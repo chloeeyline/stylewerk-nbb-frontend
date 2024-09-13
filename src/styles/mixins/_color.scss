@@ -1,0 +1,20 @@
+@mixin linear-gradient(
+    $start,
+    $stop,
+    $direction: 0deg,
+    $property: background-image,
+    $color-space: lab,
+    $longer-hue: false
+) {
+    #{$property}: linear-gradient(#{$direction}, #{$start}, #{$stop});
+
+    #{$property}: linear-gradient(#{$direction} in #{$color-space}, #{$start}, #{$stop});
+
+    @if $longer-hue {
+        #{$property}: linear-gradient(
+            #{$direction} in #{$color-space} longer hue,
+            #{$start},
+            #{$stop}
+        );
+    }
+}
