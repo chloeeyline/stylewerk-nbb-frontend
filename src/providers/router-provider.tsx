@@ -1,6 +1,6 @@
 import { createBrowserRouter, RouterProvider as ReactRouterProvider } from "react-router-dom";
 
-import Routes from "@const/routes";
+import Routes from "#/routes";
 import RootErrorBoundary from "~/components/router/root-error-boundary";
 import { lazyRoute } from "~/utils/lazy-route-helper";
 

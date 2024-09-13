@@ -7,7 +7,7 @@ export default defineConfig({
     resolve: {
         alias: {
             "~": path.resolve(__dirname, "./src"),
-            "@const": path.resolve(__dirname, "./src/constants"),
+            "#": path.resolve(__dirname, "./src/constants"),
         },
     },
     plugins: [react()],
