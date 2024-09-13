@@ -1,0 +1,5 @@
+@use "@/mixins/theme";
+
+@include theme.create(light) {
+    @include theme.scheme-light();
+}
