@@ -1,71 +1,24 @@
 import { createBrowserRouter, RouterProvider as ReactRouterProvider } from "react-router-dom";
 
-import Routes from "#/routes";
-import RootErrorBoundary from "~/components/router/RootErrorBoundary";
-import { lazyRoute } from "~/utils/lazy-route-helper";
+import RootErrorBoundary from "~/components/layout/RootErrorBoundary";
+import RootLayout from "~/routes/RootLayout";
+import { adminRoutes } from "./admin-routes";
+import { entriesRoutes } from "./entries-routes";
+import { generalRoutes } from "./general-routes";
+import { templatesRoutes } from "./templates-routes";
+import { userRoutes } from "./user-routes";
 
 const router = createBrowserRouter([
     {
         path: "/",
-        lazy: lazyRoute(() => import("~/routes/Root")),
+        element: <RootLayout />,
         errorElement: <RootErrorBoundary />,
         children: [
-            {
-                path: Routes.Home,
-                lazy: lazyRoute(() => import("~/routes/Home")),
-            },
-            {
-                path: Routes.Login,
-                lazy: lazyRoute(() => import("~/routes/Login")),
-            },
-            {
-                path: Routes.Registration,
-                lazy: lazyRoute(() => import("~/routes/Registration")),
-            },
-            {
-                path: Routes.User,
-                lazy: lazyRoute(() => import("~/routes/User")),
-            },
-            {
-                path: Routes.UserChangeEmail,
-                lazy: lazyRoute(() => import("~/routes/User/ChangeEmail")),
-            },
-            {
-                path: Routes.UserResetPassword,
-                lazy: lazyRoute(() => import("~/routes/User/ResetPassword")),
-            },
-            {
-                path: Routes.Templates,
-                lazy: lazyRoute(() => import("~/routes/Templates")),
-            },
-            {
-                path: Routes.TemplatesEdit,
-                lazy: lazyRoute(() => import("~/routes/Templates/Edit")),
-            },
-            {
-                path: Routes.Entries,
-                lazy: lazyRoute(() => import("~/routes/Entries")),
-            },
-            {
-                path: Routes.EntriesEdit,
-                lazy: lazyRoute(() => import("~/routes/Entries/Edit")),
-            },
-            {
-                path: Routes.Admin,
-                lazy: lazyRoute(() => import("~/routes/Admin")),
-            },
-            {
-                path: Routes.AdminManageThemes,
-                lazy: lazyRoute(() => import("~/routes/Admin/ManageThemes")),
-            },
-            {
-                path: Routes.AdminManageTranslations,
-                lazy: lazyRoute(() => import("~/routes/Admin/ManageTranslations")),
-            },
-            {
-                path: Routes.AdminManageUsers,
-                lazy: lazyRoute(() => import("~/routes/Admin/ManageUsers")),
-            },
+            ...generalRoutes,
+            ...userRoutes,
+            ...templatesRoutes,
+            ...entriesRoutes,
+            ...adminRoutes,
         ],
     },
 ]);
