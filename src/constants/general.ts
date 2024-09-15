@@ -1,4 +1,2 @@
-/**
- * TODO This should point towards a dev-server for backend in dev and to the live domain in prod
- */
+// TODO Set this up in the .env files!
 export const backendURL = import.meta.env.BACKEND_URL;
