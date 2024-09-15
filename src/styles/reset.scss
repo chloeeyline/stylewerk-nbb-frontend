@@ -69,6 +69,8 @@ html {
 
 /* 10. Set body to 100% height */
 html,
-body {
+body,
+#root {
     min-block-size: 100%;
+    block-size: 100%;
 }
