@@ -1,0 +1,17 @@
+@use "./transition";
+
+.transitionWrapper {
+    @include transition.wrapper(opacity);
+
+    @media (prefers-reduced-motion: no-preference) {
+        > [class="enter"],
+        > [class="exit-active"] {
+            opacity: 0;
+        }
+
+        > [class="exit"],
+        > [class="enter-active"] {
+            opacity: 1;
+        }
+    }
+}
