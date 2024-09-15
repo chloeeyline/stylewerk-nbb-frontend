@@ -1,12 +1,10 @@
-export default function Templates() {
+import Grid from "~/components/layout/Grid";
+
+export default function TemplateOverview() {
     return (
-        <div>
+        <Grid layout="content-center" className="block-size-100">
             <h1>Templates</h1>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum veniam ipsa
-                provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
-                harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
-            </p>
-        </div>
+            <p>Please select a template from the list to view it!</p>
+        </Grid>
     );
 }

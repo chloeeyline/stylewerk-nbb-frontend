@@ -5,7 +5,7 @@ import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import { useTemplate } from "./api/templates";
 
-export default function TemplatesEdit() {
+export default function TemplateView() {
     const { templateId } = useParams();
     const [result] = useTemplate(templateId ?? "");
 
@@ -26,12 +26,12 @@ export default function TemplatesEdit() {
     return (
         <div>
             <h1>
-                Edit: {name} ({id})
+                {name} ({id})
             </h1>
             <pre>
                 <code>{JSON.stringify(rows, undefined, 2)}</code>
             </pre>
-            <Link to={Routes.TemplateView.replace(RouteParams.TemplateId, id)}>Back</Link>
+            <Link to={Routes.TemplateEdit.replace(RouteParams.TemplateId, id)}>Edit</Link>
         </div>
     );
 }

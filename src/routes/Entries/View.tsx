@@ -3,11 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import { RouteParams } from "#/route-params";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
-import { useTemplate } from "./api/templates";
+import { useEntry } from "./api/entries";
 
-export default function TemplatesEdit() {
-    const { templateId } = useParams();
-    const [result] = useTemplate(templateId ?? "");
+export default function EntryView() {
+    const { entryId } = useParams();
+    const [result] = useEntry(entryId ?? "");
 
     const { ok, loading } = result;
 
@@ -21,17 +21,17 @@ export default function TemplatesEdit() {
         return <ErrorElement error={error} />;
     }
 
-    const { id, name, rows } = result.template;
+    const { id, name, rows } = result.entry;
 
     return (
         <div>
             <h1>
-                Edit: {name} ({id})
+                {name} ({id})
             </h1>
             <pre>
                 <code>{JSON.stringify(rows, undefined, 2)}</code>
             </pre>
-            <Link to={Routes.TemplateView.replace(RouteParams.TemplateId, id)}>Back</Link>
+            <Link to={Routes.EntryEdit.replace(RouteParams.EntryId, id)}>Edit</Link>
         </div>
     );
 }
