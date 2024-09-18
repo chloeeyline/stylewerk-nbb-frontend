@@ -6,13 +6,7 @@ import { Routes } from "#/routes";
 import Grid from "~/components/layout/Grid";
 import { MemoNavbar } from "~/components/layout/Navbar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
-import FadeHorizontal from "~/components/layout/Transition/FadeHorizontal";
-
-/**
- * We can't declare this tiny component inline, because it would break the transition.
- * I suspect the element gets destroyed, react looses track of it and then it gets recreated.
- */
-const Main: React.ElementType = memo((props) => <main {...props} />);
+import Transition from "~/components/layout/Transition";
 
 export default function RootLayout() {
     const { pathname } = useLocation();
@@ -41,13 +35,14 @@ export default function RootLayout() {
                         [Routes.Admin, "Admin"],
                     ]}
                 />
-                <FadeHorizontal
+                    <Transition
+                        transition="fadeHorizontal"
                     transitionKey={
                         typeof id !== "string" ? pathname : pathname.replace(`/${id}`, "")
                     }
-                    Component={Main}>
+                        scrollContainer="vertical">
                     {outlet}
-                </FadeHorizontal>
+                    </Transition>
             </Grid>
             <ScrollRestoration />
             <RouteAnnouncer />

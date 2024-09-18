@@ -3,8 +3,7 @@ import { useLocation, useOutlet } from "react-router-dom";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
-import { MemoNavbar } from "~/components/layout/Navbar";
-import FadeVertical from "~/components/layout/Transition/FadeVertical";
+import Transition from "~/components/layout/Transition";
 import { useTemplates } from "./api/templates";
 
 const TemplatesList = () => {
@@ -69,7 +68,12 @@ export default function TemplatesLayout() {
             className="block-size-100 gap-dynamic"
             style={{ "--gap": "1rem" }}>
             <TemplatesList />
-            <FadeVertical transitionKey={pathname}>{outlet}</FadeVertical>
+                <Transition
+                    transition="fadeVertical"
+                    transitionKey={pathname}
+                    scrollContainer="vertical">
+                    {outlet}
+                </Transition>
         </Grid>
     );
 }
