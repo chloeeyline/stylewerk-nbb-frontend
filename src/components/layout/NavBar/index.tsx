@@ -1,16 +1,19 @@
 import type React from "react";
-import { memo } from "react";
+import { CSSProperties, memo } from "react";
 import type ReactRouterDom from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import cls from "~/utils/class-name-helper";
+import styles from "./nav-bar.module.scss";
 
-type NavbarProps = React.HTMLAttributes<HTMLElement> & {
+type NavbarProps = React.PropsWithChildren<{
     routes: [path: string, name: string][];
     direction?: "horizontal" | "vertical";
+    className?: string;
+    styles?: CSSProperties;
     menuProps?: React.MenuHTMLAttributes<HTMLMenuElement>;
     liProps?: React.LiHTMLAttributes<HTMLLIElement>;
     navLinkProps?: ReactRouterDom.NavLinkProps;
-};
+}>;
 
 const Navbar = ({
     routes,
@@ -19,10 +22,10 @@ const Navbar = ({
     menuProps,
     liProps,
     navLinkProps,
-    ...rest
+    ...props
 }: NavbarProps) => {
     return (
-        <nav {...rest} className={cls("nav", `nav-${direction ?? "horizontal"}`, className)}>
+        <nav {...props} className={cls(styles.nav, styles[direction ?? "horizontal"], className)}>
             <menu {...menuProps}>
                 {routes.map(([path, name]) => (
                     <li {...liProps} key={path}>
@@ -63,4 +66,3 @@ const Navbar = ({
 const MemoNavbar = memo(Navbar);
 
 export { MemoNavbar, Navbar };
-

@@ -3,6 +3,7 @@ import { useLocation, useOutlet } from "react-router-dom";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
+import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import Transition from "~/components/layout/Transition";
 import { useTemplates } from "./api/templates";

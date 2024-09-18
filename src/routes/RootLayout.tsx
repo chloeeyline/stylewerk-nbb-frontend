@@ -4,7 +4,7 @@ import { ScrollRestoration, useLocation, useOutlet, useParams } from "react-rout
 
 import { Routes } from "#/routes";
 import Grid from "~/components/layout/Grid";
-import { MemoNavbar } from "~/components/layout/Navbar";
+import { MemoNavbar } from "~/components/layout/NavBar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import Transition from "~/components/layout/Transition";
 import ScrollContainer from "~/components/layout/ScrollContainer";
