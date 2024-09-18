@@ -3,6 +3,7 @@ import { useLocation, useOutlet } from "react-router-dom";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 import Transition from "~/components/layout/Transition";
 import { useEntries } from "./api/entries";
 
@@ -71,12 +72,14 @@ export default function EntriesLayout() {
             className="block-size-100 gap-dynamic"
             style={{ "--gap": "1rem" }}>
             <EntriesList />
+            <ScrollContainer direction="vertical">
                 <Transition
                     transition="fadeVertical"
                     transitionKey={pathname}
                     scrollContainer="vertical">
                     {outlet}
                 </Transition>
+            </ScrollContainer>
         </Grid>
     );
 }

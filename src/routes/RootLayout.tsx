@@ -7,6 +7,7 @@ import Grid from "~/components/layout/Grid";
 import { MemoNavbar } from "~/components/layout/Navbar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import Transition from "~/components/layout/Transition";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 
 export default function RootLayout() {
     const { pathname } = useLocation();
@@ -35,6 +36,7 @@ export default function RootLayout() {
                         [Routes.Admin, "Admin"],
                     ]}
                 />
+                <ScrollContainer direction="vertical">
                     <Transition
                         transition="fadeHorizontal"
                     transitionKey={
@@ -43,6 +45,7 @@ export default function RootLayout() {
                         scrollContainer="vertical">
                     {outlet}
                     </Transition>
+                </ScrollContainer>
             </Grid>
             <ScrollRestoration />
             <RouteAnnouncer />
