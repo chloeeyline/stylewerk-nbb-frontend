@@ -1,0 +1,35 @@
+.grid {
+    display: grid;
+}
+
+.header {
+    grid-template-rows: var(--header-width, auto) 1fr;
+}
+
+.footer {
+    grid-template-rows: 1fr var(--footer-width, auto);
+}
+
+.headerFooter {
+    grid-template-rows: var(--header-width, auto) 1fr var(--footer-width, auto);
+}
+
+.sidebarStart {
+    grid-template-columns: var(--sidebar-start-width, auto) 1fr;
+}
+
+.sidebarEnd {
+    grid-template-columns: 1fr var(--sidebar-end-width, auto);
+}
+
+.sidebarBoth {
+    grid-template-columns: var(--sidebar-start-width, auto) 1fr var(--sidebar-end-width, auto);
+}
+
+.itemsCenter {
+    place-items: center;
+}
+
+.contentCenter {
+    place-content: center;
+}

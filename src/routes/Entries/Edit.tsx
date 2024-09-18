@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { RouteParams } from "#/route-params";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
+import Grid from "~/components/layout/Grid";
 import { useEntry } from "./api/entries";
 
 export default function EntriesEdit() {
@@ -24,7 +25,7 @@ export default function EntriesEdit() {
     const { id, name, rows } = result.entry;
 
     return (
-        <div>
+        <Grid layout="auto-1fr-auto-vertical">
             <h1>
                 Edit: {name} ({id})
             </h1>
@@ -32,6 +33,6 @@ export default function EntriesEdit() {
                 <code>{JSON.stringify(rows, undefined, 2)}</code>
             </pre>
             <Link to={Routes.EntryView.replace(RouteParams.EntryId, id)}>Back</Link>
-        </div>
+        </Grid>
     );
 }

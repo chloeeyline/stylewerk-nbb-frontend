@@ -3,6 +3,7 @@ import { Link, useParams } from "react-router-dom";
 import { RouteParams } from "#/route-params";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
+import Grid from "~/components/layout/Grid";
 import { useTemplate } from "./api/templates";
 
 export default function TemplatesEdit() {
@@ -24,7 +25,7 @@ export default function TemplatesEdit() {
     const { id, name, rows } = result.template;
 
     return (
-        <div>
+        <Grid layout="auto-1fr-auto-vertical">
             <h1>
                 Edit: {name} ({id})
             </h1>
@@ -32,6 +33,6 @@ export default function TemplatesEdit() {
                 <code>{JSON.stringify(rows, undefined, 2)}</code>
             </pre>
             <Link to={Routes.TemplateView.replace(RouteParams.TemplateId, id)}>Back</Link>
-        </div>
+        </Grid>
     );
 }

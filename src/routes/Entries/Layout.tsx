@@ -69,8 +69,8 @@ export default function EntriesLayout() {
 
     return (
         <Grid
-            layout="auto-1fr-horizontal"
-            className="block-size-100 gap-dynamic"
+            layout="sidebarStart"
+            className="size-block-100 gap"
             style={{ "--gap": "1rem" }}>
             <EntriesList />
             <ScrollContainer direction="vertical">

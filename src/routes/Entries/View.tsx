@@ -3,7 +3,9 @@ import { Link, useParams } from "react-router-dom";
 import { RouteParams } from "#/route-params";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
+import Grid from "~/components/layout/Grid";
 import { useEntry } from "./api/entries";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 
 export default function EntryView() {
     const { entryId } = useParams();
@@ -24,14 +26,16 @@ export default function EntryView() {
     const { id, name, rows } = result.entry;
 
     return (
-        <div>
+        <Grid layout="headerFooter" className="size-block-100">
             <h1>
                 {name} ({id})
             </h1>
-            <pre>
-                <code>{JSON.stringify(rows, undefined, 2)}</code>
-            </pre>
+            <ScrollContainer direction="both">
+                <pre>
+                    <code>{JSON.stringify(rows, undefined, 2)}</code>
+                </pre>
+            </ScrollContainer>
             <Link to={Routes.EntryEdit.replace(RouteParams.EntryId, id)}>Edit</Link>
-        </div>
+        </Grid>
     );
 }

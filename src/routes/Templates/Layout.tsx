@@ -66,8 +66,8 @@ export default function TemplatesLayout() {
 
     return (
         <Grid
-            layout="auto-1fr-horizontal"
-            className="block-size-100 gap-dynamic"
+            layout="header"
+            className="size-block-100 gap"
             style={{ "--gap": "1rem" }}>
             <TemplatesList />
             <ScrollContainer direction="vertical">

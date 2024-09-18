@@ -1,5 +1,3 @@
-import type React from "react";
-import { memo } from "react";
 import { ScrollRestoration, useLocation, useOutlet, useParams } from "react-router-dom";
 
 import { Routes } from "#/routes";
@@ -25,8 +23,8 @@ export default function RootLayout() {
     return (
         <>
             <Grid
-                layout="auto-1fr-vertical"
-                className="block-size-100 gap-dynamic"
+                layout="header"
+                className="size-block-100 gap"
                 style={{ "--gap": "1rem" }}>
                 <MemoNavbar
                     routes={[
@@ -39,11 +37,11 @@ export default function RootLayout() {
                 <ScrollContainer direction="vertical">
                     <Transition
                         transition="fadeHorizontal"
-                    transitionKey={
-                        typeof id !== "string" ? pathname : pathname.replace(`/${id}`, "")
-                    }
+                        transitionKey={
+                            typeof id !== "string" ? pathname : pathname.replace(`/${id}`, "")
+                        }
                         scrollContainer="vertical">
-                    {outlet}
+                        {outlet}
                     </Transition>
                 </ScrollContainer>
             </Grid>
