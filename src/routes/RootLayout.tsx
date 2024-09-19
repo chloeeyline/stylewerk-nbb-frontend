@@ -22,16 +22,14 @@ export default function RootLayout() {
 
     return (
         <>
-            <Grid
-                layout="header"
-                className="size-block-100 gap"
-                style={{ "--gap": "1rem" }}>
+            <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <MemoNavbar
                     routes={[
                         [Routes.Home, "Home"],
                         [Routes.EntriesList, "Entries"],
                         [Routes.TemplatesList, "Templates"],
                         [Routes.Admin, "Admin"],
+                        [Routes.User, "User"],
                     ]}
                 />
                 <ScrollContainer direction="vertical">
