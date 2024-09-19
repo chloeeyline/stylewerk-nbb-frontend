@@ -2,11 +2,11 @@ import { createBrowserRouter, RouterProvider as ReactRouterProvider } from "reac
 
 import RootErrorBoundary from "~/components/layout/RootErrorBoundary";
 import RootLayout from "~/routes/RootLayout";
-import { adminRoutes } from "./admin-routes";
-import { entriesRoutes } from "./entries-routes";
-import { generalRoutes } from "./general-routes";
-import { templatesRoutes } from "./templates-routes";
-import { userRoutes } from "./user-routes";
+import { adminRoutes } from "./routes/admin";
+import { entriesRoutes } from "./routes/entries";
+import { generalRoutes } from "./routes/general";
+import { templatesRoutes } from "./routes/templates";
+import { userRoutes } from "./routes/user";
 
 const router = createBrowserRouter([
     {
