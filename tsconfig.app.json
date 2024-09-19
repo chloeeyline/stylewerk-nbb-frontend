@@ -24,7 +24,8 @@
         "baseUrl": ".",
         "paths": {
             "~/*": ["src/*"],
-            "#/*": ["src/constants/*"]
+            "#/*": ["src/constants/*"],
+            "@/*": ["src/styles/*"]
         }
     },
     "include": ["src"]
