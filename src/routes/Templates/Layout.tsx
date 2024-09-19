@@ -66,7 +66,7 @@ export default function TemplatesLayout() {
 
     return (
         <Grid
-            layout="header"
+            layout="sidebarStart"
             className="size-block-100 gap"
             style={{ "--gap": "1rem" }}>
             <TemplatesList />

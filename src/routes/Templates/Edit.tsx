@@ -25,7 +25,7 @@ export default function TemplatesEdit() {
     const { id, name, rows } = result.template;
 
     return (
-        <Grid layout="auto-1fr-auto-vertical">
+        <Grid layout="headerFooter">
             <h1>
                 Edit: {name} ({id})
             </h1>
