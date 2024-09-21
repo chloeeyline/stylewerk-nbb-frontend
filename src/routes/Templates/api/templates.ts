@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import wait from "~/utils/wait";
 import { getDummy, getDummyList } from "./dummy";
 import type {
     Template,
@@ -206,6 +207,8 @@ const createFolder = (folder: unknown): TemplateFolder | TemplateBuildingError =
 };
 
 const getTemplate = async (id: string): Promise<TemplateResponse> => {
+    await wait(500);
+
     try {
         const response = await getDummy(id);
 
@@ -246,6 +249,8 @@ const getTemplate = async (id: string): Promise<TemplateResponse> => {
 };
 
 const getTemplates = async (err: boolean = false): Promise<TemplateListResponse> => {
+    await wait(500);
+    
     try {
         const response = await getDummyList(err);
 
@@ -359,4 +364,5 @@ const useTemplates = (
     return [result, refresh];
 };
 
-export { TemplateError, TemplatesNotFoundError, TemplateNotFoundError, useTemplates, useTemplate };
+export { TemplateError, TemplateNotFoundError, TemplatesNotFoundError, useTemplate, useTemplates };
+

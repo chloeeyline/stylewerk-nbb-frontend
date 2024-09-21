@@ -3,14 +3,14 @@ import { useLocation, useOutlet } from "react-router-dom";
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
+import ListSidebar from "~/components/layout/ListSidebar";
 import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import Transition from "~/components/layout/Transition";
 import { useEntries } from "./api/entries";
+import type { EntryListResponse } from "./api/types";
 
-const EntriesList = () => {
-    const [result, refresh] = useEntries();
-
+const EntriesResult = ({ result }: { result: EntryListResponse }) => {
     const { ok, loading } = result;
 
     if (loading === true) {
@@ -26,15 +26,11 @@ const EntriesList = () => {
     const { general, folders } = result;
 
     return (
-        <div>
-            <button onClick={refresh}>Refresh</button>
+        <>
             {general.length >= 1 && (
                 <MemoNavbar
                     direction="vertical"
-                    routes={result.general.map(({ id, name }) => [
-                        `${Routes.EntriesList}/${id}`,
-                        name,
-                    ])}
+                    routes={general.map(({ id, name }) => [`${Routes.EntriesList}/${id}`, name])}
                 />
             )}
             {folders.length >= 1 && (
@@ -53,7 +49,20 @@ const EntriesList = () => {
                     ))}
                 </ul>
             )}
-        </div>
+        </>
+    );
+};
+
+const EntriesList = ({ pathname }: { pathname: string }) => {
+    const [result, refresh] = useEntries();
+
+    return (
+        <ListSidebar
+            collapsed={pathname === Routes.EntriesList}
+            onRefresh={refresh}
+            refreshing={result.loading}>
+            <EntriesResult result={result} />
+        </ListSidebar>
     );
 };
 
@@ -68,11 +77,8 @@ export default function EntriesLayout() {
     const outlet = useOutlet();
 
     return (
-        <Grid
-            layout="sidebarStart"
-            className="size-block-100 gap"
-            style={{ "--gap": "1rem" }}>
-            <EntriesList />
+        <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+            <EntriesList pathname={pathname} />
             <ScrollContainer direction="vertical">
                 <Transition
                     transition="fadeVertical"

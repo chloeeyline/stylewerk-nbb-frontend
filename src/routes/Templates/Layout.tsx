@@ -7,10 +7,10 @@ import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import Transition from "~/components/layout/Transition";
 import { useTemplates } from "./api/templates";
+import type { TemplateListResponse } from "./api/types";
+import ListSidebar from "~/components/layout/ListSidebar";
 
-const TemplatesList = () => {
-    const [result, refresh] = useTemplates();
-
+const TemplatesResult = ({result}: { result: TemplateListResponse}) => {
     const { ok, loading } = result;
 
     if (loading === true) {
@@ -23,11 +23,10 @@ const TemplatesList = () => {
         return <ErrorElement error={error} />;
     }
 
-    const { general, folders } = result;
+    const {  general, folders } = result;
 
     return (
-        <div>
-            <button onClick={refresh}>Refresh</button>
+        <>
             {general.length >= 1 && (
                 <MemoNavbar
                     direction="vertical"
@@ -50,7 +49,22 @@ const TemplatesList = () => {
                     ))}
                 </ul>
             )}
-        </div>
+        </>
+    );
+
+
+}
+
+const TemplatesList = ({pathname}: { pathname: string}) => {
+    const [result, refresh] = useTemplates();
+
+    return (
+        <ListSidebar
+            collapsed={pathname === Routes.TemplatesList}
+            onRefresh={refresh}
+            refreshing={result.loading}>
+            <TemplatesResult result={result} />
+        </ListSidebar>
     );
 };
 
@@ -69,7 +83,7 @@ export default function TemplatesLayout() {
             layout="sidebarStart"
             className="size-block-100 gap"
             style={{ "--gap": "1rem" }}>
-            <TemplatesList />
+            <TemplatesList pathname={pathname} />
             <ScrollContainer direction="vertical">
                 <Transition
                     transition="fadeVertical"

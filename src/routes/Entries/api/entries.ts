@@ -9,6 +9,7 @@ import type {
     EntryResponse,
     EntryRow,
 } from "./types";
+import wait from "~/utils/wait";
 
 class EntryError extends Error {
     constructor(message: string, public readonly name: string, public readonly code: number, public readonly cause?: EntryError|Error) {
@@ -201,6 +202,8 @@ const createFolder = (folder: unknown): EntryFolder | EntryBuildingError => {
 };
 
 const getEntry = async (id: string): Promise<EntryResponse> => {
+    await wait(500);
+
     try {
         const response = await getDummy(id);
 
@@ -241,6 +244,8 @@ const getEntry = async (id: string): Promise<EntryResponse> => {
 };
 
 const getEntries = async (err: boolean = false): Promise<EntryListResponse> => {
+    await wait(500);
+
     try {
         const response = await getDummyList(err);
 
