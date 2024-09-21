@@ -5,6 +5,7 @@ import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
 import { useEntry } from "./api/entries";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 
 export default function EntriesEdit() {
     const { entryId } = useParams();
@@ -25,13 +26,15 @@ export default function EntriesEdit() {
     const { id, name, rows } = result.entry;
 
     return (
-        <Grid layout="headerFooter">
+        <Grid layout="headerFooter" className="size-block-100">
             <h1>
                 Edit: {name} ({id})
             </h1>
-            <pre>
-                <code>{JSON.stringify(rows, undefined, 2)}</code>
-            </pre>
+            <ScrollContainer direction="both">
+                <pre>
+                    <code>{JSON.stringify(rows, undefined, 2)}</code>
+                </pre>
+            </ScrollContainer>
             <Link to={Routes.EntryView.replace(RouteParams.EntryId, id)}>Back</Link>
         </Grid>
     );
