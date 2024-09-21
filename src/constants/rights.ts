@@ -1,12 +1,3 @@
-export const enum Right {
-    Restricted = 0,
-    Access = 1,
-    Create = 2,
-    Edit = 4,
-    Delete = 8,
-    Admin = 16,
+export type Rights = "Restricted" | "Access" | "Create" | "Edit" | "Delete" | "Admin";
 
-    DefaultUsage = Access | Create,
-    ManipulateOthers = Edit | Delete,
-    SuperAdmin = Admin | ManipulateOthers | DefaultUsage,
-}
+export type RightsMap = Map<Rights | string, boolean>;
