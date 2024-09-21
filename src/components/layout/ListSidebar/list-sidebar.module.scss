@@ -1,0 +1,17 @@
+.sidebar {
+    max-inline-size: 10rem;
+
+    &.open {
+        inline-size: 10rem;
+
+        > .contents {
+            display: block;
+        }
+    }
+
+    &.close {
+        > .contents {
+            display: none;
+        }
+    }
+}
