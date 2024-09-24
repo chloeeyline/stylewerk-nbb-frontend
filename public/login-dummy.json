@@ -1,0 +1,21 @@
+{
+  "type": 1,
+  "errorCode": null,
+  "data": {
+    "accessToken": {
+      "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiI3ZGExMTk5Yi1lMmZjLTQzMTEtOThmOC04MDJhY2ZiOTdhZGIiLCJleHAiOjE3MjcwMTc5MjIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTExNSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTExNSJ9.ZpYSjxlB3Um_GiYbCgK3JVEtKznDWT-fXeF88_-7oww",
+      "expireTime": 1727532635
+    },
+    "refreshToken": {
+      "token": "HmemoQBJF07jYvXzJxuaQISwj/ib4LwEX6M5vNuAiLnuYE1O2tyEf2EWkLH+MiAmoqJXdNFy2ZuN09Yxc5ONacZRm3erNYvJFPx5pPL/8WxfRJyDv/VbA9y1urDj0PkEs7LH6smHJGnUICcxEoeR2QIqfOPlw/91jbmaWy3ig90E7We/aPM+IQQJYwfqvmJrj8bqmZKpJD62my0KMuOAbghImPOfgYpy/6zp/PEgV299asUC5BxCsl1ktDRMTNCGzzZdD3o8hX68b3rx/qn0ClZThpQdtSQ61soBB6WdkLlZ13XIelkcw43jj6QRvH/88wM04puI4BjVQ+FRRTMkEw==",
+      "expireTime": 1727532635
+    },
+    "statusCode": null,
+    "consistOverSession": true,
+    "username": "ghgfghdfgdfg",
+    "admin": false,
+    "rights": [
+      "Test"
+    ]
+  }
+}
