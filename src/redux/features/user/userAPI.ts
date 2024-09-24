@@ -1,11 +1,10 @@
-import type { User, UserRight } from "./userTypes";
-import { Right } from "#/rights";
 import wait from "~/utils/wait";
+import type { User, UserRights } from "./userTypes";
 
-export const defaultUserRight: UserRight = {
+export const defaultUserRights: UserRights = {
     admin: false,
-    entries: Right.Restricted,
-    templates: Right.Restricted,
+    entries: new Map([["Restricted", true]]),
+    templates: new Map([["Restricted", true]]),
 };
 
 // A mock function to mimic making an async request for data
@@ -17,6 +16,6 @@ export const fetchUser = async (id: string): Promise<User> => {
         token: "foobar-token",
         refreshToken: "foobar-refreshToken",
         username: "foobar-username",
-        right: defaultUserRight,
+        rights: defaultUserRights,
     };
 };
