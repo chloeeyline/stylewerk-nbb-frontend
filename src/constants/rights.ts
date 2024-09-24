@@ -1,3 +1,5 @@
-export type Rights = "Restricted" | "Access" | "Create" | "Edit" | "Delete" | "Admin";
+export type Right = "Test";
 
-export type RightsMap = Map<Rights | string, boolean>;
+export type RightsSet = Set<Right>;
+
+export type RightsMap = Map<Right | string, boolean>;
