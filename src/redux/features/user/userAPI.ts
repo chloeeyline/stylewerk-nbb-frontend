@@ -1,11 +1,10 @@
 import type { User, UserRight } from "./userTypes";
-import { Right } from "#/rights";
 import wait from "~/utils/wait";
 
 export const defaultUserRight: UserRight = {
     admin: false,
-    entries: Right.Restricted,
-    templates: Right.Restricted,
+    entries: new Map([["Restricted", true]]),
+    templates: new Map([["Restricted", true]]),
 };
 
 // A mock function to mimic making an async request for data

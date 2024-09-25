@@ -1,9 +1,9 @@
-import { Right } from "#/rights";
+import type { RightsMap } from "#/rights";
 
 export interface UserRight {
     admin: boolean;
-    entries: Right;
-    templates: Right;
+    entries: RightsMap;
+    templates: RightsMap;
 }
 
 export interface User {
