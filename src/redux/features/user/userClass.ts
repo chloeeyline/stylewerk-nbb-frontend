@@ -1,9 +1,12 @@
 import type { Right } from "~/constants/rights";
-import {
-    isNull,
-    isObject,
-    isString
-} from "~/utils/validation";
+import { isNull } from "~/utils/validation";
+
+import type { Token } from "~/schemas/token";
+
+import { userLoginApiSchema } from "./user-schemas";
+import { genericApiSchema } from "~/schemas/generic-api-response";
+
+import { BACKEND_URL } from "#/general";
 
 class UserError extends Error {
     public name: string = "UserError";
@@ -31,21 +34,6 @@ type UserAuthenticationError = {
     error: UserError;
 };
 
-/* type Token = {
-    token: string;
-    expireTime: number;
-}; */
-
-type UserLoginApiResponse = GenericApiResponse<{
-    accessToken: Token;
-    refreshToken: Token;
-    statusCode: 1 | 2 | 3 | null;
-    consistOverSession: boolean;
-    username: string;
-    admin: boolean;
-    rights: string[];
-}>;
-
 type UserInStorage = {
     refreshToken: Token;
     statusCode: 1 | 2 | 3 | null;
@@ -60,7 +48,7 @@ class User {
     constructor(
         protected _accessToken: Token,
         protected _refreshToken: Token,
-        protected _statusCode: 1 | 2 | 3 | null,
+        protected _statusCode: number | null,
         protected _consistOverSession: boolean,
         protected _username: string,
         protected _admin: boolean,
@@ -116,7 +104,7 @@ class User {
         consistOverSession: boolean,
     ): Promise<UserLoggedIn | UserAuthenticationError> {
         try {
-            const response = await fetch("/login-dummy.json", {
+            const response = await fetch(`${BACKEND_URL}/Auth/Login`, {
                 body: JSON.stringify({
                     username,
                     password,
@@ -130,20 +118,30 @@ class User {
 
             const json = await response.json();
 
-            if (User.validateLoginResponse(json) === false) {
-                throw new UserError("API response is malformed!", 500);
+            const { type, typeText, errorCode, errorText, data } = genericApiSchema.parse(json);
+
+            if (typeof errorCode === "number" && typeof errorText === "string") {
+                throw new UserError(errorText, errorCode);
             }
+
+            if (type !== 1) {
+                throw new UserError(`Failed logging in! ${typeText}`, type);
+            }
+
+            const parsed = userLoginApiSchema.parse(data);
+
+            const storage = parsed.consistOverSession ? localStorage : sessionStorage;
 
             return {
                 state: "loggedIn",
                 user: new User(
-                    accessToken,
-                    refreshToken,
-                    statusCode,
-                    consistOverSession,
-                    username,
-                    admin,
-                    rights,
+                    parsed.accessToken,
+                    parsed.refreshToken,
+                    parsed.statusCode,
+                    parsed.consistOverSession,
+                    parsed.username,
+                    parsed.admin,
+                    parsed.rights,
                     storage,
                 ),
             };
@@ -161,22 +159,6 @@ class User {
                 ),
             };
         }
-    }
-
-    private static validateLoginResponse(response: unknown): response is UserLoginApiResponse {
-        if (
-            isGenericApiResponse(response) === false ||
-            !("accessToken" in response.data) ||
-            isObject(response.data.accessToken) === false ||
-            isNull(response.data.accessToken) ||
-            !("token" in response.data.accessToken) ||
-            isString(response.data.accessToken.token) === false ||
-            !("expireTime" in response.data.accessToken)
-        ) {
-            return false;
-        }
-
-        return true;
     }
 
     // public static async register(): Promise<UserLoggedIn | UserAuthenticationError> {}
