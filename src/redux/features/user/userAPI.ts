@@ -1,7 +1,7 @@
+import type { User, UserRight } from "./userTypes";
 import wait from "~/utils/wait";
-import type { User, UserRights } from "./userTypes";
 
-export const defaultUserRights: UserRights = {
+export const defaultUserRights: UserRight = {
     admin: false,
     entries: new Map([["Restricted", true]]),
     templates: new Map([["Restricted", true]]),
@@ -16,6 +16,6 @@ export const fetchUser = async (id: string): Promise<User> => {
         token: "foobar-token",
         refreshToken: "foobar-refreshToken",
         username: "foobar-username",
-        rights: defaultUserRights,
+        right: defaultUserRights,
     };
 };

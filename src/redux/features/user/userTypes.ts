@@ -1,14 +1,10 @@
-import type { RightsSet } from "#/rights";
+import type { RightsMap } from "#/rights";
 
-/* export interface UserRight {
+export interface UserRight {
     admin: boolean;
-    entries: Right;
-    templates: Right;
-} */
-
-// export type UserRightNamespaces = "entries" | "templates";
-
-// export type UserRights = { admin: boolean } & Record<UserRightNamespaces, RightsMap>;
+    entries: RightsMap;
+    templates: RightsMap;
+}
 
 export interface User {
     id: string;
@@ -16,5 +12,5 @@ export interface User {
     refreshToken: string;
     username: string;
     admin: boolean;
-    rights: RightsSet;
+    right: UserRight;
 }
