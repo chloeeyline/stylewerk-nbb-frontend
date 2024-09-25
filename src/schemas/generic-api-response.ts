@@ -2,8 +2,10 @@ import { z } from "zod";
 
 const makeApiSchema = <T>(schema: z.ZodType<T>) => {
     return z.object({
-        type: z.number().int().finite().safe(),
-        errorCode: z.number().int().finite().safe().nullable(),
+        type: z.number().int().safe(),
+        typeText: z.string(),
+        errorCode: z.number().int().safe().nullable(),
+        errorText: z.string().nullable(),
         data: schema,
     });
 };
