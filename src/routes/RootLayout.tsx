@@ -17,8 +17,8 @@ const RootNavBar = () => {
         [Routes.Home, "Home"],
         [Routes.Entries.List, "Entries"],
         [Routes.Templates.List, "Templates"],
-        userIsAdmin ? [Routes.Admin, "Admin"] : undefined,
-        userIsLoggedIn ? [Routes.User, "User"] : undefined,
+        userIsAdmin ? [Routes.Admin.Index, "Admin"] : undefined,
+        userIsLoggedIn ? [Routes.User.Index, "User"] : undefined,
         userIsLoggedIn === false ? [Routes.Login, "Login"] : undefined,
         userIsLoggedIn === false ? [Routes.Registration, "Registration"] : undefined,
     ].filter((route): route is [path: string, name: string] => {
