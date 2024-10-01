@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 
-import { RouteParams } from "#/route-params";
-import { Routes } from "#/routes";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
@@ -35,7 +35,7 @@ export default function TemplateView() {
                     <code>{JSON.stringify(rows, undefined, 2)}</code>
                 </pre>
             </ScrollContainer>
-            <Link to={Routes.TemplateEdit.replace(RouteParams.TemplateId, id)}>Edit</Link>
+            <Link to={Routes.Templates.Edit.replace(RouteParams.TemplateId, id)}>Edit</Link>
         </Grid>
     );
 }

@@ -1,11 +1,11 @@
 import { Link, useParams } from "react-router-dom";
 
-import { RouteParams } from "#/route-params";
-import { Routes } from "#/routes";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
-import { useEntry } from "./api/entries";
 import ScrollContainer from "~/components/layout/ScrollContainer";
+import { useEntry } from "./api/entries";
 
 export default function EntriesEdit() {
     const { entryId } = useParams();
@@ -35,7 +35,7 @@ export default function EntriesEdit() {
                     <code>{JSON.stringify(rows, undefined, 2)}</code>
                 </pre>
             </ScrollContainer>
-            <Link to={Routes.EntryView.replace(RouteParams.EntryId, id)}>Back</Link>
+            <Link to={Routes.Entries.View.replace(RouteParams.EntryId, id)}>Back</Link>
         </Grid>
     );
 }

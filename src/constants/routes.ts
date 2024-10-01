@@ -1,4 +1,4 @@
-import { RouteParams } from "#/route-params";
+import RouteParams from "#/route-params";
 
 export const User = {
     Index: "/user",
