@@ -39,30 +39,6 @@ const Navbar = ({
     );
 };
 
-/* export default function Navbar({
-    routes,
-    direction,
-    className,
-    menuProps,
-    liProps,
-    navLinkProps,
-    ...rest
-}: NavbarProps) {
-    return (
-        <nav {...rest} className={cls("nav", `nav-${direction ?? "horizontal"}`, className)}>
-            <menu {...menuProps}>
-                {routes.map(([path, name]) => (
-                    <li {...liProps} key={path}>
-                        <NavLink {...navLinkProps} to={path}>
-                            {name}
-                        </NavLink>
-                    </li>
-                ))}
-            </menu>
-        </nav>
-    );
-} */
-
 const MemoNavbar = memo(Navbar);
 
 export { MemoNavbar, Navbar };
