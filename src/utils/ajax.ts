@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "~/constants/general";
+import { BACKEND_URL } from "#/general";
 import { NbbError } from "~/utils/nbb-error";
 import { User, userPromise } from "~/redux/features/user/userClass";
 import { genericApiSchema } from "~/schemas/generic-api-response";

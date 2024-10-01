@@ -1,4 +1,4 @@
-import { Auth } from "~/constants/backend-routes";
+import { Auth } from "#/backend-routes";
 import { tokenSchema, type Token } from "~/schemas/token";
 import Ajax from "~/utils/ajax";
 import type { UserLoginApi } from "./user-schemas";
