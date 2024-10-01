@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import Routes from "#/routes";
 
 /**
  * All general routes

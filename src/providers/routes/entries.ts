@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import { Entries } from "#/routes";
 
 /**
  * All routes regarding entries
@@ -10,7 +10,7 @@ import { Routes } from "#/routes";
  */
 export const entriesRoutes: RouteObject[] = [
     {
-        path: Routes.EntriesList,
+        path: Entries.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Entries/Layout");
 
@@ -18,7 +18,7 @@ export const entriesRoutes: RouteObject[] = [
         },
         children: [
             {
-                path: Routes.EntriesList,
+                path: Entries.List,
                 lazy: async () => {
                     const { default: Component } = await import("~/routes/Entries");
 
@@ -26,7 +26,7 @@ export const entriesRoutes: RouteObject[] = [
                 },
             },
             {
-                path: Routes.EntryView,
+                path: Entries.View,
                 lazy: async () => {
                     const { default: Component } = await import("~/routes/Entries/View");
 
@@ -36,7 +36,7 @@ export const entriesRoutes: RouteObject[] = [
         ],
     },
     {
-        path: Routes.EntryEdit,
+        path: Entries.Edit,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Entries/Edit");
 

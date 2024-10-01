@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import { Admin } from "#/routes";
 
 /**
  * All routes regarding admins
@@ -14,7 +14,7 @@ import { Routes } from "#/routes";
  */
 export const adminRoutes: RouteObject[] = [
     {
-        path: Routes.Admin,
+        path: Admin.Index,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin");
 
@@ -22,7 +22,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminThemesList,
+        path: Admin.Themes.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Themes");
 
@@ -30,7 +30,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminThemeManage,
+        path: Admin.Themes.Manage,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Themes/Manage");
 
@@ -38,7 +38,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminTranslationsList,
+        path: Admin.Translations.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Translations");
 
@@ -46,7 +46,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminTranslationManage,
+        path: Admin.Translations.Manage,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Translations/Manage");
 
@@ -54,7 +54,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminUsersList,
+        path: Admin.Users.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Users");
 
@@ -62,7 +62,7 @@ export const adminRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.AdminUserManage,
+        path: Admin.Users.Manage,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Users/Manage");
 

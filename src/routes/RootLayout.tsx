@@ -1,6 +1,6 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import Routes from "#/routes";
 import Grid from "~/components/layout/Grid";
 import { MemoNavbar } from "~/components/layout/NavBar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
@@ -15,8 +15,8 @@ const RootNavBar = () => {
 
     const routes = [
         [Routes.Home, "Home"],
-        [Routes.EntriesList, "Entries"],
-        [Routes.TemplatesList, "Templates"],
+        [Routes.Entries.List, "Entries"],
+        [Routes.Templates.List, "Templates"],
         userIsAdmin ? [Routes.Admin, "Admin"] : undefined,
         userIsLoggedIn ? [Routes.User, "User"] : undefined,
         userIsLoggedIn === false ? [Routes.Login, "Login"] : undefined,

@@ -1,6 +1,6 @@
 import { Outlet, useLocation } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import Routes from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
 import ListSidebar from "~/components/layout/ListSidebar";
@@ -29,7 +29,7 @@ const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
             {general.length >= 1 && (
                 <MemoNavbar
                     direction="vertical"
-                    routes={general.map(({ id, name }) => [`${Routes.TemplatesList}/${id}`, name])}
+                    routes={general.map(({ id, name }) => [`${Routes.Templates.List}/${id}`, name])}
                 />
             )}
             {folders.length >= 1 && (
@@ -40,7 +40,7 @@ const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
                             <MemoNavbar
                                 direction="vertical"
                                 routes={templates.map(({ id, name }) => [
-                                    `${Routes.TemplatesList}/${id}`,
+                                    `${Routes.Templates.List}/${id}`,
                                     name,
                                 ])}
                             />
@@ -58,7 +58,7 @@ const TemplatesList = () => {
 
     return (
         <ListSidebar
-            collapsed={pathname === Routes.TemplatesList}
+            collapsed={pathname === Routes.Templates.List}
             onRefresh={refresh}
             refreshing={result.loading}>
             <TemplatesResult result={result} />

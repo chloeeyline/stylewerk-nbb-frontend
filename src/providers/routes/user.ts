@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import { User } from "#/routes";
 
 /**
  * All routes regarding the user
@@ -10,7 +10,7 @@ import { Routes } from "#/routes";
  */
 export const userRoutes: RouteObject[] = [
     {
-        path: Routes.User,
+        path: User.Index,
         lazy: async () => {
             const { default: Component } = await import("~/routes/User");
 
@@ -18,7 +18,7 @@ export const userRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.UserChangeEmail,
+        path: User.ChangeEmail,
         lazy: async () => {
             const { default: Component } = await import("~/routes/User/ChangeEmail");
 
@@ -26,7 +26,7 @@ export const userRoutes: RouteObject[] = [
         },
     },
     {
-        path: Routes.UserResetPassword,
+        path: User.ResetPassword,
         lazy: async () => {
             const { default: Component } = await import("~/routes/User/ResetPassword");
 

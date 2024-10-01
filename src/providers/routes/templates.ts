@@ -1,6 +1,6 @@
 import type { RouteObject } from "react-router-dom";
 
-import { Routes } from "#/routes";
+import { Templates } from "#/routes";
 /**
  * All routes regarding templates
  * - list route
@@ -9,7 +9,7 @@ import { Routes } from "#/routes";
  */
 export const templatesRoutes: RouteObject[] = [
     {
-        path: Routes.TemplatesList,
+        path: Templates.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Templates/Layout");
 
@@ -17,7 +17,7 @@ export const templatesRoutes: RouteObject[] = [
         },
         children: [
             {
-                path: Routes.TemplatesList,
+                path: Templates.List,
                 lazy: async () => {
                     const { default: Component } = await import("~/routes/Templates");
 
@@ -25,7 +25,7 @@ export const templatesRoutes: RouteObject[] = [
                 },
             },
             {
-                path: Routes.TemplateView,
+                path: Templates.View,
                 lazy: async () => {
                     const { default: Component } = await import("~/routes/Templates/View");
 
@@ -35,7 +35,7 @@ export const templatesRoutes: RouteObject[] = [
         ],
     },
     {
-        path: Routes.TemplateEdit,
+        path: Templates.Edit,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Templates/Edit");
 
