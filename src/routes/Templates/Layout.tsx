@@ -1,16 +1,15 @@
-import { useLocation, useOutlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
+import ListSidebar from "~/components/layout/ListSidebar";
 import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import Transition from "~/components/layout/Transition";
 import { useTemplates } from "./api/templates";
 import type { TemplateListResponse } from "./api/types";
-import ListSidebar from "~/components/layout/ListSidebar";
 
-const TemplatesResult = ({result}: { result: TemplateListResponse}) => {
+const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
     const { ok, loading } = result;
 
     if (loading === true) {
@@ -23,7 +22,7 @@ const TemplatesResult = ({result}: { result: TemplateListResponse}) => {
         return <ErrorElement error={error} />;
     }
 
-    const {  general, folders } = result;
+    const { general, folders } = result;
 
     return (
         <>
@@ -51,11 +50,10 @@ const TemplatesResult = ({result}: { result: TemplateListResponse}) => {
             )}
         </>
     );
+};
 
-
-}
-
-const TemplatesList = ({pathname}: { pathname: string}) => {
+const TemplatesList = () => {
+    const { pathname } = useLocation();
     const [result, refresh] = useTemplates();
 
     return (
@@ -69,28 +67,11 @@ const TemplatesList = ({pathname}: { pathname: string}) => {
 };
 
 export default function TemplatesLayout() {
-    const { pathname } = useLocation();
-
-    /**
-     * Can't use the Outlet Component itself.
-     * It would not work with the page transitions from React Transition Group.
-     * see: https://reactcommunity.org/react-transition-group/with-react-router/
-     */
-    const outlet = useOutlet();
-
     return (
-        <Grid
-            layout="sidebarStart"
-            className="size-block-100 gap"
-            style={{ "--gap": "1rem" }}>
-            <TemplatesList pathname={pathname} />
+        <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+            <TemplatesList />
             <ScrollContainer direction="vertical">
-                <Transition
-                    transition="fadeVertical"
-                    transitionKey={pathname}
-                    scrollContainer="vertical">
-                    {outlet}
-                </Transition>
+                <Outlet />
             </ScrollContainer>
         </Grid>
     );

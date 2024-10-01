@@ -1,4 +1,4 @@
-import { useLocation, useOutlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
 import { Routes } from "#/routes";
 import ErrorElement from "~/components/general/ErrorElement";
@@ -6,7 +6,6 @@ import Grid from "~/components/layout/Grid";
 import ListSidebar from "~/components/layout/ListSidebar";
 import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import Transition from "~/components/layout/Transition";
 import { useEntries } from "./api/entries";
 import type { EntryListResponse } from "./api/types";
 
@@ -53,7 +52,8 @@ const EntriesResult = ({ result }: { result: EntryListResponse }) => {
     );
 };
 
-const EntriesList = ({ pathname }: { pathname: string }) => {
+const EntriesList = () => {
+    const { pathname } = useLocation();
     const [result, refresh] = useEntries();
 
     return (
@@ -67,25 +67,11 @@ const EntriesList = ({ pathname }: { pathname: string }) => {
 };
 
 export default function EntriesLayout() {
-    const { pathname } = useLocation();
-
-    /**
-     * Can't use the Outlet Component itself.
-     * It would not work with the page transitions from React Transition Group.
-     * see: https://reactcommunity.org/react-transition-group/with-react-router/
-     */
-    const outlet = useOutlet();
-
     return (
         <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-            <EntriesList pathname={pathname} />
+            <EntriesList />
             <ScrollContainer direction="vertical">
-                <Transition
-                    transition="fadeVertical"
-                    transitionKey={pathname}
-                    scrollContainer="vertical">
-                    {outlet}
-                </Transition>
+                <Outlet />
             </ScrollContainer>
         </Grid>
     );
