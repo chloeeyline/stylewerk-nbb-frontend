@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import LoginForm from "~/components/general/LoginForm";
 import routes from "#/routes";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 
 const LoggedIn = () => {
     const navigate = useNavigate();
@@ -25,5 +27,12 @@ const LoggedIn = () => {
 };
 
 export default function Login() {
-    return <LoginForm onLoggedIn={<LoggedIn />} />;
+    return (
+        <Grid layout="header">
+            <h1>Login</h1>
+            <ScrollContainer direction="vertical">
+                <LoginForm onLoggedIn={<LoggedIn />} />
+            </ScrollContainer>
+        </Grid>
+    );
 }

@@ -45,50 +45,44 @@ export default function LoginForm({
             return <div>Failed logging in!</div>;
     }
 
+    const submitForm = async () => {
+        const username = usernameRef.current?.value;
+        const password = passwordRef.current?.value;
+        const consistOverSession = rememberMeRef.current?.checked ?? false;
+
+        const usernameFailed = typeof username !== "string" || username.length <= 0;
+        const passwordFailed = typeof password !== "string" || password.length <= 0;
+
+        if (usernameFailed) {
+            setUsernameError("Please enter a username!");
+        }
+
+        if (passwordFailed) {
+            setPasswordError("Please enter a password!");
+        }
+
+        if (usernameFailed || passwordFailed) {
+            return;
+        }
+
+        const passwordResult = await User.validatePassword(password);
+
+        if (passwordResult.ok === false) {
+            setPasswordError(passwordResult.error.message);
+        }
+
+        if (passwordResult.ok === false) {
+            return;
+        }
+
+        dispatch(loginUser({ username, password, consistOverSession }));
+    };
+
     return (
         <form
             onSubmit={(e) => {
                 e.preventDefault();
-                const username = usernameRef.current?.value;
-                const password = passwordRef.current?.value;
-                const consistOverSession = rememberMeRef.current?.checked ?? false;
-
-                const usernameFailed = typeof username !== "string" || username.length <= 0;
-                const passwordFailed = typeof password !== "string" || password.length <= 0;
-
-                if (usernameFailed) {
-                    setUsernameError("Please enter a username!");
-                }
-
-                if (passwordFailed) {
-                    setPasswordError("Please enter a password!");
-                }
-
-                if (usernameFailed || passwordFailed) {
-                    return;
-                }
-
-                Promise.all([
-                    User.validateUsername(username),
-                    User.validatePassword(password),
-                ]).then(([usernameResult, passwordResult]) => {
-                    console.log(usernameResult);
-                    if (usernameResult.ok === false) {
-                        setUsernameError(usernameResult.error.message);
-                    }
-
-                    if (passwordResult.ok === false) {
-                        setPasswordError(passwordResult.error.message);
-                    }
-
-                    if (usernameResult.ok === false || passwordResult.ok === false) {
-                        return;
-                    }
-
-                    dispatch(loginUser({ username, password, consistOverSession }));
-                });
-
-                // dispatch(loginUser({ username, password, consistOverSession }));
+                submitForm();
             }}>
             <fieldset>
                 <legend>Username</legend>
