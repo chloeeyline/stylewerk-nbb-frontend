@@ -1,205 +1,94 @@
-import { store } from "~/redux/store";
 import { BACKEND_URL } from "~/constants/general";
+import { NbbError } from "~/utils/nbb-error";
+import { User, userPromise } from "~/redux/features/user/userClass";
+import { genericApiSchema } from "~/schemas/generic-api-response";
 
-import { NbbError } from "~/redux/features/error/nbb-error";
+type AjaxResponse = { ok: true; result: unknown } | { ok: false; error: NbbError };
 
-const errorDispatcher = (error: Error | null) => {
-    return store.dispatch({
-        type: "error",
-        payload: error,
-    });
-};
+export default class Ajax {
+    constructor(protected url: string, protected init: RequestInit, protected user?: User) {}
 
-/* type AjaxInit = {
-    auth?: boolean;
-    method: "GET" | "POST";
-    body?: object;
-    search?: Record<string, string>;
-    isOnRetry?: boolean;
-}; */
-
-type AjaxFetchMethod = (
-    input: string,
-    init: {
-        auth?: boolean;
-        method: "GET" | "POST";
-        body?: object;
-        search?: Record<string, string>;
-    },
-) => Promise<unknown>;
-
-type AjaxPostMethod = (
-    url: string,
-    init: {
-        body?: object;
-        auth?: boolean;
-    },
-) => Promise<unknown>;
-
-type AjaxGetMethod = (
-    url: string,
-    init: {
-        search?: Record<string, string>;
-        auth?: boolean;
-    },
-) => Promise<unknown>;
-
-class Ajax {
-    constructor(
-        protected url: string,
-        protected init: RequestInit,
-        protected auth: boolean = false,
-    ) {
-        // Foo
-    }
-
-    protected fetch(
-        input: string | URL | globalThis.Request,
-        init?: RequestInit,
-    ): Promise<Response>;
-
-    protected tryAutoLogin() {
-
-    }
-
-    public static async get(
-        url: string,
-        {
-            search,
-            auth,
-        }: {
-            search?: Record<string, string>;
-            auth?: boolean;
-        },
-    ): Promise<unknown> {
-        console.log(url, search, auth);
-        return;
-    }
-
-    public static async post(
-        url: string,
-        {
-            search,
-            auth,
-        }: {
-            search?: Record<string, string>;
-            auth?: boolean;
-        },
-    ): Promise<unknown> {
-        // Foo
-
-        console.log(url, search, auth);
-
-        return;
-    }
-}
-
-/* class AjaxError extends Error {
-    public name = "AjaxError" as const;
-
-    constructor(
-        message: string,
-        public readonly code: number,
-        public readonly isHttpError: boolean,
-    ) {
-        super(message);
-    }
-} */
-
-/* export function ajaxPromise(
-    url: string,
-    { auth, method, body, search }: AjaxInit,
-): Promise<unknown> {
-    return new Promise((resolve, reject) => {
-        const request: { input: string; init: RequestInit } = {
-            input: url,
-            init: {
-                method,
-                headers: {
-                    Accept: "application/json",
-                },
-            },
-        };
-
-        if (method === "POST") {
-            request.init.headers = {
-                ...request.init.headers,
-                "Content-Type": "application/json",
-            };
-
-            request.init.body = JSON.stringify(body);
-        }
-
-        if (auth === true) {
-            const user = store.getState().user.user;
-
-            request.init.headers = {
-                ...request.init.headers,
-                Authorization: `Bearer ${user?.token ?? ""}`,
-            };
-        }
-
-        const retry = ((
-            resolver: (value: unknown) => void,
-            // eslint-disable-next-line @typescript-eslint/no-explicit-any
-            rejector: (reason?: any) => void,
-            request: { input: string; init: RequestInit },
-        ) => {
-            fetch(request.input, request.init)
-                .then((response) => {
-                    response
-                        .json()
-                        .then((value) => {
-                            resolver(value);
-                        })
-                        .catch((reason) => {
-                            rejector(reason);
-                        });
-                })
-                .catch((reason) => {
-                    rejector(reason);
-                });
-        }).bind(undefined, resolve, reject, request);
+    protected async fetch(): Promise<AjaxResponse> {
+        console.log(this.url, this.init, this.user);
 
         try {
-            fetch(request.input, request.init)
-                .then((response) => {
-                    response
-                        .json()
-                        .then((value) => {
-                            resolve(value);
-                        })
-                        .catch((reason) => {
-                            throw reason;
-                        });
-                })
-                .catch((reason) => {
-                    throw reason;
-                });
-        } catch (err) {
-            if (err instanceof NbbError) {
-                errorDispatcher(err);
-                return null;
+            //* Hint this is just the native fetch function
+            const response = await fetch(this.url, this.init);
+
+            if (response.ok !== true) {
+                return {
+                    ok: false,
+                    error: new NbbError(response.statusText, response.status, true, undefined),
+                };
             }
 
-            errorDispatcher(new NbbError("Something went wrong!", 0, false, err, retry));
-        }
-    });
-}
+            const json = await response.json();
 
-export async function ajax(
-    url: string,
-    { auth, method, body, search }: AjaxInit,
-): Promise<unknown> {
-    try {
-        const request: { input: string; init: RequestInit } = {
-            input: url,
-            init: {
-                method,
-                headers: {
-                    Accept: "application/json",
-                },
-            },
+            const { code, codeName, data } = genericApiSchema.parse(json);
+
+            if (code >= 1100) {
+                throw new NbbError(codeName ?? "Something went wrong", code, false, undefined);
+            }
+
+            return {
+                ok: true,
+                result: data,
+            };
+        } catch (error) {
+            if (error instanceof NbbError) {
+                return {
+                    ok: false,
+                    error,
+                };
+            }
+
+            if (error instanceof Error) {
+                return {
+                    ok: false,
+                    error: new NbbError(error.message, 0, false, error),
+                };
+            }
+
+            return {
+                ok: false,
+                error: new NbbError(
+                    typeof error === "string" ? error : "Something went wrong",
+                    0,
+                    false,
+                    undefined,
+                ),
+            };
+        }
+    }
+
+    protected tryAutoLogin() {}
+
+    protected static async setup(
+        url: string,
+        {
+            auth,
+            method,
+            data,
+        }:
+            | {
+                  auth?: boolean;
+                  method: "GET";
+                  data?: Record<string, string>;
+              }
+            | {
+                  auth?: boolean;
+                  method: "POST";
+                  data?: object;
+              },
+    ) {
+        const getUrl = () => {
+            if (method === "POST" || Object.entries(data ?? {}).length <= 0) {
+                return `${BACKEND_URL}${url}`;
+            }
+
+            const search = new URLSearchParams(data);
+
+            return `${BACKEND_URL}${url}?${search.toString()}`;
         };
 
         const init: RequestInit = {
@@ -210,40 +99,67 @@ export async function ajax(
         };
 
         if (method === "POST") {
-            request.init.headers = {
-                ...request.init.headers,
+            init.headers = {
+                ...init.headers,
                 "Content-Type": "application/json",
             };
 
-            request.init.body = JSON.stringify(body);
+            init.body = JSON.stringify(data);
         }
 
-        if (auth === true) {
-            const user = store.getState().user.user;
+        const user = auth ? await userPromise : undefined;
 
-            request.init.headers = {
-                ...request.init.headers,
-                Authorization: `Bearer ${user?.token ?? ""}`,
+        if (auth && typeof user !== "undefined" && user.state.status === "loggedIn") {
+            init.headers = {
+                ...init.headers,
+                Authorization: `Bearer ${user.getToken()}`,
             };
         }
 
-        if (typeof search !== "undefined") {
-            request.input += `?${new URLSearchParams(search).toString()}`;
-        }
-
-        const response = await fetch(request.input, request.init);
-
-        if (response.ok !== true) {
-            throw new NbbError(response.statusText, response.status, true);
-        }
-    } catch (err) {
-        if (err instanceof NbbError) {
-            errorDispatcher(err);
-            return null;
-        }
-
-        errorDispatcher(new NbbError("Something went wrong!", 0, false, err));
-
-        return null;
+        return new Ajax(getUrl(), init, user);
     }
-} */
+
+    public static async get(
+        url: string,
+        {
+            search,
+            auth,
+        }: {
+            search?: Record<string, string>;
+            auth?: boolean;
+        } = { auth: false },
+    ): Promise<AjaxResponse> {
+        console.log(url, search, auth);
+
+        const ajax = await this.setup(url, {
+            auth,
+            method: "GET",
+            data: search,
+        });
+
+        const result = await ajax.fetch();
+
+        return result;
+    }
+
+    public static async post(
+        url: string,
+        {
+            body,
+            auth,
+        }: {
+            body?: object;
+            auth?: boolean;
+        } = { auth: false },
+    ): Promise<AjaxResponse> {
+        console.log(url, body, auth);
+
+        const ajax = await this.setup(url, {
+            auth,
+            method: "POST",
+            data: body,
+        });
+
+        return await ajax.fetch();
+    }
+}
