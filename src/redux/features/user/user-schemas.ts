@@ -23,16 +23,6 @@ const userLoginApiSchema = z.object({
 
 type UserLoginApi = z.infer<typeof userLoginApiSchema>;
 
-const userInStorageSchema = z.object({
-    refreshToken: tokenSchema,
-    statusCode: statusCodeSchema,
-    consistOverSession: z.boolean(),
-    username: z.string(),
-    admin: z.boolean(),
-    rights: rightsSchema,
-});
+export { userLoginApiSchema };
+export type { UserLoginApi };
 
-type UserInStorage = z.infer<typeof userInStorageSchema>;
-
-export { userInStorageSchema, userLoginApiSchema };
-export type { UserInStorage, UserLoginApi };
