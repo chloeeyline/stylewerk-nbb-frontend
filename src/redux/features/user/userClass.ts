@@ -1,19 +1,20 @@
+import { Auth } from "~/constants/backend-routes";
 import { tokenSchema, type Token } from "~/schemas/token";
 import Ajax from "~/utils/ajax";
 import type { UserLoginApi } from "./user-schemas";
 import { userLoginApiSchema } from "./user-schemas";
 
-type UserIsLoggedIn = {
+export type UserIsLoggedIn = {
     status: "loggedIn";
     username: string;
     admin: boolean;
 };
 
-type UserIsGuest = {
+export type UserIsGuest = {
     status: "guest";
 };
 
-type UserIsFailed = {
+export type UserIsFailed = {
     status: "failed";
     error: {
         code: number;
@@ -65,13 +66,13 @@ class User {
 
     protected static clear() {
         sessionStorage.removeItem("user");
-        localStorage.removeItem("user");
+        localStorage.removeItem("refreshToken");
     }
 
     protected static async autoLoginUser(
         token: string,
     ): Promise<UserInClassLoggedIn | UserIsGuest> {
-        const response = await Ajax.post("/Auth/RefreshToken", {
+        const response = await Ajax.post(Auth.RefreshToken, {
             body: {
                 token,
                 consistOverSession: true,
@@ -162,7 +163,7 @@ class User {
         password: string,
         consistOverSession: boolean,
     ): Promise<UserIsLoggedIn | UserIsFailed> {
-        const response = await Ajax.post("/Auth/Login", {
+        const response = await Ajax.post(Auth.Login, {
             body: {
                 username,
                 password,
@@ -170,8 +171,6 @@ class User {
             },
             auth: false,
         });
-
-        console.log(response);
 
         if (response.ok === false) {
             const { code, message } = response.error;
@@ -203,14 +202,10 @@ class User {
             };
         }
 
-        const { data } = result;
-
         this._state = {
             status: "loggedIn",
-            ...data,
+            ...result.data,
         };
-
-        console.log(this._state);
 
         this.persistUser();
 
@@ -224,6 +219,10 @@ class User {
     // public async register(): Promise<UserIsLoggedIn | UserIsFailed> {}
 
     public async logout(): Promise<UserIsGuest> {
+        const result = await Ajax.post(Auth.Login, { auth: true });
+
+        console.log("Logout", result);
+
         this._state = { status: "guest" };
         User.clear();
 
@@ -234,11 +233,29 @@ class User {
 
     public async changeEmail() {}
 
-    // public async validatePassword() {}
+    public static async validatePassword(toValidate: string) {
+        return await Ajax.post(Auth.ValidatePassword, {
+            body: {
+                toValidate,
+            },
+        });
+    }
 
-    // public async validateUsername() {}
+    public static async validateEmail(toValidate: string) {
+        return await Ajax.post(Auth.ValidateEmail, {
+            body: {
+                toValidate,
+            },
+        });
+    }
 
-    // public async validateEmail() {}
+    public static async validateUsername(toValidate: string) {
+        return await Ajax.post(Auth.ValidateUsername, {
+            body: {
+                toValidate,
+            },
+        });
+    }
 
     // public async getUserData() {}
 
@@ -280,7 +297,7 @@ class User {
     }
 
     protected async refreshToken(token: Token, consistOverSession: boolean) {
-        const response = await Ajax.post("/Auth/RefreshToken", {
+        const response = await Ajax.post(Auth.RefreshToken, {
             body: {
                 token,
                 consistOverSession,

@@ -1,8 +1,18 @@
-import { selectUser } from "~/redux/features/user/userSlice";
-import { useAppSelector } from "~/redux/hooks";
+import { logoutUser, selectUser } from "~/redux/features/user/userSlice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function User() {
     const user = useAppSelector(selectUser);
+
+    const dispatch = useAppDispatch();
+
+    if (user.status === "loggingOut") {
+        return (
+            <div>
+                <h1>User - {user.username} - Logging out...</h1>
+            </div>
+        )
+    }
 
     if (user.status === "guest") {
         return (
@@ -41,6 +51,7 @@ export default function User() {
                 provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
                 harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
             </p>
+            <button onClick={() => dispatch(logoutUser())}>Logout</button>
         </div>
     );
 }
