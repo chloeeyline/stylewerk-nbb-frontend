@@ -1,356 +1,368 @@
-import type { Right } from "~/constants/rights";
-import { isNull } from "~/utils/validation";
-
-import type { Token } from "~/schemas/token";
-
+import { tokenSchema, type Token } from "~/schemas/token";
+import Ajax from "~/utils/ajax";
+import type { UserLoginApi } from "./user-schemas";
 import { userLoginApiSchema } from "./user-schemas";
-import { genericApiSchema } from "~/schemas/generic-api-response";
 
-import { BACKEND_URL } from "#/general";
-
-class UserError extends Error {
-    public name: string = "UserError";
-
-    constructor(
-        message: string,
-        public readonly code: number,
-        public readonly cause?: UserError | Error,
-    ) {
-        super(message);
-    }
-}
-
-type UserLoggedIn = {
-    state: "loggedIn";
-    user: User;
+type UserIsLoggedIn = {
+    status: "loggedIn";
+    username: string;
+    admin: boolean;
 };
 
 type UserIsGuest = {
-    state: "guest";
+    status: "guest";
 };
 
-type UserAuthenticationError = {
-    state: "error";
-    error: UserError;
+type UserIsFailed = {
+    status: "failed";
+    error: {
+        code: number;
+        text: string;
+    };
 };
 
-type UserInStorage = {
-    refreshToken: Token;
-    statusCode: 1 | 2 | 3 | null;
-    consistOverSession: boolean;
-    username: string;
-    admin: boolean;
-    rights: Set<string>;
-    storage: Storage;
-};
+type UserInClassLoggedIn = UserIsLoggedIn & UserLoginApi;
 
 class User {
+    protected _state: UserIsGuest | UserInClassLoggedIn | UserIsFailed = { status: "guest" };
+
     constructor(
-        protected _accessToken: Token,
-        protected _refreshToken: Token,
-        protected _statusCode: number | null,
-        protected _consistOverSession: boolean,
-        protected _username: string,
-        protected _admin: boolean,
-        protected _rights: Set<string>,
-        protected _storage: Storage,
+        state: UserIsGuest | UserInClassLoggedIn = {
+            status: "guest",
+        },
     ) {
-        this.persistUser();
+        this._state = state;
+
+        if (state.status === "loggedIn") {
+            this.persistUser();
+        }
     }
 
-    public static async setup(): Promise<UserLoggedIn | UserIsGuest | UserAuthenticationError> {
-        const userStorage = localStorage.getItem("user.storage");
+    public static async setup(): Promise<User> {
+        const user = this.getUserFromStorage();
 
-        if (userStorage === null || (userStorage !== "session" && userStorage !== "local")) {
-            return { state: "guest" };
+        if (user !== null) {
+            return new User({
+                status: "loggedIn",
+                ...user,
+            });
         }
 
-        const userInStorage = this.getUserFromStorage(
-            userStorage === "session" ? sessionStorage : localStorage,
-        );
+        const refreshToken = this.getRefreshToken();
 
-        if (typeof userInStorage === "undefined") {
-            return { state: "guest" };
+        if (refreshToken === null) {
+            return new User();
         }
 
-        const tokens = await this.getOrRefreshTokens(userInStorage);
-
-        if (tokens instanceof UserError) {
-            return { state: "error", error: tokens };
+        if (Date.now() > refreshToken.expireTime) {
+            console.error("RefreshToken expired!");
+            this.clear();
+            return new User();
         }
 
-        const { accessToken, refreshToken } = tokens;
+        return new User(await this.autoLoginUser(refreshToken.token));
+    }
 
-        const { statusCode, consistOverSession, username, admin, rights, storage } = userInStorage;
+    protected static clear() {
+        sessionStorage.removeItem("user");
+        localStorage.removeItem("user");
+    }
+
+    protected static async autoLoginUser(
+        token: string,
+    ): Promise<UserInClassLoggedIn | UserIsGuest> {
+        const response = await Ajax.post("/Auth/RefreshToken", {
+            body: {
+                token,
+                consistOverSession: true,
+            },
+        });
+
+        if (response.ok === false) {
+            console.error(response.error);
+            this.clear();
+
+            return {
+                status: "guest",
+            };
+        }
+
+        const result = userLoginApiSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            const formatted = result.error.format();
+
+            const code = 100;
+
+            const text = formatted._errors.join("\n");
+
+            console.error(code, text);
+            this.clear();
+
+            return {
+                status: "guest",
+            };
+        }
+
+        const { data } = result;
 
         return {
-            state: "loggedIn",
-            user: new User(
-                accessToken,
-                refreshToken,
-                statusCode,
-                consistOverSession,
-                username,
-                admin,
-                rights,
-                storage,
-            ),
+            status: "loggedIn",
+            ...data,
         };
     }
 
-    public static async login(
+    protected static getRefreshToken(): Token | null {
+        try {
+            const token = localStorage.getItem("refreshToken");
+
+            if (token === null) {
+                return null;
+            }
+
+            const result = tokenSchema.safeParse(JSON.parse(token));
+
+            if (result.success === false) {
+                console.error(result.error);
+                return null;
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error(error);
+            return null;
+        }
+    }
+
+    protected static getUserFromStorage(): UserLoginApi | null {
+        try {
+            const user = sessionStorage.getItem("user");
+
+            if (user === null) {
+                return null;
+            }
+
+            const result = userLoginApiSchema.safeParse(JSON.parse(user));
+
+            if (result.success === false) {
+                console.error(result.error);
+                return null;
+            }
+
+            return result.data;
+        } catch (error) {
+            console.error(error);
+            // this.clear();
+            return null;
+        }
+    }
+
+    public async login(
         username: string,
         password: string,
         consistOverSession: boolean,
-    ): Promise<UserLoggedIn | UserAuthenticationError> {
-        try {
-            const response = await fetch(`${BACKEND_URL}/Auth/Login`, {
-                body: JSON.stringify({
-                    username,
-                    password,
-                    consistOverSession,
-                }),
-            });
-
-            if (response.ok !== true) {
-                throw new UserError(`Failed logging in! ${response.statusText}`, response.status);
-            }
-
-            const json = await response.json();
-
-            const { type, typeText, errorCode, errorText, data } = genericApiSchema.parse(json);
-
-            if (typeof errorCode === "number" && typeof errorText === "string") {
-                throw new UserError(errorText, errorCode);
-            }
-
-            if (type !== 1) {
-                throw new UserError(`Failed logging in! ${typeText}`, type);
-            }
-
-            const parsed = userLoginApiSchema.parse(data);
-
-            const storage = parsed.consistOverSession ? localStorage : sessionStorage;
-
-            return {
-                state: "loggedIn",
-                user: new User(
-                    parsed.accessToken,
-                    parsed.refreshToken,
-                    parsed.statusCode,
-                    parsed.consistOverSession,
-                    parsed.username,
-                    parsed.admin,
-                    parsed.rights,
-                    storage,
-                ),
-            };
-        } catch (error) {
-            if (error instanceof UserError) {
-                return { state: "error", error };
-            }
-
-            return {
-                state: "error",
-                error: new UserError(
-                    "something went wrong",
-                    500,
-                    error instanceof Error ? error : undefined,
-                ),
-            };
-        }
-    }
-
-    // public static async register(): Promise<UserLoggedIn | UserAuthenticationError> {}
-
-    private static getUserFromStorage(storage: Storage): UserInStorage | undefined {
-        const token = storage.getItem("user.refreshToken.token");
-
-        const expireTimeFromStorage = storage.getItem("user.refreshToken.expireTime");
-
-        const expireTime = isNull(expireTimeFromStorage)
-            ? expireTimeFromStorage
-            : Number(expireTimeFromStorage);
-
-        const statusCodeFromStorage = storage.getItem("user.statusCode");
-
-        const statusCode = isNull(statusCodeFromStorage)
-            ? statusCodeFromStorage
-            : Number(statusCodeFromStorage);
-
-        const consistOverSession = storage.getItem("user.consistOverSession") === "true";
-
-        const username = storage.getItem("user.username");
-
-        const admin = storage.getItem("user.admin") === "true";
-
-        const rights = new Set((storage.getItem("user.rights") ?? "").split(","));
-
-        if (
-            isNull(token) ||
-            isNull(expireTime) ||
-            (statusCode !== 1 && statusCode !== 2 && statusCode !== 3) ||
-            isNull(username)
-        ) {
-            return;
-        }
-
-        const refreshToken = {
-            token,
-            expireTime,
-        };
-
-        return {
-            refreshToken,
-            statusCode,
-            consistOverSession,
-            username,
-            admin,
-            rights,
-            storage,
-        };
-    }
-
-    private static async getOrRefreshTokens(
-        user: UserInStorage,
-    ): Promise<{ accessToken: Token; refreshToken: Token } | UserError> {
-        const token = sessionStorage.getItem("user.accessToken.token");
-
-        const expireTimeFromStorage = sessionStorage.getItem("user.accessToken.expireTime");
-
-        const expireTime = isNull(expireTimeFromStorage)
-            ? expireTimeFromStorage
-            : Number(expireTimeFromStorage);
-
-        if (isNull(token) || isNull(expireTime)) {
-            return await this.fetchTokens(user);
-        }
-
-        return {
-            accessToken: {
-                token,
-                expireTime,
+    ): Promise<UserIsLoggedIn | UserIsFailed> {
+        const response = await Ajax.post("/Auth/Login", {
+            body: {
+                username,
+                password,
+                consistOverSession,
             },
-            refreshToken: user.refreshToken,
-        };
-    }
-
-    private static async fetchTokens(
-        user: UserInStorage,
-    ): Promise<{ accessToken: Token; refreshToken: Token } | UserError> {
-        console.log(user);
-
-        return {
-            accessToken: {
-                token: "",
-                expireTime: 0,
-            },
-            refreshToken: {
-                token: "",
-                expireTime: 0,
-            },
-        };
-    }
-
-    public static clearUser(): void {
-        localStorage.removeItem("user.storage");
-
-        ["user.accessToken.token", "user.accessToken.expireTime"].forEach((key) => {
-            sessionStorage.removeItem(key);
+            auth: false,
         });
 
-        const keys = [
-            "user.refreshToken.token",
-            "user.refreshToken.expireTime",
-            "user.statusCode",
-            "user.consistOverSession",
-            "user.username",
-            "user.admin",
-            "user.rights",
-        ];
+        console.log(response);
 
-        keys.forEach((key) => {
-            sessionStorage.removeItem(key);
-            localStorage.removeItem(key);
-        });
+        if (response.ok === false) {
+            const { code, message } = response.error;
+
+            return {
+                status: "failed",
+                error: {
+                    code,
+                    text: message,
+                },
+            };
+        }
+
+        const result = userLoginApiSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            const formatted = result.error.format();
+
+            const code = 100;
+
+            const text = formatted._errors.join("\n");
+
+            return {
+                status: "failed",
+                error: {
+                    code,
+                    text,
+                },
+            };
+        }
+
+        const { data } = result;
+
+        this._state = {
+            status: "loggedIn",
+            ...data,
+        };
+
+        console.log(this._state);
+
+        this.persistUser();
+
+        return {
+            status: this._state.status,
+            username: this._state.username,
+            admin: this._state.admin,
+        };
     }
 
-    public async logout(): Promise<void> {
-        User.clearUser();
+    // public async register(): Promise<UserIsLoggedIn | UserIsFailed> {}
+
+    public async logout(): Promise<UserIsGuest> {
+        this._state = { status: "guest" };
+        User.clear();
+
+        return this._state;
     }
 
     public async resetPassword() {}
 
     public async changeEmail() {}
 
-    // private async validatePassword() {}
+    // public async validatePassword() {}
 
-    // private async validateUsername() {}
+    // public async validateUsername() {}
 
-    // private async validateEmail() {}
+    // public async validateEmail() {}
 
-    public async getUserData() {}
+    // public async getUserData() {}
 
-    public async updateUserData() {}
+    // public async updateUserData() {}
 
-    private persistUser() {
-        sessionStorage.setItem("user.accessToken.token", this._accessToken.token);
-        sessionStorage.setItem(
-            "user.accessToken.expireTime",
-            this._accessToken.expireTime.toString(),
-        );
-
-        const storage = this._storage;
-
-        const refreshToken = this._refreshToken;
-        const statusCode = this._statusCode;
-        const consistOverSession = this._consistOverSession;
-        const username = this._username;
-        const admin = this._admin;
-        const rights = this._rights;
-
-        storage.setItem("user.refreshToken.token", refreshToken.token);
-        storage.setItem("user.refreshToken.expireTime", refreshToken.expireTime.toString());
-
-        if (isNull(statusCode) === false) {
-            storage.setItem("user.statusCode", statusCode.toString());
-        } else {
-            storage.removeItem("user.statusCode");
+    protected persistUser() {
+        if (this._state.status !== "loggedIn") {
+            return;
         }
 
-        storage.setItem("user.consistOverSession", consistOverSession ? "true" : "false");
-        storage.setItem("user.username", username);
-        storage.setItem("user.admin", admin ? "true" : "false");
-        storage.setItem("user.rights", Array.from(rights).join(","));
+        const {
+            accessToken,
+            refreshToken,
+            statusCode,
+            consistOverSession,
+            username,
+            admin,
+            rights,
+        } = this._state;
+
+        sessionStorage.setItem(
+            "user",
+            JSON.stringify({
+                accessToken,
+                refreshToken,
+                statusCode,
+                consistOverSession,
+                username,
+                admin,
+                rights: Array.from(rights),
+            }),
+        );
+
+        if (consistOverSession === true) {
+            localStorage.setItem("refreshToken", JSON.stringify(refreshToken));
+        } else {
+            localStorage.removeItem("refreshToken");
+        }
     }
 
-    public get accessToken() {
-        return this._accessToken;
+    protected async refreshToken(token: Token, consistOverSession: boolean) {
+        const response = await Ajax.post("/Auth/RefreshToken", {
+            body: {
+                token,
+                consistOverSession,
+            },
+        });
+
+        if (response.ok === false) {
+            console.error(response.error);
+            await this.logout();
+            return;
+        }
+
+        const result = userLoginApiSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            const formatted = result.error.format();
+
+            const code = 100;
+
+            const text = formatted._errors.join("\n");
+
+            console.error(code, text);
+            await this.logout();
+            return;
+        }
+
+        const { data } = result;
+
+        this._state = {
+            status: "loggedIn",
+            ...data,
+        };
     }
 
-    public get refreshToken() {
-        return this._refreshToken;
+    public async getToken() {
+        if (this._state.status !== "loggedIn") {
+            return "";
+        }
+
+        const { accessToken, refreshToken, consistOverSession } = this._state;
+
+        if (accessToken.expireTime < Date.now()) {
+            await this.refreshToken(refreshToken, consistOverSession);
+        }
+
+        return this._state.accessToken.token;
     }
 
-    public get statusCode() {
-        return this._statusCode;
+    public get state(): UserIsGuest | UserIsLoggedIn | UserIsFailed {
+        switch (this._state.status) {
+            case "guest": {
+                const { status } = this._state;
+
+                return {
+                    status,
+                };
+            }
+            case "loggedIn": {
+                const { status, username, admin } = this._state;
+
+                return {
+                    status,
+                    username,
+                    admin,
+                };
+            }
+            case "failed": {
+                const { status, error } = this._state;
+
+                return {
+                    status,
+                    error,
+                };
+            }
+        }
     }
 
-    public get consistOverSession() {
-        return this._consistOverSession;
-    }
-
-    public get username() {
-        return this._username;
-    }
-
-    public get admin() {
-        return this._admin;
-    }
-
-    public hasRight(...rights: Right[]) {
-        return rights.every((right) => this._rights.has(right));
+    public get loggedIn() {
+        return this._state.status === "loggedIn";
     }
 }
 
-export { User };
+const userPromise = User.setup();
+
+export { User, userPromise };

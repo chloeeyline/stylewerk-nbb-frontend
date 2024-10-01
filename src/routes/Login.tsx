@@ -1,12 +1,53 @@
-export default function Home() {
+import { useRef } from "react";
+import { loginUser, selectUser } from "~/redux/features/user/userSlice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+
+export default function Login() {
+    const user = useAppSelector(selectUser);
+
+    const usernameRef = useRef<HTMLInputElement>(null);
+    const passwordRef = useRef<HTMLInputElement>(null);
+    const rememberMeRef = useRef<HTMLInputElement>(null);
+
+    const dispatch = useAppDispatch();
+
+    if (user.status === "loggingIn") {
+        return <div>Logging in...</div>;
+    }
+
+    if (user.status === "loggedIn") {
+        return <div>{user.username}</div>;
+    }
+
     return (
-        <div>
-            <h1>Login</h1>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum veniam ipsa
-                provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
-                harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
-            </p>
-        </div>
+        <form
+            onSubmit={(e) => {
+                e.preventDefault();
+                const username = usernameRef.current?.value;
+                const password = passwordRef.current?.value;
+                const consistOverSession = rememberMeRef.current?.checked;
+
+                if (
+                    typeof username === "string" &&
+                    typeof password === "string" &&
+                    typeof consistOverSession === "boolean"
+                ) {
+                    dispatch(loginUser({ username, password, consistOverSession }));
+                }
+            }}>
+            <fieldset>
+                <legend>Username</legend>
+                <input ref={usernameRef} type="text" name="username" id="username" />
+            </fieldset>
+            <fieldset>
+                <legend>Password</legend>
+                <input ref={passwordRef} type="password" name="password" id="password" />
+            </fieldset>
+            <fieldset>
+                <legend>Remember me</legend>
+                <input ref={rememberMeRef} type="checkbox" name="rememberMe" id="rememberMe" />
+            </fieldset>
+            <button type="submit">Submit</button>
+        </form>
     );
 }

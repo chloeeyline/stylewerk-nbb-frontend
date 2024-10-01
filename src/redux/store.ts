@@ -1,11 +1,10 @@
-import { configureStore, ThunkAction, Action } from "@reduxjs/toolkit";
+import type { Action, ThunkAction } from "@reduxjs/toolkit";
+import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/user/userSlice";
-import errorReducer from "./features/error/errorSlice";
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
-        error: errorReducer,
     },
 });
 
