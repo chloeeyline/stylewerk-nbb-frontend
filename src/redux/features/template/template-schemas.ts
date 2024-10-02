@@ -33,7 +33,7 @@ const templateItemSchema = z.object({
     description: z.string().nullable(),
     tags: z.string().nullable(),
     createdAt: z.number().int().safe().positive(),
-    lastUpdatedAt: z.number().int().safe().positive(),
+    lastUpdatedAt: z.number().int().safe().nonnegative(),
     username: z.string(),
     visibility: shareVisibilitySchema,
 });
@@ -48,9 +48,9 @@ type TemplateSearchParams = {
     username?: string;
     description?: string;
     tags?: string;
-    common?: "true" | "false";
-    directly?: "true" | "false";
-    group?: "true" | "false";
+    publicShared?: "true" | "false";
+    shared?: "true" | "false";
+    includeOwned?: "true" | "false";
     directUser?: "true" | "false";
 };
 

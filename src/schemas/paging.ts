@@ -1,10 +1,10 @@
 import { z } from "zod";
 
 const pagingSchema = z.object({
-    count: z.number().int().safe().positive(),
-    page: z.number().int().safe().positive(),
-    maxPage: z.number().int().safe().positive(),
-    perPage: z.number().int().safe().positive(),
+    count: z.number().int().safe().nonnegative(),
+    page: z.number().int().safe().nonnegative(),
+    maxPage: z.number().int().safe().nonnegative(),
+    perPage: z.number().int().safe().nonnegative(),
 });
 
 export { pagingSchema };

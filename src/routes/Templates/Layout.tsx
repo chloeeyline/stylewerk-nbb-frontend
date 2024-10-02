@@ -1,73 +1,32 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
-import Routes from "#/routes";
-import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
-import ListSidebar from "~/components/layout/ListSidebar";
-import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useTemplates } from "./api/templates";
-import type { TemplateListResponse } from "./api/types";
-
-const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
-    const { ok, loading } = result;
-
-    if (loading === true) {
-        return <div>Loading...</div>;
-    }
-
-    if (ok === false) {
-        const { error } = result;
-
-        return <ErrorElement error={error} />;
-    }
-
-    const { general, folders } = result;
-
-    return (
-        <>
-            {general.length >= 1 && (
-                <MemoNavbar
-                    direction="vertical"
-                    routes={general.map(({ id, name }) => ({
-                        type: "link",
-                        url: `${Routes.Templates.List}/${id}`,
-                        name,
-                    }))}
-                />
-            )}
-            {folders.length >= 1 && (
-                <ul>
-                    {folders.map(({ id, name, templates }) => (
-                        <li key={id}>
-                            {name}
-                            <MemoNavbar
-                                direction="vertical"
-                                routes={templates.map(({ id, name }) => ({
-                                    type: "link",
-                                    url: `${Routes.Templates.List}/${id}`,
-                                    name,
-                                }))}
-                            />
-                        </li>
-                    ))}
-                </ul>
-            )}
-        </>
-    );
-};
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { listTemplates, selectTemplate } from "~/redux/features/template/template-slice";
+import { useEffect } from "react";
 
 const TemplatesList = () => {
-    const { pathname } = useLocation();
-    const [result, refresh] = useTemplates();
+    const template = useAppSelector(selectTemplate);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(listTemplates());
+    }, []);
 
     return (
-        <ListSidebar
-            collapsed={pathname === Routes.Templates.List}
-            onRefresh={refresh}
-            refreshing={result.loading}>
-            <TemplatesResult result={result} />
-        </ListSidebar>
+        <div>
+            {template.items &&
+                template.items.length > 0 &&
+                template.items?.map((item) => (
+                    <div key={item.id}>
+                        {item.name && <div>{item.name}</div>}
+                        {item.description && <div>{item.description}</div>}
+                        {item.tags && <div>{item.tags}</div>}
+                        {item.username && <div>{item.username}</div>}
+                    </div>
+                ))}
+        </div>
     );
 };
 
