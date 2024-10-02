@@ -29,7 +29,11 @@ const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
             {general.length >= 1 && (
                 <MemoNavbar
                     direction="vertical"
-                    routes={general.map(({ id, name }) => [`${Routes.Templates.List}/${id}`, name])}
+                    routes={general.map(({ id, name }) => ({
+                        type: "link",
+                        url: `${Routes.Templates.List}/${id}`,
+                        name,
+                    }))}
                 />
             )}
             {folders.length >= 1 && (
@@ -39,10 +43,11 @@ const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
                             {name}
                             <MemoNavbar
                                 direction="vertical"
-                                routes={templates.map(({ id, name }) => [
-                                    `${Routes.Templates.List}/${id}`,
+                                routes={templates.map(({ id, name }) => ({
+                                    type: "link",
+                                    url: `${Routes.Templates.List}/${id}`,
                                     name,
-                                ])}
+                                }))}
                             />
                         </li>
                     ))}

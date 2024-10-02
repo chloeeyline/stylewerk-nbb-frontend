@@ -29,7 +29,11 @@ const EntriesResult = ({ result }: { result: EntryListResponse }) => {
             {general.length >= 1 && (
                 <MemoNavbar
                     direction="vertical"
-                    routes={general.map(({ id, name }) => [`${Routes.Entries.List}/${id}`, name])}
+                    routes={general.map(({ id, name }) => ({
+                        type: "link",
+                        url: `${Routes.Entries.List}/${id}`,
+                        name,
+                    }))}
                 />
             )}
             {folders.length >= 1 && (
@@ -39,10 +43,11 @@ const EntriesResult = ({ result }: { result: EntryListResponse }) => {
                             {name}
                             <MemoNavbar
                                 direction="vertical"
-                                routes={entries.map(({ id, name }) => [
-                                    `${Routes.Entries.List}/${id}`,
+                                routes={entries.map(({ id, name }) => ({
+                                    type: "link",
+                                    url: `${Routes.Entries.List}/${id}`,
                                     name,
-                                ])}
+                                }))}
                             />
                         </li>
                     ))}

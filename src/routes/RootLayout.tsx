@@ -1,39 +1,33 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import Routes from "#/routes";
+import Frontend from "#/routes";
 import Grid from "~/components/layout/Grid";
-import { MemoNavbar } from "~/components/layout/NavBar";
+import { MemoNavbar, NavbarRoute } from "~/components/layout/NavBar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { selectUser } from "~/redux/features/user/user-slice";
-import { useAppSelector } from "~/redux/hooks";
+import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 const RootNavBar = () => {
     const user = useAppSelector(selectUser);
-    const userIsLoggedIn = user.status === "loggedIn";
-    const userIsAdmin = userIsLoggedIn && user.admin === true;
 
-    const routes = [
-        [Routes.Home, "Home"],
-        [Routes.Entries.List, "Entries"],
-        [Routes.Templates.List, "Templates"],
-        userIsAdmin ? [Routes.Admin.Index, "Admin"] : undefined,
-        userIsLoggedIn ? [Routes.User.Index, "User"] : undefined,
-        userIsLoggedIn === false ? [Routes.Login, "Login"] : undefined,
-        userIsLoggedIn === false ? [Routes.Registration, "Registration"] : undefined,
-    ].filter((route): route is [path: string, name: string] => {
-        if (
-            typeof route !== "undefined" &&
-            Array.isArray(route) &&
-            route.length === 2 &&
-            typeof route[0] === "string" &&
-            typeof route[1] === "string"
-        ) {
-            return true;
-        }
+    const loggedIn = user.status === "loggedIn";
+    const isAdmin = loggedIn && user.admin === true;
 
-        return false;
-    });
+    const dispatch = useAppDispatch();
+
+    const routes: (NavbarRoute | undefined)[] = [
+        { type: "link", url: Frontend.Home, name: "Home" },
+        { type: "link", url: Frontend.Entries.List, name: "Entries" },
+        { type: "link", url: Frontend.Templates.List, name: "Templates" },
+        isAdmin ? { type: "link", url: Frontend.Admin.Index, name: "Admin" } : undefined,
+        loggedIn ? { type: "link", url: Frontend.User.Index, name: "User" } : undefined,
+        loggedIn
+            ? { type: "button", onClick: () => dispatch(logoutUser()), name: "Logout" }
+            : undefined,
+        !loggedIn ? { type: "link", url: Frontend.Login, name: "Login" } : undefined,
+        !loggedIn ? { type: "link", url: Frontend.Registration, name: "Registration" } : undefined,
+    ];
 
     return <MemoNavbar routes={routes} />;
 };
