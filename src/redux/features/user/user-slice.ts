@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import type { AppDispatch, RootState } from "~/redux/store";
-import { UserIsFailed, UserIsGuest, UserIsLoggedIn, userPromise } from "./userClass";
+import { UserIsFailed, UserIsGuest, UserIsLoggedIn, userPromise } from "./user-class";
 
 export type UserState = {
     status: "guest" | "loggedIn" | "loggingIn" | "loggingOut" | "failed";

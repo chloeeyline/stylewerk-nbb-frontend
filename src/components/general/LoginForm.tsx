@@ -1,7 +1,7 @@
 import type React from "react";
 import { useRef, useState } from "react";
-import { User } from "~/redux/features/user/userClass";
-import { loginUser, selectUser } from "~/redux/features/user/userSlice";
+import { User } from "~/redux/features/user/user-class";
+import { loginUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function LoginForm({

@@ -5,7 +5,7 @@ import Grid from "~/components/layout/Grid";
 import { MemoNavbar } from "~/components/layout/NavBar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { selectUser } from "~/redux/features/user/userSlice";
+import { selectUser } from "~/redux/features/user/user-slice";
 import { useAppSelector } from "~/redux/hooks";
 
 const RootNavBar = () => {

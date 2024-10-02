@@ -1,4 +1,4 @@
-import { logoutUser, selectUser } from "~/redux/features/user/userSlice";
+import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function User() {

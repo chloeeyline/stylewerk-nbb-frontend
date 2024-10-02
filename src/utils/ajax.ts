@@ -1,6 +1,6 @@
 import { BACKEND_URL } from "#/general";
 import { NbbError } from "~/utils/nbb-error";
-import { User, userPromise } from "~/redux/features/user/userClass";
+import { User, userPromise } from "~/redux/features/user/user-class";
 import { genericApiSchema } from "~/schemas/generic-api-response";
 
 type AjaxResponse = { ok: true; result: unknown } | { ok: false; error: NbbError };
