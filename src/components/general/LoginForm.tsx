@@ -1,51 +1,38 @@
+import Frontend from "#/routes";
 import type React from "react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { User } from "~/redux/features/user/user-class";
 import { loginUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-export default function LoginForm({
-    onLoggingIn,
-    onLoggedIn,
-    onFailed,
-}: {
-    onLoggingIn?: React.ReactNode;
-    onLoggedIn?: React.ReactNode;
-    onFailed?: React.ReactNode;
-}) {
+type FormErrors = {
+    username: string | null;
+    password: string | null;
+};
+
+export default function LoginForm() {
     const user = useAppSelector(selectUser);
 
     const usernameRef = useRef<HTMLInputElement>(null);
     const passwordRef = useRef<HTMLInputElement>(null);
     const rememberMeRef = useRef<HTMLInputElement>(null);
 
+    const [formError, setFormError] = useState<FormErrors>({ username: null, password: null });
+
     const dispatch = useAppDispatch();
 
-    const [usernameError, setUsernameError] = useState<string | undefined>();
-    const [passwordError, setPasswordError] = useState<string | undefined>();
+    const navigate = useNavigate();
 
-    switch (user.status) {
-        case "loggedIn":
-            if (typeof onLoggedIn !== "undefined") {
-                return onLoggedIn;
-            }
+    useEffect(() => {
+        if (user.status === "loggedIn") {
+            navigate(Frontend.User.Index);
+        }
+    }, [user.status]);
 
-            return <div>{user.username} - Logged in</div>;
-        case "loggingIn":
-            if (typeof onLoggingIn !== "undefined") {
-                return onLoggingIn;
-            }
+    const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
 
-            return <div>Logging in...</div>;
-        case "failed":
-            if (typeof onFailed !== "undefined") {
-                return onFailed;
-            }
-
-            return <div>Failed logging in!</div>;
-    }
-
-    const submitForm = async () => {
         const username = usernameRef.current?.value;
         const password = passwordRef.current?.value;
         const consistOverSession = rememberMeRef.current?.checked ?? false;
@@ -53,25 +40,28 @@ export default function LoginForm({
         const usernameFailed = typeof username !== "string" || username.length <= 0;
         const passwordFailed = typeof password !== "string" || password.length <= 0;
 
+        const error: FormErrors = {
+            username: null,
+            password: null,
+        };
+
         if (usernameFailed) {
-            setUsernameError("Please enter a username!");
+            error.username = "Please enter a username!";
         }
 
         if (passwordFailed) {
-            setPasswordError("Please enter a password!");
+            error.password = "Please enter a password!";
         }
 
         if (usernameFailed || passwordFailed) {
+            setFormError(error);
             return;
         }
 
         const passwordResult = await User.validatePassword(password);
 
         if (passwordResult.ok === false) {
-            setPasswordError(passwordResult.error.message);
-        }
-
-        if (passwordResult.ok === false) {
+            setFormError({ username: null, password: passwordResult.error.message });
             return;
         }
 
@@ -79,20 +69,18 @@ export default function LoginForm({
     };
 
     return (
-        <form
-            onSubmit={(e) => {
-                e.preventDefault();
-                submitForm();
-            }}>
+        <form onSubmit={submitForm}>
+            {user.status === "loggingIn" ? <h2>Logging in...</h2> : null}
+            {user.status === "failed" ? <h2>Error logging in...</h2> : null}
             <fieldset>
                 <legend>Username</legend>
                 <input ref={usernameRef} type="text" name="username" id="username" />
-                {usernameError !== null ? <div>{usernameError}</div> : null}
+                {formError.username !== null ? <div>{formError.username}</div> : null}
             </fieldset>
             <fieldset>
                 <legend>Password</legend>
                 <input ref={passwordRef} type="password" name="password" id="password" />
-                {passwordError !== null ? <div>{passwordError}</div> : null}
+                {formError.password !== null ? <div>{formError.password}</div> : null}
             </fieldset>
             <fieldset>
                 <legend>Remember me</legend>
