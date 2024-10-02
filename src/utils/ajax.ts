@@ -112,7 +112,7 @@ export default class Ajax {
         if (auth && typeof user !== "undefined" && user.state.status === "loggedIn") {
             init.headers = {
                 ...init.headers,
-                Authorization: `Bearer ${user.getToken()}`,
+                Authorization: `Bearer ${await user.getToken()}`,
             };
         }
 
