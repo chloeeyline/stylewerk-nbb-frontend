@@ -221,7 +221,10 @@ class User {
     public async logout(): Promise<UserIsGuest> {
         const result = await Ajax.post(Auth.Login, { auth: true });
 
-        console.log("Logout", result);
+        if (result.ok === false) {
+            console.error("Error logging out!", result.error);
+            console.log("Simply discarding local tokens!");
+        }
 
         this._state = { status: "guest" };
         User.clear();
