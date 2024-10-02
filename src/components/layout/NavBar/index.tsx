@@ -1,38 +1,53 @@
 import type React from "react";
 import { CSSProperties, memo } from "react";
-import type ReactRouterDom from "react-router-dom";
 import { NavLink } from "react-router-dom";
 import cls from "~/utils/class-name-helper";
 import styles from "./nav-bar.module.scss";
 
+type NavbarRoute =
+    | {
+          type: "link";
+          name: string;
+          url: string;
+      }
+    | {
+          type: "button";
+          name: string;
+          onClick: () => void;
+      };
+
 type NavbarProps = React.PropsWithChildren<{
-    routes: [path: string, name: string][];
+    routes: (NavbarRoute | undefined)[];
     direction?: "horizontal" | "vertical";
     className?: string;
     styles?: CSSProperties;
     menuProps?: React.MenuHTMLAttributes<HTMLMenuElement>;
-    liProps?: React.LiHTMLAttributes<HTMLLIElement>;
-    navLinkProps?: ReactRouterDom.NavLinkProps;
 }>;
 
-const Navbar = ({
-    routes,
-    direction,
-    className,
-    menuProps,
-    liProps,
-    navLinkProps,
-    ...props
-}: NavbarProps) => {
+const NavbarItem = ({ route }: { route: NavbarRoute }) => {
+    if (route.type === "link") {
+        return (
+            <li>
+                <NavLink to={route.url}>{route.name}</NavLink>
+            </li>
+        );
+    }
+
+    return (
+        <button type="button" onClick={() => route.onClick()}>
+            {route.name}
+        </button>
+    );
+};
+
+const Navbar = ({ routes, direction, className, ...props }: NavbarProps) => {
+    const filtered = routes.filter((route) => typeof route !== "undefined");
+
     return (
         <nav {...props} className={cls(styles.nav, styles[direction ?? "horizontal"], className)}>
-            <menu {...menuProps}>
-                {routes.map(([path, name]) => (
-                    <li {...liProps} key={path}>
-                        <NavLink {...navLinkProps} to={path}>
-                            {name}
-                        </NavLink>
-                    </li>
+            <menu>
+                {filtered.map((route) => (
+                    <NavbarItem key={route.name} route={route} />
                 ))}
             </menu>
         </nav>
@@ -42,3 +57,4 @@ const Navbar = ({
 const MemoNavbar = memo(Navbar);
 
 export { MemoNavbar, Navbar };
+export type { NavbarRoute, NavbarProps };
