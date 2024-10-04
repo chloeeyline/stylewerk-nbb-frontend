@@ -142,7 +142,7 @@ export default function TemplatesLayout() {
                             <input
                                 name="includeOwned"
                                 type="checkbox"
-                                checked={template.filter.includeOwned == "true" ? true : false}
+                                checked={template.filter.includeOwned === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="includeOwned">Eigene</label>
@@ -151,7 +151,7 @@ export default function TemplatesLayout() {
                             <input
                                 name="shared"
                                 type="checkbox"
-                                checked={template.filter.shared == "true" ? true : false}
+                                checked={template.filter.shared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="shared">Geteilt</label>
@@ -160,7 +160,7 @@ export default function TemplatesLayout() {
                             <input
                                 name="publicShared"
                                 type="checkbox"
-                                checked={template.filter.publicShared == "true" ? true : false}
+                                checked={template.filter.publicShared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="public">Öffentliche</label>
@@ -169,7 +169,7 @@ export default function TemplatesLayout() {
                             <input
                                 name="directUser"
                                 type="checkbox"
-                                checked={template.filter.directUser == "true" ? true : false}
+                                checked={template.filter.directUser === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="directUser">Genauer Benutzername</label>

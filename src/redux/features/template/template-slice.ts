@@ -181,7 +181,7 @@ export const removeTemplates = createAsyncThunk<
         const template = selectTemplate(thunkApi.getState());
 
         const response = await Ajax.post(Backend.Template.Remove, {
-            body: {
+            search: {
                 id,
             },
             auth: true,
@@ -220,7 +220,7 @@ export const copyTemplates = createAsyncThunk<
         const template = selectTemplate(thunkApi.getState());
 
         const response = await Ajax.post(Backend.Template.Copy, {
-            body: {
+            search: {
                 id,
             },
             auth: true,

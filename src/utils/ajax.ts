@@ -69,12 +69,13 @@ export default class Ajax {
             auth,
             method,
             search,
-            body
+            body,
         }:
             | {
                   auth?: boolean;
                   method: "GET";
                   search?: Record<string, string>;
+                  body?: null;
               }
             | {
                   auth?: boolean;
@@ -88,9 +89,7 @@ export default class Ajax {
                 return `${BACKEND_URL}${url}`;
             }
 
-            const search = new URLSearchParams(search);
-
-            return `${BACKEND_URL}${url}?${search.toString()}`;
+            return `${BACKEND_URL}${url}?${new URLSearchParams(search).toString()}`;
         };
 
         const init: RequestInit = {
@@ -106,7 +105,7 @@ export default class Ajax {
                 "Content-Type": "application/json",
             };
 
-            init.body = JSON.stringify(body);
+            init.body = JSON.stringify(body ?? null);
         }
 
         const user = auth ? await userPromise : undefined;
