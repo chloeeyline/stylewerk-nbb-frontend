@@ -1,4 +1,4 @@
-import LoginForm from "~/components/general/LoginForm";
+import LoginForm from "~/components/forms/LoginForm";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 
