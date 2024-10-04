@@ -1,83 +1,188 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet } from "react-router-dom";
+import type React from "react";
 
-import Routes from "#/routes";
-import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
-import ListSidebar from "~/components/layout/ListSidebar";
-import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useTemplates } from "./api/templates";
-import type { TemplateListResponse } from "./api/types";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import {
+    listTemplates,
+    selectTemplate,
+    setFilter,
+    setHideFilters,
+    setHideList,
+} from "~/redux/features/template/template-slice";
+import { useEffect } from "react";
+import RouteParams from "~/constants/route-params";
+import Routes from "~/constants/routes";
+import cls from "~/utils/class-name-helper";
 
-const TemplatesResult = ({ result }: { result: TemplateListResponse }) => {
-    const { ok, loading } = result;
+const TemplatesList = () => {
+    const template = useAppSelector(selectTemplate);
+    const dispatch = useAppDispatch();
 
-    if (loading === true) {
-        return <div>Loading...</div>;
-    }
-
-    if (ok === false) {
-        const { error } = result;
-
-        return <ErrorElement error={error} />;
-    }
-
-    const { general, folders } = result;
+    useEffect(() => {
+        dispatch(listTemplates());
+    }, []);
 
     return (
         <>
-            {general.length >= 1 && (
-                <MemoNavbar
-                    direction="vertical"
-                    routes={general.map(({ id, name }) => ({
-                        type: "link",
-                        url: `${Routes.Templates.List}/${id}`,
-                        name,
-                    }))}
-                />
-            )}
-            {folders.length >= 1 && (
-                <ul>
-                    {folders.map(({ id, name, templates }) => (
-                        <li key={id}>
-                            {name}
-                            <MemoNavbar
-                                direction="vertical"
-                                routes={templates.map(({ id, name }) => ({
-                                    type: "link",
-                                    url: `${Routes.Templates.List}/${id}`,
-                                    name,
-                                }))}
-                            />
-                        </li>
+            <ScrollContainer
+                direction="vertical"
+                className={cls("p-1", template.hideList ? "hidden" : undefined)}>
+                {template.items &&
+                    template.items.length > 0 &&
+                    template.items?.map((item) => (
+                        <NavLink
+                            to={Routes.Templates.View.replace(RouteParams.TemplateId, item.id)}
+                            key={item.id}
+                            className="lcontainer m-be-1">
+                            <div className="lrow">
+                                {item.name && <div className="lcell">{item.name}</div>}
+                                {item.username && (
+                                    <div className="lcell" style={{ textAlign: "right" }}>
+                                        {item.username}
+                                    </div>
+                                )}
+                            </div>
+                            {item.description && (
+                                <div className="lrow">
+                                    <div className="lcell">{item.description}</div>
+                                </div>
+                            )}
+                            {item.tags && (
+                                <div className="lrow">
+                                    {item.tags.split(",").map((tag) => (
+                                        <div key={tag} className="lcell tag">
+                                            {tag}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </NavLink>
                     ))}
-                </ul>
-            )}
+            </ScrollContainer>
+            <div className={!template.hideList ? "hidden" : undefined}></div>
         </>
     );
 };
 
-const TemplatesList = () => {
-    const { pathname } = useLocation();
-    const [result, refresh] = useTemplates();
-
-    return (
-        <ListSidebar
-            collapsed={pathname === Routes.Templates.List}
-            onRefresh={refresh}
-            refreshing={result.loading}>
-            <TemplatesResult result={result} />
-        </ListSidebar>
-    );
-};
-
 export default function TemplatesLayout() {
+    const template = useAppSelector(selectTemplate);
+    const dispatch = useAppDispatch();
+
+    const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setFilter({
+                type: e.target.name,
+                value: e.target.value,
+            }),
+        );
+    };
+
+    const dispatchFilterCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setFilter({
+                type: e.target.name,
+                value: e.target.checked ? "true" : "false",
+            }),
+        );
+    };
+
     return (
-        <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-            <TemplatesList />
-            <ScrollContainer direction="vertical">
-                <Outlet />
-            </ScrollContainer>
+        <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+            <div>
+                <button onClick={() => dispatch(listTemplates())}>Refresh</button>
+                <button
+                    onClick={() => {
+                        dispatch(setHideList());
+                    }}>
+                    {template.hideList ? "Liste anzeigen" : "Liste verstecken"}
+                </button>
+                <button
+                    onClick={() => {
+                        dispatch(setHideFilters());
+                    }}>
+                    {template.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
+                </button>
+                <form className={cls("header", template.hideFilters ? "hidden" : undefined)}>
+                    <fieldset className="header">
+                        <legend>Filter</legend>
+                        <label htmlFor="name">Name</label>
+                        <input
+                            name="name"
+                            type="text"
+                            value={template.filter.name}
+                            onChange={dispatchFilter}
+                        />
+                        <label htmlFor="description">Beschreibung</label>
+                        <input
+                            name="description"
+                            type="text"
+                            value={template.filter.description}
+                            onChange={dispatchFilter}
+                        />
+                        <label htmlFor="tags">Tags</label>
+                        <input
+                            name="tags"
+                            type="text"
+                            value={template.filter.tags}
+                            onChange={dispatchFilter}
+                        />
+                        <label htmlFor="username">Benutzername</label>
+                        <input
+                            name="username"
+                            type="text"
+                            value={template.filter.username}
+                            onChange={dispatchFilter}
+                        />
+                    </fieldset>
+                    <fieldset style={{ display: "grid" }}>
+                        <legend>Sichtbarkeit</legend>
+                        <div>
+                            <input
+                                name="includeOwned"
+                                type="checkbox"
+                                checked={template.filter.includeOwned === "true"}
+                                onChange={dispatchFilterCheckbox}
+                            />
+                            <label htmlFor="includeOwned">Eigene</label>
+                        </div>
+                        <div>
+                            <input
+                                name="shared"
+                                type="checkbox"
+                                checked={template.filter.shared === "true"}
+                                onChange={dispatchFilterCheckbox}
+                            />
+                            <label htmlFor="shared">Geteilt</label>
+                        </div>
+                        <div>
+                            <input
+                                name="publicShared"
+                                type="checkbox"
+                                checked={template.filter.publicShared === "true"}
+                                onChange={dispatchFilterCheckbox}
+                            />
+                            <label htmlFor="public">Öffentliche</label>
+                        </div>
+                        <div>
+                            <input
+                                name="directUser"
+                                type="checkbox"
+                                checked={template.filter.directUser === "true"}
+                                onChange={dispatchFilterCheckbox}
+                            />
+                            <label htmlFor="directUser">Genauer Benutzername</label>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+            <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+                <TemplatesList />
+                <ScrollContainer direction="vertical">
+                    <Outlet />
+                </ScrollContainer>
+            </Grid>
         </Grid>
     );
 }

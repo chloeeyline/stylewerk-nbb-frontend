@@ -68,27 +68,28 @@ export default class Ajax {
         {
             auth,
             method,
-            data,
+            search,
+            body,
         }:
             | {
                   auth?: boolean;
                   method: "GET";
-                  data?: Record<string, string>;
+                  search?: Record<string, string>;
+                  body?: null;
               }
             | {
                   auth?: boolean;
                   method: "POST";
-                  data?: object;
+                  search?: Record<string, string>;
+                  body?: object;
               },
     ) {
         const getUrl = () => {
-            if (method === "POST" || Object.entries(data ?? {}).length <= 0) {
+            if (Object.entries(search ?? {}).length <= 0) {
                 return `${BACKEND_URL}${url}`;
             }
 
-            const search = new URLSearchParams(data);
-
-            return `${BACKEND_URL}${url}?${search.toString()}`;
+            return `${BACKEND_URL}${url}?${new URLSearchParams(search).toString()}`;
         };
 
         const init: RequestInit = {
@@ -104,7 +105,7 @@ export default class Ajax {
                 "Content-Type": "application/json",
             };
 
-            init.body = JSON.stringify(data);
+            init.body = JSON.stringify(body ?? null);
         }
 
         const user = auth ? await userPromise : undefined;
@@ -129,35 +130,32 @@ export default class Ajax {
             auth?: boolean;
         } = { auth: false },
     ): Promise<AjaxResponse> {
-        console.log(url, search, auth);
-
         const ajax = await this.setup(url, {
             auth,
             method: "GET",
-            data: search,
+            search: search,
         });
 
-        const result = await ajax.fetch();
-
-        return result;
+        return await ajax.fetch();
     }
 
     public static async post(
         url: string,
         {
+            search,
             body,
             auth,
         }: {
+            search?: Record<string, string>;
             body?: object;
             auth?: boolean;
         } = { auth: false },
     ): Promise<AjaxResponse> {
-        console.log(url, body, auth);
-
         const ajax = await this.setup(url, {
             auth,
             method: "POST",
-            data: body,
+            search: search,
+            body: body,
         });
 
         return await ajax.fetch();

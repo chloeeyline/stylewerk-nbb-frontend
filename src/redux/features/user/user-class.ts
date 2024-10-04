@@ -153,7 +153,6 @@ class User {
             return result.data;
         } catch (error) {
             console.error(error);
-            // this.clear();
             return null;
         }
     }
@@ -344,6 +343,10 @@ class User {
 
         if (accessToken.expireTime < Date.now()) {
             await this.refreshToken(refreshToken, consistOverSession);
+        }
+
+        if (this._state.status !== "loggedIn") {
+            return "";
         }
 
         return this._state.accessToken.token;
