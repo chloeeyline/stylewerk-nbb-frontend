@@ -25,41 +25,44 @@ const TemplatesList = () => {
     }, []);
 
     return (
-        <ScrollContainer
-            direction="vertical"
-            className={cls("p-1", template.hideList ? "hidden" : undefined)}>
-            {template.items &&
-                template.items.length > 0 &&
-                template.items?.map((item) => (
-                    <NavLink
-                        to={Routes.Templates.View.replace(RouteParams.TemplateId, item.id)}
-                        key={item.id}
-                        className="lcontainer m-be-1">
-                        <div className="lrow">
-                            {item.name && <div className="lcell">{item.name}</div>}
-                            {item.username && (
-                                <div className="lcell" style={{ textAlign: "right" }}>
-                                    {item.username}
+        <>
+            <ScrollContainer
+                direction="vertical"
+                className={cls("p-1", template.hideList ? "hidden" : undefined)}>
+                {template.items &&
+                    template.items.length > 0 &&
+                    template.items?.map((item) => (
+                        <NavLink
+                            to={Routes.Templates.View.replace(RouteParams.TemplateId, item.id)}
+                            key={item.id}
+                            className="lcontainer m-be-1">
+                            <div className="lrow">
+                                {item.name && <div className="lcell">{item.name}</div>}
+                                {item.username && (
+                                    <div className="lcell" style={{ textAlign: "right" }}>
+                                        {item.username}
+                                    </div>
+                                )}
+                            </div>
+                            {item.description && (
+                                <div className="lrow">
+                                    <div className="lcell">{item.description}</div>
                                 </div>
                             )}
-                        </div>
-                        {item.description && (
-                            <div className="lrow">
-                                <div className="lcell">{item.description}</div>
-                            </div>
-                        )}
-                        {item.tags && (
-                            <div className="lrow">
-                                {item.tags.split(",").map((tag) => (
-                                    <div key={tag} className="lcell tag">
-                                        {tag}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-                    </NavLink>
-                ))}
-        </ScrollContainer>
+                            {item.tags && (
+                                <div className="lrow">
+                                    {item.tags.split(",").map((tag) => (
+                                        <div key={tag} className="lcell tag">
+                                            {tag}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </NavLink>
+                    ))}
+            </ScrollContainer>
+            <div className={!template.hideList ? "hidden" : undefined}></div>
+        </>
     );
 };
 
@@ -72,6 +75,15 @@ export default function TemplatesLayout() {
             setFilter({
                 type: e.target.name,
                 value: e.target.value,
+            }),
+        );
+    };
+
+    const dispatchFilterCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setFilter({
+                type: e.target.name,
+                value: e.target.checked ? "true" : "false",
             }),
         );
     };
@@ -127,19 +139,39 @@ export default function TemplatesLayout() {
                     <fieldset style={{ display: "grid" }}>
                         <legend>Sichtbarkeit</legend>
                         <div>
-                            <input name="owned" type="checkbox" />
-                            <label htmlFor="owned">Eigene</label>
+                            <input
+                                name="includeOwned"
+                                type="checkbox"
+                                checked={template.filter.includeOwned == "true" ? true : false}
+                                onChange={dispatchFilterCheckbox}
+                            />
+                            <label htmlFor="includeOwned">Eigene</label>
                         </div>
                         <div>
-                            <input name="shared" type="checkbox" />
+                            <input
+                                name="shared"
+                                type="checkbox"
+                                checked={template.filter.shared == "true" ? true : false}
+                                onChange={dispatchFilterCheckbox}
+                            />
                             <label htmlFor="shared">Geteilt</label>
                         </div>
                         <div>
-                            <input name="public" type="checkbox" />
+                            <input
+                                name="publicShared"
+                                type="checkbox"
+                                checked={template.filter.publicShared == "true" ? true : false}
+                                onChange={dispatchFilterCheckbox}
+                            />
                             <label htmlFor="public">Öffentliche</label>
                         </div>
                         <div>
-                            <input name="directUser" type="checkbox" />
+                            <input
+                                name="directUser"
+                                type="checkbox"
+                                checked={template.filter.directUser == "true" ? true : false}
+                                onChange={dispatchFilterCheckbox}
+                            />
                             <label htmlFor="directUser">Genauer Benutzername</label>
                         </div>
                     </fieldset>

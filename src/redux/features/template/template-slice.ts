@@ -322,6 +322,7 @@ const templateSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(updateTemplates.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.detail = action.payload.detail;
             })
