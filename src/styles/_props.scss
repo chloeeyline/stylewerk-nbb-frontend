@@ -8,12 +8,12 @@ $spacing: (
 );
 
 $logical: (
-    b: "block",
-    i: "inline",
-    bs: "block-start",
-    is: "inline-start",
-    be: "block-end",
-    ie: "inline-end",
+    /* block === top & bottom */ b: "block",
+    /* inline === left & right */ i: "inline",
+    /* block-start === top */ bs: "block-start",
+    /* inline-start === left */ is: "inline-start",
+    /* block-end === bottom */ be: "block-end",
+    /* inline-end === right */ ie: "inline-end"
 );
 
 $container-breakpoints: (
