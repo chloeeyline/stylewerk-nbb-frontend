@@ -61,18 +61,18 @@ type TemplateCell = z.infer<typeof templateCellSchema>;
 type TemplatePaging = z.infer<typeof templatePagingSchema>;
 
 export {
-    templateSchema,
-    templateItemSchema,
-    templateRowSchema,
     templateCellSchema,
+    templateItemSchema,
     templatePagingSchema,
+    templateRowSchema,
+    templateSchema,
 };
 
 export type {
     Template,
-    TemplateItem,
-    TemplateRow,
     TemplateCell,
+    TemplateItem,
     TemplatePaging,
+    TemplateRow,
     TemplateSearchParams,
 };

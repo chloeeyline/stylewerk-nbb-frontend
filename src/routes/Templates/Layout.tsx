@@ -1,9 +1,11 @@
-import { NavLink, Outlet } from "react-router-dom";
 import type React from "react";
+import { NavLink, Outlet } from "react-router-dom";
 
+import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import RouteParams from "~/constants/route-params";
+import Routes from "~/constants/routes";
 import {
     listTemplates,
     selectTemplate,
@@ -11,9 +13,7 @@ import {
     setHideFilters,
     setHideList,
 } from "~/redux/features/template/template-slice";
-import { useEffect } from "react";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
 const TemplatesList = () => {

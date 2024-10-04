@@ -5,7 +5,6 @@ import type { Paging } from "~/schemas/paging";
 import Ajax from "~/utils/ajax";
 import type { Template, TemplateItem, TemplateSearchParams } from "./template-schemas";
 import { templatePagingSchema, templateSchema } from "./template-schemas";
-import { boolean } from "zod";
 
 type TemplateState = {
     status: "idle" | "loading" | "succeeded" | "failed";

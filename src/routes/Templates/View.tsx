@@ -3,13 +3,11 @@ import { Link, useParams } from "react-router-dom";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import { useEffect } from "react";
-import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import {
     copyTemplates,
     detailTemplates,
-    listTemplates,
     removeTemplates,
     selectTemplate,
 } from "~/redux/features/template/template-slice";
