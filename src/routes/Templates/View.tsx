@@ -9,6 +9,7 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import {
     copyTemplates,
     detailTemplates,
+    listTemplates,
     removeTemplates,
     selectTemplate,
 } from "~/redux/features/template/template-slice";
@@ -37,16 +38,6 @@ export default function TemplateView() {
     if (status === "failed") {
         return <div>Error...</div>;
     }
-
-    /* if (
-        !("detail" in template) ||
-        typeof template.detail !== "object" ||
-        template.detail === null ||
-        !("id" in template.detail) ||
-        typeof template.detail.id !== "string"
-    ) {
-        return <div>Loading...</div>;
-    } */
 
     return (
         <Grid layout="header" className="size-block-100">

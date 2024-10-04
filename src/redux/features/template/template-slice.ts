@@ -30,6 +30,16 @@ const initialState: TemplateState = {
     hideList: false,
 };
 
+const refreshTemplateList = (template: TemplateState) =>
+    Ajax.get(Backend.Template.List, {
+        search: {
+            page: template.paging.page.toString(),
+            perPage: template.paging.perPage.toString(),
+            ...template.filter,
+        },
+        auth: true,
+    });
+
 export const listTemplates = createAsyncThunk<
     TemplateState,
     void,
@@ -42,14 +52,7 @@ export const listTemplates = createAsyncThunk<
     async (_arg, thunkApi) => {
         const template = selectTemplate(thunkApi.getState());
 
-        const response = await Ajax.get(Backend.Template.List, {
-            search: {
-                page: template.paging.page.toString(),
-                perPage: template.paging.perPage.toString(),
-                ...template.filter,
-            },
-            auth: true,
-        });
+        const response = await refreshTemplateList(template);
 
         if (response.ok === false) {
             return thunkApi.rejectWithValue(response.error);
@@ -191,9 +194,23 @@ export const removeTemplates = createAsyncThunk<
             return thunkApi.rejectWithValue(response.error);
         }
 
+        const refreshResponse = await refreshTemplateList(template);
+
+        if (refreshResponse.ok === false) {
+            return thunkApi.rejectWithValue(refreshResponse.error);
+        }
+
+        const refreshResult = templatePagingSchema.safeParse(refreshResponse.result);
+
+        if (refreshResult.success === false) {
+            return thunkApi.rejectWithValue(refreshResult.error);
+        }
+
         return {
             ...template,
             status: "succeeded",
+            paging: refreshResult.data.paging,
+            items: refreshResult.data.items,
         };
     },
     {
@@ -236,10 +253,24 @@ export const copyTemplates = createAsyncThunk<
             return thunkApi.rejectWithValue(result.error);
         }
 
+        const refreshResponse = await refreshTemplateList(template);
+
+        if (refreshResponse.ok === false) {
+            return thunkApi.rejectWithValue(refreshResponse.error);
+        }
+
+        const refreshResult = templatePagingSchema.safeParse(refreshResponse.result);
+
+        if (refreshResult.success === false) {
+            return thunkApi.rejectWithValue(refreshResult.error);
+        }
+
         return {
             ...template,
             status: "succeeded",
             detail: result.data,
+            paging: refreshResult.data.paging,
+            items: refreshResult.data.items,
         };
     },
     {
@@ -271,7 +302,6 @@ const templateSlice = createSlice({
                 case "description":
                 case "tags":
                     state.filter[action.payload.type] = action.payload.value;
-
                     break;
                 case "publicShared":
                 case "shared":
@@ -301,6 +331,7 @@ const templateSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(listTemplates.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.paging = action.payload.paging;
                 state.items = action.payload.items;
@@ -312,6 +343,7 @@ const templateSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(detailTemplates.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.detail = action.payload.detail;
             })
@@ -332,8 +364,11 @@ const templateSlice = createSlice({
             .addCase(removeTemplates.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(removeTemplates.fulfilled, (state) => {
+            .addCase(removeTemplates.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                state.paging = action.payload.paging;
+                state.items = action.payload.items;
             })
             .addCase(removeTemplates.rejected, (state) => {
                 state.status = "failed";
@@ -342,8 +377,11 @@ const templateSlice = createSlice({
                 state.status = "loading";
             })
             .addCase(copyTemplates.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.detail = action.payload.detail;
+                state.paging = action.payload.paging;
+                state.items = action.payload.items;
             })
             .addCase(copyTemplates.rejected, (state) => {
                 state.status = "failed";

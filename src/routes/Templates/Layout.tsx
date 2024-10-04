@@ -111,28 +111,28 @@ export default function TemplatesLayout() {
                         <input
                             name="name"
                             type="text"
-                            value={template.filter.name}
+                            value={template.filter.name ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="description">Beschreibung</label>
                         <input
                             name="description"
                             type="text"
-                            value={template.filter.description}
+                            value={template.filter.description ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="tags">Tags</label>
                         <input
                             name="tags"
                             type="text"
-                            value={template.filter.tags}
+                            value={template.filter.tags ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="username">Benutzername</label>
                         <input
                             name="username"
                             type="text"
-                            value={template.filter.username}
+                            value={template.filter.username ?? ""}
                             onChange={dispatchFilter}
                         />
                     </fieldset>
