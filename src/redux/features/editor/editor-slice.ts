@@ -1,4 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
