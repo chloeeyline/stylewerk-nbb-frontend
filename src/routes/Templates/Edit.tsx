@@ -2,40 +2,68 @@ import { Link, useParams } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
-import ErrorElement from "~/components/general/ErrorElement";
+import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useTemplate } from "./api/templates";
+import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
 
 export default function TemplatesEdit() {
     const { templateId } = useParams();
-    const [result] = useTemplate(templateId ?? "");
+    const editor = useAppSelector(selectEditor);
+    const dispatch = useAppDispatch();
 
-    const { ok, loading } = result;
+    useEffect(() => {
+        if (!templateId) return;
+        dispatch(getEditor({ id: templateId, isTemplate: true }));
+    }, [templateId]);
 
-    if (loading === true) {
+    const { status, data } = editor;
+
+    if (status === "idle") {
+        return null;
+    }
+
+    if (status === "loading") {
         return <div>Loading...</div>;
     }
 
-    if (ok === false) {
-        const { error } = result;
-
-        return <ErrorElement error={error} />;
+    if (status === "failed") {
+        return <div>Error...</div>;
     }
-
-    const { id, name, rows } = result.template;
 
     return (
         <Grid layout="headerFooter" className="size-block-100">
-            <h1>
-                Edit: {name} ({id})
-            </h1>
             <ScrollContainer direction="both">
                 <pre>
-                    <code>{JSON.stringify(rows, undefined, 2)}</code>
+                    <code>{JSON.stringify(editor.data, undefined, 2)}</code>
                 </pre>
             </ScrollContainer>
-            <Link to={Routes.Templates.View.replace(RouteParams.TemplateId, id)}>Back</Link>
+            {typeof data?.templateID === "string" ? (
+                <div>
+                    <button
+                        onClick={() => {
+                            if (typeof data.templateID !== "string") return;
+                            dispatch(copyTemplates({ id: data.templateID }));
+                        }}>
+                        Copy
+                    </button>
+                    <button
+                        onClick={() => {
+                            if (typeof data.templateID !== "string") return;
+                            dispatch(removeTemplates({ id: data.templateID }));
+                        }}>
+                        Delete
+                    </button>
+                    <Link
+                        to={Routes.Templates.View.replace(RouteParams.TemplateId, data.templateID)}>
+                        Back
+                    </Link>
+                </div>
+            ) : (
+                <div></div>
+            )}
         </Grid>
     );
 }

@@ -2,40 +2,58 @@ import { Link, useParams } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
-import ErrorElement from "~/components/general/ErrorElement";
+import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useEntry } from "./api/entries";
+import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function EntriesEdit() {
     const { entryId } = useParams();
-    const [result] = useEntry(entryId ?? "");
+    const editor = useAppSelector(selectEditor);
+    const dispatch = useAppDispatch();
 
-    const { ok, loading } = result;
+    useEffect(() => {
+        if (!entryId) return;
+        dispatch(getEditor({ id: entryId, isTemplate: false }));
+    }, [entryId]);
 
-    if (loading === true) {
+    const { status, data } = editor;
+
+    if (status === "idle") {
+        return null;
+    }
+
+    if (status === "loading") {
         return <div>Loading...</div>;
     }
 
-    if (ok === false) {
-        const { error } = result;
-
-        return <ErrorElement error={error} />;
+    if (status === "failed") {
+        return <div>Error...</div>;
     }
 
-    const { id, name, rows } = result.entry;
-
     return (
-        <Grid layout="headerFooter" className="size-block-100">
-            <h1>
-                Edit: {name} ({id})
-            </h1>
+        <Grid layout="header" className="size-block-100">
             <ScrollContainer direction="both">
                 <pre>
-                    <code>{JSON.stringify(rows, undefined, 2)}</code>
+                    <code>{JSON.stringify(editor.data, undefined, 2)}</code>
                 </pre>
+                {typeof data?.templateID === "string" ? (
+                    <>
+                        <button
+                            onClick={() => {
+                                if (typeof data.templateID !== "string") return;
+                                // dispatch(removeTemplates({ id: data.templateID }));
+                            }}>
+                            Delete
+                        </button>
+                        <Link
+                            to={Routes.Entries.View.replace(RouteParams.EntryId, data.templateID)}>
+                            Edit
+                        </Link>
+                    </>
+                ) : null}
             </ScrollContainer>
-            <Link to={Routes.Entries.View.replace(RouteParams.EntryId, id)}>Back</Link>
         </Grid>
     );
 }
