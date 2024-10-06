@@ -70,4 +70,11 @@ export const Template = {
     Copy: "/Template/Copy",
 } as const;
 
-export default { Auth, ColorTheme, Entry, Language, Share, Template } as const;
+export const Editor = {
+    GetEntry: "/Editor/GetEntry",
+    GetTemplate: "/Editor/GetTemplate",
+    UpdateEntry: "/Editor/UpdateEntry",
+    UpdateTemplate: "/Editor/UpdateTemplate",
+} as const;
+
+export default { Auth, ColorTheme, Entry, Language, Share, Template, Editor } as const;

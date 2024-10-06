@@ -81,95 +81,6 @@ export const listTemplates = createAsyncThunk<
     },
 );
 
-export const detailTemplates = createAsyncThunk<
-    TemplateState,
-    { id: string },
-    {
-        dispatch: AppDispatch;
-        state: RootState;
-    }
->(
-    "template/detail",
-    async ({ id }, thunkApi) => {
-        const template = selectTemplate(thunkApi.getState());
-
-        const response = await Ajax.get(Backend.Template.Details, {
-            search: {
-                id,
-            },
-            auth: true,
-        });
-
-        if (response.ok === false) {
-            return thunkApi.rejectWithValue(response.error);
-        }
-
-        const result = templateSchema.safeParse(response.result);
-
-        if (result.success === false) {
-            return thunkApi.rejectWithValue(result.error);
-        }
-
-        return {
-            ...template,
-            status: "succeeded",
-            detail: result.data,
-        };
-    },
-    {
-        condition(_arg, { getState }) {
-            const template = selectTemplate(getState());
-
-            if (template.status === "loading") {
-                return false;
-            }
-        },
-    },
-);
-
-export const updateTemplates = createAsyncThunk<
-    TemplateState,
-    void,
-    {
-        dispatch: AppDispatch;
-        state: RootState;
-    }
->(
-    "template/update",
-    async (_arg, thunkApi) => {
-        const template = selectTemplate(thunkApi.getState());
-        const response = await Ajax.post(Backend.Template.Update, {
-            body: template.detail,
-            auth: true,
-        });
-
-        if (response.ok === false) {
-            return thunkApi.rejectWithValue(response.error);
-        }
-
-        const result = templateSchema.safeParse(response.result);
-
-        if (result.success === false) {
-            return thunkApi.rejectWithValue(result.error);
-        }
-
-        return {
-            ...template,
-            status: "succeeded",
-            detail: result.data,
-        };
-    },
-    {
-        condition(_arg, { getState }) {
-            const template = selectTemplate(getState());
-
-            if (template.status === "loading") {
-                return false;
-            }
-        },
-    },
-);
-
 export const removeTemplates = createAsyncThunk<
     TemplateState,
     { id: string },
@@ -310,7 +221,6 @@ const templateSlice = createSlice({
                         state.filter[action.payload.type] = action.payload.value;
                         break;
                     }
-
                     state.filter[action.payload.type] = undefined;
                     break;
             }
@@ -336,28 +246,6 @@ const templateSlice = createSlice({
                 state.items = action.payload.items;
             })
             .addCase(listTemplates.rejected, (state) => {
-                state.status = "failed";
-            })
-            .addCase(detailTemplates.pending, (state) => {
-                state.status = "loading";
-            })
-            .addCase(detailTemplates.fulfilled, (state, action) => {
-                if (action.payload.status !== "succeeded") return;
-                state.status = "succeeded";
-                state.detail = action.payload.detail;
-            })
-            .addCase(detailTemplates.rejected, (state) => {
-                state.status = "failed";
-            })
-            .addCase(updateTemplates.pending, (state) => {
-                state.status = "loading";
-            })
-            .addCase(updateTemplates.fulfilled, (state, action) => {
-                if (action.payload.status !== "succeeded") return;
-                state.status = "succeeded";
-                state.detail = action.payload.detail;
-            })
-            .addCase(updateTemplates.rejected, (state) => {
                 state.status = "failed";
             })
             .addCase(removeTemplates.pending, (state) => {

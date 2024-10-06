@@ -32,7 +32,7 @@ const templateItemSchema = z.object({
     name: z.string(),
     description: z.string().nullable(),
     tags: z.string().nullable(),
-    createdAt: z.number().int().safe().positive(),
+    createdAt: z.number().int().safe().nonnegative(),
     lastUpdatedAt: z.number().int().safe().nonnegative(),
     username: z.string(),
     visibility: shareVisibilitySchema,
