@@ -195,7 +195,7 @@ export const copyTemplates = createAsyncThunk<
 );
 
 const templateSlice = createSlice({
-    name: "user",
+    name: "template",
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {

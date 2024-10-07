@@ -13,11 +13,13 @@ const entryItemSchema = z.object({
     visibility: shareVisibilitySchema,
 });
 
-const entryFoldersSchema = z.object({
-    id: z.string().uuid().nullable(),
-    name: z.string().nullable(),
-    items: z.array(entryItemSchema),
-});
+const entryFoldersSchema = z
+    .object({
+        id: z.string().uuid().nullable(),
+        name: z.string().nullable(),
+        items: z.array(entryItemSchema),
+    })
+    .array();
 
 type EntrySearchParams = {
     name?: string;
