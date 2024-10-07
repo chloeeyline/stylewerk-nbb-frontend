@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import { entryFoldersSchema } from "./entry-schemas";
 import type { EntryFolders, EntrySearchParams } from "./entry-schemas";
+import { entryFoldersSchema } from "./entry-schemas";
 
 type EntryState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -33,7 +33,7 @@ export const listFolder = createAsyncThunk<
     async (_arg, thunkApi) => {
         const entry = selectEntry(thunkApi.getState());
 
-        const response = await Ajax.post(Backend.Entry.Folder.List, {
+        const response = await Ajax.get(Backend.Entry.Folder.List, {
             search: entry.filter,
             auth: true,
         });

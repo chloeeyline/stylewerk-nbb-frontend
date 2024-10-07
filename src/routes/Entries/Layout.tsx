@@ -1,14 +1,8 @@
-import { Outlet, useLocation } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 
-import Routes from "#/routes";
-import ErrorElement from "~/components/general/ErrorElement";
 import Grid from "~/components/layout/Grid";
-import ListSidebar from "~/components/layout/ListSidebar";
-import { MemoNavbar } from "~/components/layout/NavBar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useEntries } from "./api/entries";
-import type { EntryListResponse } from "./api/types";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { EntryFolder } from "~/redux/features/entry/entry-schemas";
 import {
     listFolder,
     selectEntry,
@@ -16,72 +10,35 @@ import {
     setHideFilters,
     setHideList,
 } from "~/redux/features/entry/entry-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
-const EntriesResult = ({ result }: { result: EntryListResponse }) => {
-    const { ok, loading } = result;
-
-    if (loading === true) {
-        return <div>Loading...</div>;
-    }
-
-    if (ok === false) {
-        const { error } = result;
-
-        return <ErrorElement error={error} />;
-    }
-
-    const { general, folders } = result;
-
+const EntriesResult = ({ result }: { result: EntryFolder }) => {
     return (
         <>
-            {general.length >= 1 && (
-                <MemoNavbar
-                    direction="vertical"
-                    routes={general.map(({ id, name }) => ({
-                        type: "link",
-                        url: `${Routes.Entries.List}/${id}`,
-                        name,
-                    }))}
-                />
-            )}
-            {folders.length >= 1 && (
-                <ul>
-                    {folders.map(({ id, name, entries }) => (
-                        <li key={id}>
-                            {name}
-                            <MemoNavbar
-                                direction="vertical"
-                                routes={entries.map(({ id, name }) => ({
-                                    type: "link",
-                                    url: `${Routes.Entries.List}/${id}`,
-                                    name,
-                                }))}
-                            />
-                        </li>
-                    ))}
-                </ul>
-            )}
+            <pre>
+                <code>{JSON.stringify(result, undefined, 2)}</code>
+            </pre>
         </>
     );
 };
 
 const EntriesList = () => {
-    const { pathname } = useLocation();
-    const [result, refresh] = useEntries();
+    const entry = useAppSelector(selectEntry);
 
     return (
-        <ListSidebar
-            collapsed={pathname === Routes.Entries.List}
-            onRefresh={refresh}
-            refreshing={result.loading}>
-            <EntriesResult result={result} />
-        </ListSidebar>
+        <>
+            <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
+                {entry.items &&
+                    entry.items.map((item) => <EntriesResult key={item.id} result={item} />)}
+            </ScrollContainer>
+            <div className={entry!.hideList ? "hidden" : undefined}></div>
+        </>
     );
 };
 
 export default function EntriesLayout() {
-    const template = useAppSelector(selectEntry);
+    const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,43 +67,43 @@ export default function EntriesLayout() {
                     onClick={() => {
                         dispatch(setHideList());
                     }}>
-                    {template.hideList ? "Liste anzeigen" : "Liste verstecken"}
+                    {entry.hideList ? "Liste anzeigen" : "Liste verstecken"}
                 </button>
                 <button
                     onClick={() => {
                         dispatch(setHideFilters());
                     }}>
-                    {template.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
+                    {entry.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
                 </button>
-                <form className={cls("header", template.hideFilters ? "hidden" : undefined)}>
+                <form className={cls("header", entry.hideFilters ? "hidden" : undefined)}>
                     <fieldset className="header">
                         <legend>Filter</legend>
                         <label htmlFor="name">Name</label>
                         <input
                             name="name"
                             type="text"
-                            value={template.filter.name ?? ""}
+                            value={entry.filter.name ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="templateName">Beschreibung</label>
                         <input
                             name="templateName"
                             type="text"
-                            value={template.filter.templateName ?? ""}
+                            value={entry.filter.templateName ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="tags">Tags</label>
                         <input
                             name="tags"
                             type="text"
-                            value={template.filter.tags ?? ""}
+                            value={entry.filter.tags ?? ""}
                             onChange={dispatchFilter}
                         />
                         <label htmlFor="username">Benutzername</label>
                         <input
                             name="username"
                             type="text"
-                            value={template.filter.username ?? ""}
+                            value={entry.filter.username ?? ""}
                             onChange={dispatchFilter}
                         />
                     </fieldset>
@@ -156,7 +113,7 @@ export default function EntriesLayout() {
                             <input
                                 name="includeOwned"
                                 type="checkbox"
-                                checked={template.filter.includeOwned === "true"}
+                                checked={entry.filter.includeOwned === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="includeOwned">Eigene</label>
@@ -165,7 +122,7 @@ export default function EntriesLayout() {
                             <input
                                 name="shared"
                                 type="checkbox"
-                                checked={template.filter.shared === "true"}
+                                checked={entry.filter.shared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="shared">Geteilt</label>
@@ -174,7 +131,7 @@ export default function EntriesLayout() {
                             <input
                                 name="publicShared"
                                 type="checkbox"
-                                checked={template.filter.publicShared === "true"}
+                                checked={entry.filter.publicShared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="public">Öffentliche</label>
@@ -183,7 +140,7 @@ export default function EntriesLayout() {
                             <input
                                 name="directUser"
                                 type="checkbox"
-                                checked={template.filter.directUser === "true"}
+                                checked={entry.filter.directUser === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="directUser">Genauer Benutzername</label>

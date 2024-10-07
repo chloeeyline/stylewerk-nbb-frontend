@@ -1,5 +1,5 @@
 import type React from "react";
-import { NavLink, Outlet } from "react-router-dom";
+import { Link, NavLink, Outlet } from "react-router-dom";
 
 import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
@@ -7,7 +7,9 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
 import {
+    copyTemplates,
     listTemplates,
+    removeTemplates,
     selectTemplate,
     setFilter,
     setHideFilters,
@@ -15,6 +17,7 @@ import {
 } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
 
 const TemplatesList = () => {
     const template = useAppSelector(selectTemplate);
@@ -68,6 +71,7 @@ const TemplatesList = () => {
 
 export default function TemplatesLayout() {
     const template = useAppSelector(selectTemplate);
+    const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +108,31 @@ export default function TemplatesLayout() {
                     }}>
                     {template.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
                 </button>
+                {typeof editor.data?.templateID === "string" ? (
+                    <>
+                        <button
+                            onClick={() => {
+                                if (typeof editor.data?.templateID !== "string") return;
+                                dispatch(copyTemplates({ id: editor.data.templateID }));
+                            }}>
+                            Copy
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (typeof editor.data?.templateID !== "string") return;
+                                dispatch(removeTemplates({ id: editor.data.templateID }));
+                            }}>
+                            Delete
+                        </button>
+                        <Link
+                            to={Routes.Templates.Edit.replace(
+                                RouteParams.TemplateId,
+                                editor.data.templateID,
+                            )}>
+                            Edit
+                        </Link>
+                    </>
+                ) : null}
                 <form className={cls("header", template.hideFilters ? "hidden" : undefined)}>
                     <fieldset className="header">
                         <legend>Filter</legend>
@@ -179,9 +208,7 @@ export default function TemplatesLayout() {
             </div>
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <TemplatesList />
-                <ScrollContainer direction="vertical">
-                    <Outlet />
-                </ScrollContainer>
+                <Outlet />
             </Grid>
         </Grid>
     );

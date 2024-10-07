@@ -13,13 +13,13 @@ const entryItemSchema = z.object({
     visibility: shareVisibilitySchema,
 });
 
-const entryFoldersSchema = z
-    .object({
-        id: z.string().uuid().nullable(),
-        name: z.string().nullable(),
-        items: z.array(entryItemSchema),
-    })
-    .array();
+const entryFolderSchema = z.object({
+    id: z.string().uuid().nullable(),
+    name: z.string().nullable(),
+    items: z.array(entryItemSchema),
+});
+
+const entryFoldersSchema = entryFolderSchema.array();
 
 type EntrySearchParams = {
     name?: string;
@@ -33,8 +33,9 @@ type EntrySearchParams = {
 };
 
 type EntryItem = z.infer<typeof entryItemSchema>;
+type EntryFolder = z.infer<typeof entryFolderSchema>;
 type EntryFolders = z.infer<typeof entryFoldersSchema>;
 
-export { entryItemSchema, entryFoldersSchema };
+export { entryFoldersSchema, entryItemSchema };
 
-export type { EntryItem, EntryFolders, EntrySearchParams };
+export type { EntryFolder, EntryFolders, EntryItem, EntrySearchParams };
