@@ -32,7 +32,7 @@ const templateItemSchema = z.object({
     name: z.string(),
     description: z.string().nullable(),
     tags: z.string().nullable(),
-    createdAt: z.number().int().safe().positive(),
+    createdAt: z.number().int().safe().nonnegative(),
     lastUpdatedAt: z.number().int().safe().nonnegative(),
     username: z.string(),
     visibility: shareVisibilitySchema,
@@ -61,18 +61,18 @@ type TemplateCell = z.infer<typeof templateCellSchema>;
 type TemplatePaging = z.infer<typeof templatePagingSchema>;
 
 export {
-    templateSchema,
-    templateItemSchema,
-    templateRowSchema,
     templateCellSchema,
+    templateItemSchema,
     templatePagingSchema,
+    templateRowSchema,
+    templateSchema,
 };
 
 export type {
     Template,
-    TemplateItem,
-    TemplateRow,
     TemplateCell,
+    TemplateItem,
     TemplatePaging,
+    TemplateRow,
     TemplateSearchParams,
 };

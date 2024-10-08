@@ -2,11 +2,15 @@ import type { Action, ThunkAction } from "@reduxjs/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 import userReducer from "./features/user/user-slice";
 import templateReducer from "./features/template/template-slice";
+import entryReducer from "./features/entry/entry-slice";
+import editorSlice from "./features/editor/editor-slice";
 
 export const store = configureStore({
     reducer: {
         user: userReducer,
         template: templateReducer,
+        entry: entryReducer,
+        editor: editorSlice,
     },
 });
 
