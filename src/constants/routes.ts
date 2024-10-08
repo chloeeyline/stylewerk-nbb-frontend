@@ -3,6 +3,7 @@ import RouteParams from "#/route-params";
 export const User = {
     Index: "/user",
     ChangeEmail: "/user/change-email",
+    VerifyEmail: "/user/verify-email",
     ResetPassword: "/user/reset-password",
 } as const;
 

@@ -280,6 +280,14 @@ class User {
         });
     }
 
+    public static async verifyEmail(token: string) {
+        return await Ajax.post(Auth.VerifyEmail, {
+            search: {
+                token,
+            },
+        });
+    }
+
     // public async getUserData() {}
 
     // public async updateUserData() {}
