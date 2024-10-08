@@ -6,6 +6,7 @@ import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
 import {
     copyTemplates,
     listTemplates,
@@ -17,7 +18,6 @@ import {
 } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import { selectEditor } from "~/redux/features/editor/editor-slice";
 
 const TemplatesList = () => {
     const template = useAppSelector(selectTemplate);
@@ -73,6 +73,10 @@ export default function TemplatesLayout() {
     const template = useAppSelector(selectTemplate);
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (template.items && template.items.length == 0) dispatch(listTemplates());
+    }, []);
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(

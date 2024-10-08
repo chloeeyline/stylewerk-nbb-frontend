@@ -17,7 +17,7 @@ const initialState: EntryState = {
     status: "idle",
     items: [],
     filter: {},
-    hideFilters: false,
+    hideFilters: true,
     hideList: false,
 };
 
@@ -84,7 +84,7 @@ export const detailFolder = createAsyncThunk<
         if (response.ok === false) {
             return thunkApi.rejectWithValue(response.error);
         }
-        console.log(response.result);
+
         const result = entryItemsSchema.safeParse(response.result);
 
         if (result.success === false) {

@@ -80,7 +80,7 @@ export default function EntriesLayout() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(listFolder());
+        if (entry.items.length == 0) dispatch(listFolder());
     }, []);
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
