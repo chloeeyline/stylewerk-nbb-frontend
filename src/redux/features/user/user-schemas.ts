@@ -21,8 +21,17 @@ const userLoginApiSchema = z.object({
     rights: rightsSchema,
 });
 
+const userDataSchema = z.object({
+    username: z.string(),
+    email: z.string(),
+    firstName: z.string(),
+    lastName: z.string(),
+    gender: z.enum(["NotSpecified", "Female", "Male", "NonBinary"]),
+    birthday: z.number().int().safe().nonnegative(),
+});
+
 type UserLoginApi = z.infer<typeof userLoginApiSchema>;
+type UserData = z.infer<typeof userDataSchema>;
 
-export { userLoginApiSchema };
-export type { UserLoginApi };
-
+export { userLoginApiSchema, userDataSchema };
+export type { UserLoginApi, UserData };

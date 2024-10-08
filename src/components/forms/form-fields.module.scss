@@ -1,0 +1,46 @@
+.form {
+    display: grid;
+
+    gap: 0.5rem;
+    margin-inline: auto;
+
+    max-inline-size: var(--max-inline-size, 40ch);
+}
+
+.fieldset {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.inputWrapper {
+    display: grid;
+
+    input,
+    select {
+        display: block;
+
+        padding: 0.25em;
+
+        width: 100%;
+
+        color: currentColor;
+
+        font-weight: 400;
+        line-height: 1.5;
+
+        border-width: thin;
+        border-style: solid;
+        border-color: gray;
+        border-radius: 0.5em;
+    }
+
+    &.checkbox {
+        display: flex;
+        gap: 0.5em;
+
+        input {
+            display: inline;
+            width: auto;
+        }
+    }
+}

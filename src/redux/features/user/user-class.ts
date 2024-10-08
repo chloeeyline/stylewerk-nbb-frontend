@@ -215,7 +215,28 @@ class User {
         };
     }
 
-    // public async register(): Promise<UserIsLoggedIn | UserIsFailed> {}
+    public static async registration(body: {
+        username: string;
+        email: string;
+        password: string;
+        firstName: string;
+        lastName: string;
+        gender: string;
+        birthday: number;
+    }): Promise<{ ok: true } | { ok: false; error: string }> {
+        const result = await Ajax.post(Auth.Registration, {
+            body,
+        });
+
+        if (result.ok === false) {
+            return {
+                ok: false,
+                error: result.error.message,
+            };
+        }
+
+        return { ok: true };
+    }
 
     public async logout(): Promise<UserIsGuest> {
         const result = await Ajax.post(Auth.Login, { auth: true });
@@ -255,6 +276,14 @@ class User {
         return await Ajax.post(Auth.ValidateUsername, {
             body: {
                 toValidate,
+            },
+        });
+    }
+
+    public static async verifyEmail(token: string) {
+        return await Ajax.post(Auth.VerifyEmail, {
+            search: {
+                token,
             },
         });
     }
