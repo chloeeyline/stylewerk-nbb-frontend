@@ -3,7 +3,7 @@ import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import type { EntryFolders, EntrySearchParams } from "./entry-schemas";
-import { entryFoldersSchema } from "./entry-schemas";
+import { entryFoldersSchema, entryItemsSchema } from "./entry-schemas";
 
 type EntryState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -52,6 +52,59 @@ export const listFolder = createAsyncThunk<
             ...entry,
             status: "succeeded",
             items: result.data,
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
+export const detailFolder = createAsyncThunk<
+    EntryState,
+    { id: string },
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/folder/detail",
+    async ({ id }, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.get(Backend.Entry.Folder.Details, {
+            search: {
+                id,
+            },
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+        console.log(response.result);
+        const result = entryItemsSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            return thunkApi.rejectWithValue(result.error);
+        }
+
+        const items = entry.items.map((item) => {
+            if (item.id === id) {
+                return {
+                    ...item,
+                    items: result.data,
+                };
+            }
+            return item;
+        });
+
+        return {
+            ...entry,
+            status: "succeeded",
+            items,
         };
     },
     {
@@ -113,6 +166,17 @@ const entrySlice = createSlice({
                 state.items = action.payload.items;
             })
             .addCase(listFolder.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(detailFolder.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(detailFolder.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+                state.items = action.payload.items;
+            })
+            .addCase(detailFolder.rejected, (state) => {
                 state.status = "failed";
             });
     },

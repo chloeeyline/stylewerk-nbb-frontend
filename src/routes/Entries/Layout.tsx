@@ -1,9 +1,13 @@
-import { Outlet } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, Outlet } from "react-router-dom";
 
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
+import RouteParams from "~/constants/route-params";
+import Routes from "~/constants/routes";
 import { EntryFolder } from "~/redux/features/entry/entry-schemas";
 import {
+    detailFolder,
     listFolder,
     selectEntry,
     setFilter,
@@ -14,32 +18,70 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
 const EntriesResult = ({ result }: { result: EntryFolder }) => {
-    return (
-        <>
-            <pre>
-                <code>{JSON.stringify(result, undefined, 2)}</code>
-            </pre>
-        </>
-    );
-};
-
-const EntriesList = () => {
     const entry = useAppSelector(selectEntry);
+    const dispatch = useAppDispatch();
+    const [visible, setVisible] = useState(result.items.length == 0 ? false : true);
 
     return (
-        <>
-            <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
-                {entry.items &&
-                    entry.items.map((item) => <EntriesResult key={item.id} result={item} />)}
-            </ScrollContainer>
-            <div className={entry!.hideList ? "hidden" : undefined}></div>
-        </>
+        <div className="lcontainer">
+            <div
+                className="lrow"
+                onClick={() => {
+                    setVisible(!visible);
+                    if (result.items.length == 0 && result.id) {
+                        dispatch(detailFolder({ id: result.id }));
+                    }
+                }}>
+                <div className="lcell">{result.name ?? "Unbenannt"}</div>
+            </div>
+            <div
+                className={cls("lrow", visible ? undefined : "hidden")}
+                style={{ marginLeft: "1rem" }}>
+                <div className="lcell">
+                    {result.items &&
+                        result.items.length > 0 &&
+                        result.items?.map((item) => (
+                            <NavLink
+                                to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
+                                key={item.id}
+                                className="lcontainer m-be-1">
+                                <div className="lrow">
+                                    {item.name && <div className="lcell">{item.name}</div>}
+                                    {item.username && (
+                                        <div className="lcell" style={{ textAlign: "right" }}>
+                                            {item.username}
+                                        </div>
+                                    )}
+                                </div>
+                                {item.templateName && (
+                                    <div className="lrow">
+                                        <div className="lcell">{item.templateName}</div>
+                                    </div>
+                                )}
+                                {item.tags && (
+                                    <div className="lrow">
+                                        {item.tags.split(",").map((tag) => (
+                                            <div key={tag} className="lcell tag">
+                                                {tag}
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </NavLink>
+                        ))}
+                </div>
+            </div>
+        </div>
     );
 };
 
 export default function EntriesLayout() {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        dispatch(listFolder());
+    }, []);
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
@@ -149,10 +191,16 @@ export default function EntriesLayout() {
                 </form>
             </div>
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-                <EntriesList />
-                <ScrollContainer direction="vertical">
-                    <Outlet />
-                </ScrollContainer>
+                <div>
+                    <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
+                        {entry.items &&
+                            entry.items.map((item) => (
+                                <EntriesResult key={item.id} result={item} />
+                            ))}
+                    </ScrollContainer>
+                    <div className={entry!.hideList ? "hidden" : undefined}></div>
+                </div>
+                <Outlet />
             </Grid>
         </Grid>
     );
