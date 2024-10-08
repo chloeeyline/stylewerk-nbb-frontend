@@ -18,17 +18,15 @@ export default function TemplateView() {
         };
     }, [templateId]);
 
-    const { status, data } = editor;
-
-    if (status === "idle") {
+    if (editor.status === "idle") {
         return null;
     }
 
-    if (status === "loading") {
+    if (editor.status === "loading") {
         return <div>Loading...</div>;
     }
 
-    if (status === "failed") {
+    if (editor.status === "failed") {
         return <div>Error...</div>;
     }
 

@@ -18,17 +18,15 @@ export default function EntriesEdit() {
         dispatch(getEditor({ id: entryId, isTemplate: false }));
     }, [entryId]);
 
-    const { status, data } = editor;
-
-    if (status === "idle") {
+    if (editor.status === "idle") {
         return null;
     }
 
-    if (status === "loading") {
+    if (editor.status === "loading") {
         return <div>Loading...</div>;
     }
 
-    if (status === "failed") {
+    if (editor.status === "failed") {
         return <div>Error...</div>;
     }
 
@@ -38,17 +36,20 @@ export default function EntriesEdit() {
                 <pre>
                     <code>{JSON.stringify(editor.data, undefined, 2)}</code>
                 </pre>
-                {typeof data?.templateID === "string" ? (
+                {typeof editor.data?.templateID === "string" ? (
                     <>
                         <button
                             onClick={() => {
-                                if (typeof data.templateID !== "string") return;
+                                if (typeof editor.data?.templateID !== "string") return;
                                 // dispatch(removeTemplates({ id: data.templateID }));
                             }}>
                             Delete
                         </button>
                         <Link
-                            to={Routes.Entries.View.replace(RouteParams.EntryId, data.templateID)}>
+                            to={Routes.Entries.View.replace(
+                                RouteParams.EntryId,
+                                editor.data?.templateID,
+                            )}>
                             Edit
                         </Link>
                     </>

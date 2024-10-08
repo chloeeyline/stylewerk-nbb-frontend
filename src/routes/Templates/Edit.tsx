@@ -5,9 +5,9 @@ import Routes from "#/routes";
 import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
+import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
 
 export default function TemplatesEdit() {
     const { templateId } = useParams();
@@ -19,17 +19,15 @@ export default function TemplatesEdit() {
         dispatch(getEditor({ id: templateId, isTemplate: true }));
     }, [templateId]);
 
-    const { status, data } = editor;
-
-    if (status === "idle") {
+    if (editor.status === "idle") {
         return null;
     }
 
-    if (status === "loading") {
+    if (editor.status === "loading") {
         return <div>Loading...</div>;
     }
 
-    if (status === "failed") {
+    if (editor.status === "failed") {
         return <div>Error...</div>;
     }
 
@@ -40,24 +38,27 @@ export default function TemplatesEdit() {
                     <code>{JSON.stringify(editor.data, undefined, 2)}</code>
                 </pre>
             </ScrollContainer>
-            {typeof data?.templateID === "string" ? (
+            {typeof editor?.data?.templateID === "string" ? (
                 <div>
                     <button
                         onClick={() => {
-                            if (typeof data.templateID !== "string") return;
-                            dispatch(copyTemplates({ id: data.templateID }));
+                            if (typeof editor.data?.templateID !== "string") return;
+                            dispatch(copyTemplates({ id: editor.data?.templateID }));
                         }}>
                         Copy
                     </button>
                     <button
                         onClick={() => {
-                            if (typeof data.templateID !== "string") return;
-                            dispatch(removeTemplates({ id: data.templateID }));
+                            if (typeof editor.data?.templateID !== "string") return;
+                            dispatch(removeTemplates({ id: editor.data?.templateID }));
                         }}>
                         Delete
                     </button>
                     <Link
-                        to={Routes.Templates.View.replace(RouteParams.TemplateId, data.templateID)}>
+                        to={Routes.Templates.View.replace(
+                            RouteParams.TemplateId,
+                            editor.data?.templateID,
+                        )}>
                         Back
                     </Link>
                 </div>
