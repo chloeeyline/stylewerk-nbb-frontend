@@ -18,7 +18,6 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
 const EntriesResult = ({ result }: { result: EntryFolder }) => {
-    const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const [visible, setVisible] = useState(result.items.length == 0 ? false : true);
 
