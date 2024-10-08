@@ -5,9 +5,10 @@ import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
-import { EntryFolder } from "~/redux/features/entry/entry-schemas";
+import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
+    listEntry,
     listFolder,
     selectEntry,
     setFilter,
@@ -17,12 +18,44 @@ import {
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
+const EntryComponent = ({ item }: { item: EntryItem }) => {
+    return (
+        <NavLink
+            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
+            key={item.id}
+            className="lcontainer m-be-1">
+            <div className="lrow">
+                {item.name && <div className="lcell">{item.name}</div>}
+                {item.username && (
+                    <div className="lcell" style={{ textAlign: "right" }}>
+                        {item.username}
+                    </div>
+                )}
+            </div>
+            {item.templateName && (
+                <div className="lrow">
+                    <div className="lcell">{item.templateName}</div>
+                </div>
+            )}
+            {item.tags && (
+                <div className="lrow">
+                    {item.tags.split(",").map((tag) => (
+                        <div key={tag} className="lcell tag">
+                            {tag}
+                        </div>
+                    ))}
+                </div>
+            )}
+        </NavLink>
+    );
+};
+
 const EntriesResult = ({ result }: { result: EntryFolder }) => {
     const dispatch = useAppDispatch();
     const [visible, setVisible] = useState(result.items.length == 0 ? false : true);
 
     return (
-        <div className="lcontainer">
+        <div className="lcontainer m-be-1" style={{ backgroundColor: "blue" }}>
             <div
                 className="lrow"
                 onClick={() => {
@@ -35,39 +68,11 @@ const EntriesResult = ({ result }: { result: EntryFolder }) => {
             </div>
             <div
                 className={cls("lrow", visible ? undefined : "hidden")}
-                style={{ marginLeft: "1rem" }}>
+                style={{ marginLeft: "2rem" }}>
                 <div className="lcell">
                     {result.items &&
                         result.items.length > 0 &&
-                        result.items?.map((item) => (
-                            <NavLink
-                                to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
-                                key={item.id}
-                                className="lcontainer m-be-1">
-                                <div className="lrow">
-                                    {item.name && <div className="lcell">{item.name}</div>}
-                                    {item.username && (
-                                        <div className="lcell" style={{ textAlign: "right" }}>
-                                            {item.username}
-                                        </div>
-                                    )}
-                                </div>
-                                {item.templateName && (
-                                    <div className="lrow">
-                                        <div className="lcell">{item.templateName}</div>
-                                    </div>
-                                )}
-                                {item.tags && (
-                                    <div className="lrow">
-                                        {item.tags.split(",").map((tag) => (
-                                            <div key={tag} className="lcell tag">
-                                                {tag}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </NavLink>
-                        ))}
+                        result.items?.map((item) => <EntryComponent key={item.id} item={item} />)}
                 </div>
             </div>
         </div>
@@ -79,7 +84,8 @@ export default function EntriesLayout() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (entry.items.length == 0) dispatch(listFolder());
+        if (entry.hideFilters) dispatch(listFolder());
+        else dispatch(listEntry());
     }, []);
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,7 +109,13 @@ export default function EntriesLayout() {
     return (
         <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
             <div>
-                <button onClick={() => dispatch(listFolder())}>Refresh</button>
+                <button
+                    onClick={() => {
+                        if (entry.hideFilters) dispatch(listFolder());
+                        else dispatch(listEntry());
+                    }}>
+                    {entry.hideFilters ? "Refresh" : "Filter"}
+                </button>
                 <button
                     onClick={() => {
                         dispatch(setHideList());
@@ -192,10 +204,12 @@ export default function EntriesLayout() {
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <div>
                     <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
-                        {entry.items &&
-                            entry.items.map((item) => (
-                                <EntriesResult key={item.id} result={item} />
-                            ))}
+                        {entry.folders.map((item) => (
+                            <EntriesResult key={item.id} result={item} />
+                        ))}
+                        {entry.items.map((item) => (
+                            <EntryComponent key={item.id} item={item} />
+                        ))}
                     </ScrollContainer>
                     <div className={entry!.hideList ? "hidden" : undefined}></div>
                 </div>

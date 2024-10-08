@@ -5,7 +5,7 @@ import Routes from "#/routes";
 import { useEffect } from "react";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
+import { getEditor, reset, selectEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
@@ -17,6 +17,9 @@ export default function TemplatesEdit() {
     useEffect(() => {
         if (!templateId) return;
         dispatch(getEditor({ id: templateId, isTemplate: true }));
+        return () => {
+            dispatch(reset());
+        };
     }, [templateId]);
 
     if (editor.status === "idle") {

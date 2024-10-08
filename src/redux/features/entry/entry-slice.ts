@@ -2,12 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import type { EntryFolders, EntrySearchParams } from "./entry-schemas";
+import type { EntryFolders, EntryItems, EntrySearchParams } from "./entry-schemas";
 import { entryFoldersSchema, entryItemsSchema } from "./entry-schemas";
 
 type EntryState = {
     status: "idle" | "loading" | "succeeded" | "failed";
-    items: EntryFolders;
+    folders: EntryFolders;
+    items: EntryItems;
     filter: EntrySearchParams;
     hideFilters: boolean;
     hideList: boolean;
@@ -15,11 +16,58 @@ type EntryState = {
 
 const initialState: EntryState = {
     status: "idle",
+    folders: [],
     items: [],
-    filter: {},
+    filter: {
+        includeOwned: "true",
+    },
     hideFilters: true,
     hideList: false,
 };
+
+export const listEntry = createAsyncThunk<
+    EntryState,
+    void,
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/list",
+    async (_arg, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.get(Backend.Entry.List, {
+            search: {
+                ...entry.filter,
+            },
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+        console.log(response.result);
+        const result = entryItemsSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            return thunkApi.rejectWithValue(result.error);
+        }
+
+        return {
+            ...entry,
+            status: "succeeded",
+            folders: [],
+            items: result.data,
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
 
 export const listFolder = createAsyncThunk<
     EntryState,
@@ -34,7 +82,6 @@ export const listFolder = createAsyncThunk<
         const entry = selectEntry(thunkApi.getState());
 
         const response = await Ajax.get(Backend.Entry.Folder.List, {
-            search: entry.filter,
             auth: true,
         });
 
@@ -51,7 +98,9 @@ export const listFolder = createAsyncThunk<
         return {
             ...entry,
             status: "succeeded",
-            items: result.data,
+            folders: result.data,
+            items: [],
+            filter: {},
         };
     },
     {
@@ -91,7 +140,7 @@ export const detailFolder = createAsyncThunk<
             return thunkApi.rejectWithValue(result.error);
         }
 
-        const items = entry.items.map((item) => {
+        const items = entry.folders.map((item) => {
             if (item.id === id) {
                 return {
                     ...item,
@@ -104,7 +153,7 @@ export const detailFolder = createAsyncThunk<
         return {
             ...entry,
             status: "succeeded",
-            items,
+            folders: items,
         };
     },
     {
@@ -132,7 +181,12 @@ const entrySlice = createSlice({
                 case "username":
                 case "templateName":
                 case "tags":
-                    state.filter[action.payload.type] = action.payload.value;
+                    action.payload.value = action.payload.value?.trim();
+                    if (action.payload.value && action.payload.value.length > 0) {
+                        state.filter[action.payload.type] = action.payload.value;
+                    } else {
+                        state.filter[action.payload.type] = undefined;
+                    }
                     break;
                 case "publicShared":
                 case "shared":
@@ -140,9 +194,18 @@ const entrySlice = createSlice({
                 case "directUser":
                     if (action.payload.value === "true" || action.payload.value === "false") {
                         state.filter[action.payload.type] = action.payload.value;
-                        break;
+                    } else {
+                        state.filter[action.payload.type] = undefined;
                     }
-                    state.filter[action.payload.type] = undefined;
+                    if (
+                        (state.filter.publicShared === undefined ||
+                            state.filter.publicShared === "false") &&
+                        (state.filter.shared === undefined || state.filter.shared === "false") &&
+                        (state.filter.includeOwned === undefined ||
+                            state.filter.includeOwned === "false")
+                    ) {
+                        state.filter.includeOwned = "true";
+                    }
                     break;
             }
         },
@@ -151,6 +214,12 @@ const entrySlice = createSlice({
         },
         setHideList: (state) => {
             state.hideList = !state.hideList;
+        },
+        resetFilter: (state) => {
+            state.items = [];
+            state.filter = {
+                includeOwned: "true",
+            };
         },
     },
     // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -163,7 +232,9 @@ const entrySlice = createSlice({
             .addCase(listFolder.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                state.folders = action.payload.folders;
                 state.items = action.payload.items;
+                state.filter = action.payload.filter;
             })
             .addCase(listFolder.rejected, (state) => {
                 state.status = "failed";
@@ -174,9 +245,22 @@ const entrySlice = createSlice({
             .addCase(detailFolder.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
-                state.items = action.payload.items;
+                state.folders = action.payload.folders;
             })
             .addCase(detailFolder.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(listEntry.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(listEntry.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+                state.folders = action.payload.folders;
+                state.items = action.payload.items;
+                state.filter = action.payload.filter;
+            })
+            .addCase(listEntry.rejected, (state) => {
                 state.status = "failed";
             });
     },

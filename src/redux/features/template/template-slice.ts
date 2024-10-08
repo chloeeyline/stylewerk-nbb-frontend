@@ -24,7 +24,9 @@ const initialState: TemplateState = {
         count: 0,
         maxPage: 0,
     },
-    filter: {},
+    filter: {
+        includeOwned: "true",
+    },
     hideFilters: false,
     hideList: false,
 };
@@ -211,7 +213,12 @@ const templateSlice = createSlice({
                 case "username":
                 case "description":
                 case "tags":
-                    state.filter[action.payload.type] = action.payload.value;
+                    action.payload.value = action.payload.value?.trim();
+                    if (action.payload.value && action.payload.value.length > 0) {
+                        state.filter[action.payload.type] = action.payload.value;
+                    } else {
+                        state.filter[action.payload.type] = undefined;
+                    }
                     break;
                 case "publicShared":
                 case "shared":
@@ -219,9 +226,18 @@ const templateSlice = createSlice({
                 case "directUser":
                     if (action.payload.value === "true" || action.payload.value === "false") {
                         state.filter[action.payload.type] = action.payload.value;
-                        break;
+                    } else {
+                        state.filter[action.payload.type] = undefined;
                     }
-                    state.filter[action.payload.type] = undefined;
+                    if (
+                        (state.filter.publicShared === undefined ||
+                            state.filter.publicShared === "false") &&
+                        (state.filter.shared === undefined || state.filter.shared === "false") &&
+                        (state.filter.includeOwned === undefined ||
+                            state.filter.includeOwned === "false")
+                    ) {
+                        state.filter.includeOwned = "true";
+                    }
                     break;
             }
         },
