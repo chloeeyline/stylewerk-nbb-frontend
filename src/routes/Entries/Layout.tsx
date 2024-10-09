@@ -27,6 +27,7 @@ import {
     dragFolder,
     listEntry,
     listFolder,
+    reorderFolder,
     selectEntry,
     setFilter,
     toggleDragMode,
@@ -167,6 +168,7 @@ export default function EntriesLayout() {
                 <button
                     onClick={() => {
                         dispatch(toggleDragMode());
+                        if (entry.dragMode) dispatch(reorderFolder());
                     }}>
                     {entry.dragMode ? "Ordnerreihenfolge speichern" : "Ordnerreihenfolge verändern"}
                 </button>

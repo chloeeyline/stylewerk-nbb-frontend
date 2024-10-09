@@ -35,7 +35,7 @@ export const Entry = {
         Details: "/Entry/Folder/Details",
         Update: "/Entry/Folder/Update",
         Remove: "/Entry/Folder/Remove",
-        Reorder: "/Entry/Folder/Remove",
+        Reorder: "/Entry/Folder/Reorder",
     },
 } as const;
 

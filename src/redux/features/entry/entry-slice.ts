@@ -168,6 +168,41 @@ export const detailFolder = createAsyncThunk<
     },
 );
 
+export const reorderFolder = createAsyncThunk<
+    EntryState,
+    void,
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/folder/reorder",
+    async (_arg, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const idlist = entry.folders.map((item) => item.id);
+        const response = await Ajax.post(Backend.Entry.Folder.Reorder, {
+            body: idlist,
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+
+        return {
+            ...entry,
+            status: "succeeded",
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
 const entrySlice = createSlice({
     name: "entry",
     initialState,
@@ -283,6 +318,16 @@ const entrySlice = createSlice({
                 state.filter = action.payload.filter;
             })
             .addCase(listEntry.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(reorderFolder.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(reorderFolder.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+            })
+            .addCase(reorderFolder.rejected, (state) => {
                 state.status = "failed";
             });
     },
