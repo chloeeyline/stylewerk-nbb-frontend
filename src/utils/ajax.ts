@@ -1,16 +1,15 @@
 import { BACKEND_URL } from "#/general";
-import { NbbError } from "~/utils/nbb-error";
-import { User, userPromise } from "~/redux/features/user/user-class";
+import { getAccessToken } from "~/redux/features/user/user-api";
 import { genericApiSchema } from "~/schemas/generic-api-response";
+import type { NbbError } from "~/schemas/nbb-error";
+import { createNbbError, nbbErrorSchema } from "~/schemas/nbb-error";
 
 type AjaxResponse = { ok: true; result: unknown } | { ok: false; error: NbbError };
 
 export default class Ajax {
-    constructor(protected url: string, protected init: RequestInit, protected user?: User) {}
+    constructor(protected url: string, protected init: RequestInit) {}
 
     protected async fetch(): Promise<AjaxResponse> {
-        console.log(this.url, this.init, this.user);
-
         try {
             //* Hint this is just the native fetch function
             const response = await fetch(this.url, this.init);
@@ -18,7 +17,7 @@ export default class Ajax {
             if (response.ok !== true) {
                 return {
                     ok: false,
-                    error: new NbbError(response.statusText, response.status, true, undefined),
+                    error: createNbbError(response.status, response.statusText, true),
                 };
             }
 
@@ -27,7 +26,10 @@ export default class Ajax {
             const { code, codeName, data } = genericApiSchema.parse(json);
 
             if (code >= 1100) {
-                throw new NbbError(codeName ?? "Something went wrong", code, false, undefined);
+                return {
+                    ok: false,
+                    error: createNbbError(code, codeName, false, undefined),
+                };
             }
 
             return {
@@ -35,33 +37,34 @@ export default class Ajax {
                 result: data,
             };
         } catch (error) {
-            if (error instanceof NbbError) {
+            const result = nbbErrorSchema.safeParse(error);
+
+            if (result.success) {
                 return {
                     ok: false,
-                    error,
+                    error: result.data,
                 };
             }
 
             if (error instanceof Error) {
                 return {
                     ok: false,
-                    error: new NbbError(error.message, 0, false, error),
+                    error: createNbbError(0, error.message, false),
                 };
             }
 
             return {
                 ok: false,
-                error: new NbbError(
-                    typeof error === "string" ? error : "Something went wrong",
+                error: createNbbError(
                     0,
+                    typeof error === "string" ? error : "Something went wrong",
                     false,
-                    undefined,
                 ),
             };
         }
     }
 
-    protected tryAutoLogin() {}
+    // protected tryAutoLogin() {}
 
     protected static async setup(
         url: string,
@@ -108,16 +111,18 @@ export default class Ajax {
             init.body = JSON.stringify(body ?? null);
         }
 
-        const user = auth ? await userPromise : undefined;
+        if (auth) {
+            const token = await getAccessToken();
 
-        if (auth && typeof user !== "undefined" && user.state.status === "loggedIn") {
-            init.headers = {
-                ...init.headers,
-                Authorization: `Bearer ${await user.getToken()}`,
-            };
+            if (typeof token === "string") {
+                init.headers = {
+                    ...init.headers,
+                    Authorization: `Bearer ${token}`,
+                };
+            }
         }
 
-        return new Ajax(getUrl(), init, user);
+        return new Ajax(getUrl(), init);
     }
 
     public static async get(
@@ -133,7 +138,7 @@ export default class Ajax {
         const ajax = await this.setup(url, {
             auth,
             method: "GET",
-            search: search,
+            search,
         });
 
         return await ajax.fetch();
@@ -154,8 +159,8 @@ export default class Ajax {
         const ajax = await this.setup(url, {
             auth,
             method: "POST",
-            search: search,
-            body: body,
+            search,
+            body,
         });
 
         return await ajax.fetch();
