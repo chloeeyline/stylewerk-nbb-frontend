@@ -1,5 +1,3 @@
-import { DragEndEvent } from "@dnd-kit/core";
-import { arrayMove } from "@dnd-kit/sortable";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
@@ -263,20 +261,8 @@ const entrySlice = createSlice({
                 includeOwned: "true",
             };
         },
-        dragFolder: (state, action: PayloadAction<DragEndEvent>) => {
-            if (state.folders.length > 0) {
-                const { active, over } = action.payload;
-
-                if (over && active.id !== over.id) {
-                    const oldIndex = state.folders.indexOf(
-                        state.folders.filter((value) => value.id === active.id)[0],
-                    );
-                    const newIndex = state.folders.indexOf(
-                        state.folders.filter((value) => value.id === over.id)[0],
-                    );
-                    state.folders = arrayMove(state.folders, oldIndex, newIndex);
-                }
-            }
+        setFolders: (state, action: PayloadAction<EntryFolders>) => {
+            state.folders = action.payload;
         },
     },
     // The `extraReducers` field lets the slice handle actions defined elsewhere,
@@ -338,8 +324,8 @@ export const {
     toggleHideFilters,
     toggleHideList,
     resetFilter,
-    dragFolder,
     toggleDragMode,
+    setFolders,
 } = entrySlice.actions;
 export const selectEntry = (state: RootState) => state.entry;
 export default entrySlice.reducer;

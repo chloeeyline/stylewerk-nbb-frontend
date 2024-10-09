@@ -3,6 +3,7 @@ import { shareVisibilitySchema } from "~/schemas/share-visibility";
 
 const entryItemSchema = z.object({
     id: z.string().uuid(),
+    folderID: z.string().uuid(),
     name: z.string(),
     isEncrypted: z.boolean(),
     tags: z.string().nullable(),

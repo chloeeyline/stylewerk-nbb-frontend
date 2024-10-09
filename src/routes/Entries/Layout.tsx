@@ -1,13 +1,16 @@
 import {
     closestCenter,
     DndContext,
+    DragEndEvent,
     KeyboardSensor,
     PointerSensor,
+    useDroppable,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
 import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
+    arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
     useSortable,
@@ -24,12 +27,12 @@ import Routes from "~/constants/routes";
 import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
-    dragFolder,
     listEntry,
     listFolder,
     reorderFolder,
     selectEntry,
     setFilter,
+    setFolders,
     toggleDragMode,
     toggleHideFilters,
     toggleHideList,
@@ -41,7 +44,6 @@ const EntryComponent = ({ item }: { item: EntryItem }) => {
     return (
         <NavLink
             to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
-            key={item.id}
             className="lcontainer m-be-1">
             <div className="lrow">
                 {item.name && <div className="lcell">{item.name}</div>}
@@ -69,7 +71,7 @@ const EntryComponent = ({ item }: { item: EntryItem }) => {
     );
 };
 
-const EntriesResult = ({ item }: { item: EntryFolder }) => {
+const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const [visible, setVisible] = useState(item.items.length == 0 ? false : true);
@@ -141,6 +143,22 @@ export default function EntriesLayout() {
                 value: e.target.checked ? "true" : "false",
             }),
         );
+    };
+
+    const dragFolder = (e: DragEndEvent) => {
+        if (entry.folders.length > 0) {
+            const { active, over } = e;
+
+            if (over && active.id !== over.id) {
+                const oldIndex = entry.folders.indexOf(
+                    entry.folders.filter((value) => value.id === active.id)[0],
+                );
+                const newIndex = entry.folders.indexOf(
+                    entry.folders.filter((value) => value.id === over.id)[0],
+                );
+                dispatch(setFolders(arrayMove(entry.folders, oldIndex, newIndex)));
+            }
+        }
     };
 
     return (
@@ -258,12 +276,12 @@ export default function EntriesLayout() {
                             modifiers={[restrictToVerticalAxis]}
                             sensors={sensors}
                             collisionDetection={closestCenter}
-                            onDragEnd={(e) => dispatch(dragFolder(e))}>
+                            onDragEnd={(e) => dragFolder(e)}>
                             <SortableContext
                                 items={entry.folders}
                                 strategy={verticalListSortingStrategy}>
                                 {entry.folders.map((item) => (
-                                    <EntriesResult key={item.id} item={item} />
+                                    <EntryFolderComponent key={item.id} item={item} />
                                 ))}
                             </SortableContext>
                         </DndContext>
