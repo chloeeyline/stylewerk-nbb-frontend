@@ -1,3 +1,16 @@
+import {
+    closestCenter,
+    DndContext,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import {
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
 
@@ -8,6 +21,7 @@ import Routes from "~/constants/routes";
 import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
+    dragHeader,
     listEntry,
     listFolder,
     selectEntry,
@@ -50,7 +64,13 @@ const EntryComponent = ({ item }: { item: EntryItem }) => {
     );
 };
 
-const EntriesResult = ({ result }: { result: EntryFolder }) => {
+const EntriesResult = ({
+    result,
+    beingDragged,
+}: {
+    result: EntryFolder;
+    beingDragged?: boolean;
+}) => {
     const dispatch = useAppDispatch();
     const [visible, setVisible] = useState(result.items.length == 0 ? false : true);
 
@@ -67,7 +87,10 @@ const EntriesResult = ({ result }: { result: EntryFolder }) => {
                 <div className="lcell">{result.name ?? "Unbenannt"}</div>
             </div>
             <div
-                className={cls("lrow", visible ? undefined : "hidden")}
+                className={cls(
+                    "lrow",
+                    visible === false || beingDragged === true ? undefined : "hidden",
+                )}
                 style={{ marginLeft: "2rem" }}>
                 <div className="lcell">
                     {result.items &&
@@ -87,6 +110,13 @@ export default function EntriesLayout() {
         if (entry.hideFilters) dispatch(listFolder());
         else dispatch(listEntry());
     }, []);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
@@ -204,9 +234,18 @@ export default function EntriesLayout() {
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <div>
                     <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
-                        {entry.folders.map((item) => (
-                            <EntriesResult key={item.id} result={item} />
-                        ))}
+                        <DndContext
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(e) => dispatch(dragHeader(e))}>
+                            <SortableContext
+                                items={entry.folders}
+                                strategy={verticalListSortingStrategy}>
+                                {entry.folders.map((item) => (
+                                    <EntriesResult key={item.id} result={item} />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
                         {entry.items.map((item) => (
                             <EntryComponent key={item.id} item={item} />
                         ))}

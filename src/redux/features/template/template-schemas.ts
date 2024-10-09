@@ -2,33 +2,8 @@ import { z } from "zod";
 import { pagingSchema } from "~/schemas/paging";
 import { shareVisibilitySchema } from "~/schemas/share-visibility";
 
-const templateCellSchema = z.object({
-    id: z.string().nullable(),
-    inputHelper: z.number(),
-    hideOnEmpty: z.boolean(),
-    isRequired: z.boolean(),
-    text: z.string().nullable(),
-    metaData: z.string().nullable(),
-});
-
-const templateRowSchema = z.object({
-    id: z.string().nullable(),
-    canWrapCells: z.boolean(),
-    canRepeat: z.boolean(),
-    hideOnNoInput: z.boolean(),
-    items: z.array(templateCellSchema),
-});
-
-const templateSchema = z.object({
-    id: z.string().nullable(),
-    name: z.string(),
-    description: z.string().nullable(),
-    tags: z.string().nullable(),
-    items: z.array(templateRowSchema),
-});
-
 const templateItemSchema = z.object({
-    id: z.string(),
+    id: z.string().uuid(),
     name: z.string(),
     description: z.string().nullable(),
     tags: z.string().nullable(),
@@ -54,25 +29,9 @@ type TemplateSearchParams = {
     directUser?: "true" | "false";
 };
 
-type Template = z.infer<typeof templateSchema>;
 type TemplateItem = z.infer<typeof templateItemSchema>;
-type TemplateRow = z.infer<typeof templateRowSchema>;
-type TemplateCell = z.infer<typeof templateCellSchema>;
 type TemplatePaging = z.infer<typeof templatePagingSchema>;
 
-export {
-    templateCellSchema,
-    templateItemSchema,
-    templatePagingSchema,
-    templateRowSchema,
-    templateSchema,
-};
+export { templateItemSchema, templatePagingSchema };
 
-export type {
-    Template,
-    TemplateCell,
-    TemplateItem,
-    TemplatePaging,
-    TemplateRow,
-    TemplateSearchParams,
-};
+export type { TemplateItem, TemplatePaging, TemplateSearchParams };

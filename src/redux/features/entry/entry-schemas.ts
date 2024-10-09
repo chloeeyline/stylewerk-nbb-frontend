@@ -16,7 +16,7 @@ const entryItemSchema = z.object({
 const entryItemsSchema = entryItemSchema.array();
 
 const entryFolderSchema = z.object({
-    id: z.string().uuid().nullable(),
+    id: z.string().uuid(),
     name: z.string().nullable(),
     items: entryItemsSchema,
 });

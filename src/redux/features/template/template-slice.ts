@@ -3,15 +3,15 @@ import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import type { Paging } from "~/schemas/paging";
 import Ajax from "~/utils/ajax";
-import type { Template, TemplateItem, TemplateSearchParams } from "./template-schemas";
-import { templatePagingSchema, templateSchema } from "./template-schemas";
+import { editorSchema } from "../editor/editor-schemas";
+import type { TemplateItem, TemplateSearchParams } from "./template-schemas";
+import { templatePagingSchema } from "./template-schemas";
 
 type TemplateState = {
     status: "idle" | "loading" | "succeeded" | "failed";
     paging: Paging;
     items?: TemplateItem[];
     filter: TemplateSearchParams;
-    detail?: Template;
     hideFilters: boolean;
     hideList: boolean;
 };
@@ -159,7 +159,7 @@ export const copyTemplates = createAsyncThunk<
             return thunkApi.rejectWithValue(response.error);
         }
 
-        const result = templateSchema.safeParse(response.result);
+        const result = editorSchema.safeParse(response.result);
 
         if (result.success === false) {
             return thunkApi.rejectWithValue(result.error);
@@ -282,7 +282,6 @@ const templateSlice = createSlice({
             .addCase(copyTemplates.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
-                state.detail = action.payload.detail;
                 state.paging = action.payload.paging;
                 state.items = action.payload.items;
             })
