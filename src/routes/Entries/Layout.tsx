@@ -4,7 +4,6 @@ import {
     DragEndEvent,
     KeyboardSensor,
     PointerSensor,
-    useDroppable,
     useSensor,
     useSensors,
 } from "@dnd-kit/core";

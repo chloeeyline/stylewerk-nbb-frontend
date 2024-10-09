@@ -2,8 +2,8 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import type { EntryFolders, EntryItems, EntrySearchParams } from "./entry-schemas";
-import { entryFoldersSchema, entryItemsSchema } from "./entry-schemas";
+import type { EntryFolder, EntryFolders, EntryItems, EntrySearchParams } from "./entry-schemas";
+import { entryFolderSchema, entryFoldersSchema, entryItemsSchema } from "./entry-schemas";
 
 type EntryState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -26,50 +26,6 @@ const initialState: EntryState = {
     hideList: false,
     dragMode: false,
 };
-
-export const listEntry = createAsyncThunk<
-    EntryState,
-    void,
-    {
-        dispatch: AppDispatch;
-        state: RootState;
-    }
->(
-    "entry/list",
-    async (_arg, thunkApi) => {
-        const entry = selectEntry(thunkApi.getState());
-
-        const response = await Ajax.get(Backend.Entry.List, {
-            search: {
-                ...entry.filter,
-            },
-            auth: true,
-        });
-
-        if (response.ok === false) {
-            return thunkApi.rejectWithValue(response.error);
-        }
-        console.log(response.result);
-        const result = entryItemsSchema.safeParse(response.result);
-
-        if (result.success === false) {
-            return thunkApi.rejectWithValue(result.error);
-        }
-
-        return {
-            ...entry,
-            status: "succeeded",
-            folders: [],
-            items: result.data,
-        };
-    },
-    {
-        condition(_arg, { getState }) {
-            const entry = selectEntry(getState());
-            if (entry.status === "loading") return false;
-        },
-    },
-);
 
 export const listFolder = createAsyncThunk<
     EntryState,
@@ -166,6 +122,54 @@ export const detailFolder = createAsyncThunk<
     },
 );
 
+export const updateFolder = createAsyncThunk<
+    EntryState,
+    { model: EntryFolder },
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/folder/update",
+    async ({ model }, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.post(Backend.Entry.Folder.Update, {
+            body: model,
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+
+        const result = entryFolderSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            return thunkApi.rejectWithValue(result.error);
+        }
+
+        const items = entry.folders.map((item) => {
+            if (item.id === model.id) {
+                return result.data;
+            }
+            return item;
+        });
+
+        return {
+            ...entry,
+            status: "succeeded",
+            folders: items,
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
 export const reorderFolder = createAsyncThunk<
     EntryState,
     void,
@@ -178,9 +182,120 @@ export const reorderFolder = createAsyncThunk<
     async (_arg, thunkApi) => {
         const entry = selectEntry(thunkApi.getState());
 
-        const idlist = entry.folders.map((item) => item.id);
         const response = await Ajax.post(Backend.Entry.Folder.Reorder, {
-            body: idlist,
+            body: entry.folders.map((item) => item.id),
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+
+        return {
+            ...entry,
+            status: "succeeded",
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
+export const removeFolder = createAsyncThunk<
+    EntryState,
+    { id: string },
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/folder/remove",
+    async ({ id }, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.post(Backend.Entry.Folder.Remove, {
+            search: { id },
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+
+        return {
+            ...entry,
+            status: "succeeded",
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
+export const listEntry = createAsyncThunk<
+    EntryState,
+    void,
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/list",
+    async (_arg, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.get(Backend.Entry.List, {
+            search: {
+                ...entry.filter,
+            },
+            auth: true,
+        });
+
+        if (response.ok === false) {
+            return thunkApi.rejectWithValue(response.error);
+        }
+        console.log(response.result);
+        const result = entryItemsSchema.safeParse(response.result);
+
+        if (result.success === false) {
+            return thunkApi.rejectWithValue(result.error);
+        }
+
+        return {
+            ...entry,
+            status: "succeeded",
+            folders: [],
+            items: result.data,
+        };
+    },
+    {
+        condition(_arg, { getState }) {
+            const entry = selectEntry(getState());
+            if (entry.status === "loading") return false;
+        },
+    },
+);
+
+export const removeEntry = createAsyncThunk<
+    EntryState,
+    { id: string },
+    {
+        dispatch: AppDispatch;
+        state: RootState;
+    }
+>(
+    "entry/remove",
+    async ({ id }, thunkApi) => {
+        const entry = selectEntry(thunkApi.getState());
+
+        const response = await Ajax.get(Backend.Entry.Remove, {
+            search: { id },
             auth: true,
         });
 
@@ -293,17 +408,15 @@ const entrySlice = createSlice({
             .addCase(detailFolder.rejected, (state) => {
                 state.status = "failed";
             })
-            .addCase(listEntry.pending, (state) => {
+            .addCase(updateFolder.pending, (state) => {
                 state.status = "loading";
             })
-            .addCase(listEntry.fulfilled, (state, action) => {
+            .addCase(updateFolder.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.folders = action.payload.folders;
-                state.items = action.payload.items;
-                state.filter = action.payload.filter;
             })
-            .addCase(listEntry.rejected, (state) => {
+            .addCase(updateFolder.rejected, (state) => {
                 state.status = "failed";
             })
             .addCase(reorderFolder.pending, (state) => {
@@ -314,6 +427,38 @@ const entrySlice = createSlice({
                 state.status = "succeeded";
             })
             .addCase(reorderFolder.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(removeFolder.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(removeFolder.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+            })
+            .addCase(removeFolder.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(listEntry.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(listEntry.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+                state.folders = action.payload.folders;
+                state.items = action.payload.items;
+            })
+            .addCase(listEntry.rejected, (state) => {
+                state.status = "failed";
+            })
+            .addCase(removeEntry.pending, (state) => {
+                state.status = "loading";
+            })
+            .addCase(removeEntry.fulfilled, (state, action) => {
+                if (action.payload.status !== "succeeded") return;
+                state.status = "succeeded";
+            })
+            .addCase(removeEntry.rejected, (state) => {
                 state.status = "failed";
             });
     },
