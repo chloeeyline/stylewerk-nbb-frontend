@@ -33,4 +33,12 @@ export const userRoutes: RouteObject[] = [
             return { Component };
         },
     },
+    {
+        path: User.VerifyEmail,
+        lazy: async () => {
+            const { default: Component } = await import("~/routes/User/VerifyEmail");
+
+            return { Component };
+        },
+    },
 ];
