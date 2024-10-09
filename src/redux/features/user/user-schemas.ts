@@ -1,24 +1,13 @@
 import { z } from "zod";
 import { tokenSchema } from "~/schemas/token";
 
-const statusCodeSchema = z.number().int().finite().safe().nullable();
-
-const rightsSchema = z.custom<Set<string>>().transform<Set<string>>((values) => {
-    if (Array.isArray(values) && values.every((value) => typeof value === "string")) {
-        return new Set<string>(values);
-    }
-
-    return new Set<string>();
-});
-
 const userLoginApiSchema = z.object({
     accessToken: tokenSchema,
     refreshToken: tokenSchema,
-    statusCode: statusCodeSchema,
+    statusCode: z.number().int().finite().safe().nullable(),
     consistOverSession: z.boolean(),
     username: z.string(),
     admin: z.boolean(),
-    rights: rightsSchema,
 });
 
 const userDataSchema = z.object({
