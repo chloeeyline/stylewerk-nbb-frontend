@@ -14,6 +14,7 @@ type EntryState = {
     filter: EntrySearchParams;
     hideFilters: boolean;
     hideList: boolean;
+    dragMode: boolean;
 };
 
 const initialState: EntryState = {
@@ -25,6 +26,7 @@ const initialState: EntryState = {
     },
     hideFilters: true,
     hideList: false,
+    dragMode: false,
 };
 
 export const listEntry = createAsyncThunk<
@@ -211,11 +213,14 @@ const entrySlice = createSlice({
                     break;
             }
         },
-        setHideFilters: (state) => {
+        toggleHideFilters: (state) => {
             state.hideFilters = !state.hideFilters;
         },
-        setHideList: (state) => {
+        toggleHideList: (state) => {
             state.hideList = !state.hideList;
+        },
+        toggleDragMode: (state) => {
+            state.dragMode = !state.dragMode;
         },
         resetFilter: (state) => {
             state.items = [];
@@ -223,7 +228,7 @@ const entrySlice = createSlice({
                 includeOwned: "true",
             };
         },
-        dragHeader: (state, action: PayloadAction<DragEndEvent>) => {
+        dragFolder: (state, action: PayloadAction<DragEndEvent>) => {
             if (state.folders.length > 0) {
                 const { active, over } = action.payload;
 
@@ -283,7 +288,13 @@ const entrySlice = createSlice({
     },
 });
 
-export const { setFilter, setHideFilters, setHideList, resetFilter, dragHeader } =
-    entrySlice.actions;
+export const {
+    setFilter,
+    toggleHideFilters,
+    toggleHideList,
+    resetFilter,
+    dragFolder,
+    toggleDragMode,
+} = entrySlice.actions;
 export const selectEntry = (state: RootState) => state.entry;
 export default entrySlice.reducer;

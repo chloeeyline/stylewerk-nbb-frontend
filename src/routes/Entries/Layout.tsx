@@ -6,14 +6,17 @@ import {
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
     SortableContext,
     sortableKeyboardCoordinates,
+    useSortable,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
 import { NavLink, Outlet } from "react-router-dom";
-
+import Move from "~/components/Icon/Move";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
@@ -21,13 +24,14 @@ import Routes from "~/constants/routes";
 import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
-    dragHeader,
+    dragFolder,
     listEntry,
     listFolder,
     selectEntry,
     setFilter,
-    setHideFilters,
-    setHideList,
+    toggleDragMode,
+    toggleHideFilters,
+    toggleHideList,
 } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
@@ -64,38 +68,40 @@ const EntryComponent = ({ item }: { item: EntryItem }) => {
     );
 };
 
-const EntriesResult = ({
-    result,
-    beingDragged,
-}: {
-    result: EntryFolder;
-    beingDragged?: boolean;
-}) => {
+const EntriesResult = ({ item }: { item: EntryFolder }) => {
+    const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
-    const [visible, setVisible] = useState(result.items.length == 0 ? false : true);
+    const [visible, setVisible] = useState(item.items.length == 0 ? false : true);
+
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+        id: item.id,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+    };
 
     return (
-        <div className="lcontainer m-be-1" style={{ backgroundColor: "blue" }}>
+        <div ref={setNodeRef} className="lcontainer m-be-1" style={style} {...attributes}>
+            <Move className={entry.dragMode ? undefined : "hidden"} {...listeners} />
             <div
                 className="lrow"
                 onClick={() => {
                     setVisible(!visible);
-                    if (result.items.length == 0 && result.id) {
-                        dispatch(detailFolder({ id: result.id }));
+                    if (item.items.length == 0 && item.id) {
+                        dispatch(detailFolder({ id: item.id }));
                     }
                 }}>
-                <div className="lcell">{result.name ?? "Unbenannt"}</div>
+                <div className="lcell">{item.name ?? "Unbenannt"}</div>
             </div>
             <div
-                className={cls(
-                    "lrow",
-                    visible === false || beingDragged === true ? undefined : "hidden",
-                )}
+                className={cls("lrow", visible && !entry.dragMode ? undefined : "hidden")}
                 style={{ marginLeft: "2rem" }}>
                 <div className="lcell">
-                    {result.items &&
-                        result.items.length > 0 &&
-                        result.items?.map((item) => <EntryComponent key={item.id} item={item} />)}
+                    {item.items &&
+                        item.items.length > 0 &&
+                        item.items?.map((item) => <EntryComponent key={item.id} item={item} />)}
                 </div>
             </div>
         </div>
@@ -148,17 +154,27 @@ export default function EntriesLayout() {
                 </button>
                 <button
                     onClick={() => {
-                        dispatch(setHideList());
+                        dispatch(toggleHideList());
                     }}>
                     {entry.hideList ? "Liste anzeigen" : "Liste verstecken"}
                 </button>
                 <button
                     onClick={() => {
-                        dispatch(setHideFilters());
+                        dispatch(toggleHideFilters());
                     }}>
                     {entry.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
                 </button>
-                <form className={cls("header", entry.hideFilters ? "hidden" : undefined)}>
+                <button
+                    onClick={() => {
+                        dispatch(toggleDragMode());
+                    }}>
+                    {entry.dragMode ? "Ordnerreihenfolge speichern" : "Ordnerreihenfolge verändern"}
+                </button>
+                <form
+                    className={cls(
+                        "header",
+                        entry.hideFilters || entry.dragMode ? "hidden" : undefined,
+                    )}>
                     <fieldset className="header">
                         <legend>Filter</legend>
                         <label htmlFor="name">Name</label>
@@ -233,16 +249,19 @@ export default function EntriesLayout() {
             </div>
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <div>
-                    <ScrollContainer className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
+                    <ScrollContainer
+                        direction="vertical"
+                        className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
                         <DndContext
+                            modifiers={[restrictToVerticalAxis]}
                             sensors={sensors}
                             collisionDetection={closestCenter}
-                            onDragEnd={(e) => dispatch(dragHeader(e))}>
+                            onDragEnd={(e) => dispatch(dragFolder(e))}>
                             <SortableContext
                                 items={entry.folders}
                                 strategy={verticalListSortingStrategy}>
                                 {entry.folders.map((item) => (
-                                    <EntriesResult key={item.id} result={item} />
+                                    <EntriesResult key={item.id} item={item} />
                                 ))}
                             </SortableContext>
                         </DndContext>
