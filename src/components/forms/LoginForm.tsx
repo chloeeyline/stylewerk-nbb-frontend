@@ -2,11 +2,13 @@ import Frontend from "#/routes";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { User } from "~/redux/features/user/user-class";
+import { validatePassword } from "~/redux/features/user/user-api";
 import { loginUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
+import { useTranslation } from "react-i18next";
+import cls from "~/utils/class-name-helper";
 
 type FormErrors = {
     username: string | null;
@@ -14,6 +16,8 @@ type FormErrors = {
 };
 
 export default function LoginForm() {
+    const { t } = useTranslation();
+
     const user = useAppSelector(selectUser);
 
     const [login, setLogin] = useState<{
@@ -59,21 +63,12 @@ export default function LoginForm() {
         };
         let errorCount = 0;
 
-        if (username.length <= 0) {
-            errors.username = "Please enter a username!";
-            errorCount++;
-        }
+        const passwordResult = await validatePassword(password);
 
-        if (password.length <= 0) {
-            errors.password = "Please enter a password!";
+        if (passwordResult.ok === false) {
+            console.error(passwordResult);
+            errors.password = passwordResult.error.message;
             errorCount++;
-        } else {
-            const passwordResult = await User.validatePassword(password);
-
-            if (passwordResult.ok === false) {
-                errors.password = passwordResult.error.message;
-                errorCount++;
-            }
         }
 
         if (errorCount !== 0) {
@@ -81,7 +76,7 @@ export default function LoginForm() {
             setLogin({
                 ...login,
                 submitting: false,
-                error: "Error validating form fields, please check!",
+                error: t("formErrors.general"),
             });
             return;
         }
@@ -96,16 +91,22 @@ export default function LoginForm() {
     };
 
     return (
-        <form className={styles.form} onSubmit={submitForm}>
+        <form
+            className={cls(
+                styles.form,
+                styles.spinner,
+                login.submitting ? styles.submitting : undefined,
+            )}
+            onSubmit={submitForm}>
             <fieldset className={styles.fieldset}>
-                <legend>Login</legend>
+                <legend>{t("nav.login")}</legend>
 
-                {login.submitting ? <h2>Logging in...</h2> : null}
+                {login.submitting ? <h2>{t("formStatus.login")}...</h2> : null}
                 {login.error !== null ? <h2>{login.error}</h2> : null}
                 {typeof user.error?.text === "string" ? <h2>{user.error.text}</h2> : null}
 
                 <InputField
-                    label="Username"
+                    label={t("formFields.username")}
                     name="username"
                     required
                     ref={usernameRef}
@@ -114,7 +115,7 @@ export default function LoginForm() {
 
                 <InputField
                     type="password"
-                    label="Password"
+                    label={t("formFields.password")}
                     name="password"
                     required
                     ref={passwordRef}
@@ -123,13 +124,13 @@ export default function LoginForm() {
 
                 <InputField
                     type="checkbox"
-                    label="Remember me"
+                    label={t("formFields.rememberMe")}
                     name="rememberMe"
                     ref={rememberMeRef}
                 />
             </fieldset>
 
-            <button type="submit">Submit</button>
+            <button type="submit">{t("formSubmit.login")}</button>
         </form>
     );
 }

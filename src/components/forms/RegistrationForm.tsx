@@ -1,9 +1,10 @@
 import type React from "react";
 import { useRef, useState } from "react";
-import { User } from "~/redux/features/user/user-class";
+import { validateEmail, validatePassword, validateUsername, register } from "~/redux/features/user/user-api";
 import styles from "./form-fields.module.scss";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
+import { useTranslation } from "react-i18next";
 
 const genders = ["NotSpecified", "Female", "Male", "NonBinary"] as const;
 
@@ -32,6 +33,8 @@ const initialFormErrors = {
 };
 
 export default function RegistrationForm() {
+    const { t } = useTranslation();
+    
     const [registration, setRegistration] = useState<{
         submitting: boolean;
         done: boolean;
@@ -85,23 +88,23 @@ export default function RegistrationForm() {
 
         setRegistration({ ...registration, submitting: true, error: null });
 
-        const username = usernameRef.current?.value ?? "";
-        const email = emailRef.current?.value ?? "";
-        const password = passwordRef.current?.value ?? "";
-        const repeatPassword = repeatPasswordRef.current?.value ?? "";
-        const firstName = firstNameRef.current?.value ?? "";
-        const lastName = lastNameRef.current?.value ?? "";
-        const gender = genderRef.current?.value ?? "";
-        const birthday = birthdayRef.current?.value ?? "";
+        const username = (usernameRef.current?.value ?? "").trim();
+        const email = (emailRef.current?.value ?? "").trim();
+        const password = (passwordRef.current?.value ?? "").trim();
+        const repeatPassword = (repeatPasswordRef.current?.value ?? "").trim();
+        const firstName = (firstNameRef.current?.value ?? "").trim();
+        const lastName = (lastNameRef.current?.value ?? "").trim();
+        const gender = (genderRef.current?.value ?? "").trim();
+        const birthday = (birthdayRef.current?.value ?? "").trim();
 
         const errors: FormErrors = { ...initialFormErrors };
         let errorCount = 0;
 
         if (username.length <= 0) {
-            errors.username = "Please enter a username!";
+            errors.username = t("formErrors.pleaseEnter", { what: t("formFields.username")});
             errorCount++;
         } else {
-            const usernameResult = await User.validateUsername(username);
+            const usernameResult = await validateUsername(username);
 
             if (usernameResult.ok === false) {
                 errors.username = usernameResult.error.message;
@@ -110,10 +113,10 @@ export default function RegistrationForm() {
         }
 
         if (email.length <= 0) {
-            errors.email = "Please enter an email!";
+            errors.email = t("formErrors.pleaseEnter", { what: t("formFields.email")});
             errorCount++;
         } else {
-            const emailResult = await User.validateEmail(email);
+            const emailResult = await validateEmail(email);
 
             if (emailResult.ok === false) {
                 errors.email = emailResult.error.message;
@@ -125,7 +128,7 @@ export default function RegistrationForm() {
             errors.password = "Please enter a password!";
             errorCount++;
         } else {
-            const passwordResult = await User.validatePassword(password);
+            const passwordResult = await validatePassword(password);
 
             if (passwordResult.ok === false) {
                 errors.password = passwordResult.error.message;
@@ -134,7 +137,7 @@ export default function RegistrationForm() {
         }
 
         if (password !== repeatPassword) {
-            errors.repeatPassword = "Passwords don't match!";
+            errors.repeatPassword = t("formErrors.passwordsNoMatch");
             errorCount++;
         }
 
@@ -168,7 +171,7 @@ export default function RegistrationForm() {
             return;
         }
 
-        const registrationResult = await User.registration({
+        const registrationResult = await register({
             username,
             email,
             password,
@@ -195,7 +198,7 @@ export default function RegistrationForm() {
             <fieldset className={styles.fieldset}>
                 <legend>Registration</legend>
 
-                {registration.submitting === true ? <div>Submitting...</div> : null}
+                {registration.submitting === true ? <div>{t("formStatus.registration")}...</div> : null}
                 {registration.error !== null ? <div>{registration.error}</div> : null}
 
                 <InputField

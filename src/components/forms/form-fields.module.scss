@@ -1,10 +1,58 @@
 .form {
+    position: relative;
     display: grid;
 
     gap: 0.5rem;
     margin-inline: auto;
 
     max-inline-size: var(--max-inline-size, 40ch);
+
+    isolation: isolate;
+
+    transition: opacity 0.25ms ease-in-out, filter 0.25ms ease-in-out;
+}
+
+.spinner::after {
+    position: absolute;
+    content: "";
+    width: 3rem;
+    height: 3rem;
+    margin: auto;
+
+    inset: 0;
+
+    border-style: solid;
+    border-width: medium;
+    border-radius: 50%;
+    border-color: white;
+    border-block-start-color: transparent;
+
+    animation: spin 1s linear infinite;
+
+    opacity: 0;
+}
+
+.submitting {
+    filter: blur(0.125rem);
+
+    &::after {
+        opacity: 1;
+    }
+}
+
+.submitting::before {
+    position: absolute;
+    content: "";
+    inset: 0;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 .fieldset {

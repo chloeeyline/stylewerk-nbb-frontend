@@ -3,6 +3,7 @@ import { CSSProperties, memo } from "react";
 import { NavLink } from "react-router-dom";
 import cls from "~/utils/class-name-helper";
 import styles from "./nav-bar.module.scss";
+import LanguageSwitcher from "~/components/general/LanguageSwitcher";
 
 type NavbarRoute =
     | {
@@ -34,9 +35,11 @@ const NavbarItem = ({ route }: { route: NavbarRoute }) => {
     }
 
     return (
-        <button type="button" onClick={() => route.onClick()}>
-            {route.name}
-        </button>
+        <li>
+            <button type="button" onClick={() => route.onClick()}>
+                {route.name}
+            </button>
+        </li>
     );
 };
 
@@ -49,6 +52,9 @@ const Navbar = ({ routes, direction, className, ...props }: NavbarProps) => {
                 {filtered.map((route) => (
                     <NavbarItem key={route.name} route={route} />
                 ))}
+                <li>
+                    <LanguageSwitcher />
+                </li>
             </menu>
         </nav>
     );

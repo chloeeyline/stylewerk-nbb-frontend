@@ -1,7 +1,9 @@
+import { useTranslation } from "react-i18next";
 import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function User() {
+    const { t } = useTranslation();
     const user = useAppSelector(selectUser);
 
     const dispatch = useAppDispatch();
@@ -11,7 +13,7 @@ export default function User() {
             <div>
                 <h1>User - {user.username} - Logging out...</h1>
             </div>
-        )
+        );
     }
 
     if (user.status === "guest") {
@@ -43,7 +45,7 @@ export default function User() {
     return (
         <div>
             <h1>
-                User - {username}
+                {t("common.user", { count: 1 })}: {username}
                 {admin === true ? " - is admin" : ""}
             </h1>
             <p>
@@ -51,7 +53,7 @@ export default function User() {
                 provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
                 harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
             </p>
-            <button onClick={() => dispatch(logoutUser())}>Logout</button>
+            <button onClick={() => dispatch(logoutUser())}>{t("common.logout")}</button>
         </div>
     );
 }

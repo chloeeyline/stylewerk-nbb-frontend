@@ -4,8 +4,7 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 
 export default function Registration() {
     return (
-        <Grid layout="header">
-            <h1>Registration</h1>
+        <Grid layout="contentCenter" className="size-block-100">
             <ScrollContainer direction="vertical">
                 <RegistrationForm />
             </ScrollContainer>
