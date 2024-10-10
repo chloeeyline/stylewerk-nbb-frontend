@@ -17,6 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "react-router-dom";
 import Move from "~/components/Icon/Move";
 import Grid from "~/components/layout/Grid";
@@ -74,6 +75,7 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const [visible, setVisible] = useState(item.items.length == 0 ? false : true);
+    const { t } = useTranslation();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: item.id,
@@ -86,7 +88,6 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
 
     return (
         <div ref={setNodeRef} className="lcontainer m-be-1" style={style} {...attributes}>
-            <Move className={entry.dragMode ? undefined : "hidden"} {...listeners} />
             <div
                 className="lrow"
                 onClick={() => {
@@ -95,7 +96,17 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
                         dispatch(detailFolder({ id: item.id }));
                     }
                 }}>
-                <div className="lcell">{item.name ?? "Unbenannt"}</div>
+                <div
+                    className={cls(
+                        "lcell",
+                        item.name !== null && entry.dragMode ? undefined : "hidden",
+                    )}>
+                    <Move
+                        className={item.name !== null && entry.dragMode ? undefined : "hidden"}
+                        {...listeners}
+                    />
+                </div>
+                <div className="lcell">{item.name ?? t("list.generalFolder")}</div>
             </div>
             <div
                 className={cls("lrow", visible && !entry.dragMode ? undefined : "hidden")}
@@ -113,6 +124,7 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
 export default function EntriesLayout() {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (entry.hideFilters) dispatch(listFolder());
@@ -168,26 +180,28 @@ export default function EntriesLayout() {
                         if (entry.hideFilters) dispatch(listFolder());
                         else dispatch(listEntry());
                     }}>
-                    {entry.hideFilters ? "Refresh" : "Filter"}
+                    {entry.hideFilters ? t("list.refresh") : t("list.filter")}
                 </button>
                 <button
                     onClick={() => {
                         dispatch(toggleHideList());
                     }}>
-                    {entry.hideList ? "Liste anzeigen" : "Liste verstecken"}
+                    {entry.hideList ? t("list.showList") : t("list.hideList")}
                 </button>
                 <button
                     onClick={() => {
                         dispatch(toggleHideFilters());
                     }}>
-                    {entry.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
+                    {entry.hideFilters ? t("list.showFilters") : t("list.hideFilters")}
                 </button>
                 <button
                     onClick={() => {
                         dispatch(toggleDragMode());
                         if (entry.dragMode) dispatch(reorderFolder());
                     }}>
-                    {entry.dragMode ? "Ordnerreihenfolge speichern" : "Ordnerreihenfolge verändern"}
+                    {entry.dragMode
+                        ? t("list.dragFolderModeActive")
+                        : t("list.dragFolderModeDeactive")}
                 </button>
                 <form
                     className={cls(
@@ -195,29 +209,29 @@ export default function EntriesLayout() {
                         entry.hideFilters || entry.dragMode ? "hidden" : undefined,
                     )}>
                     <fieldset className="header">
-                        <legend>Filter</legend>
-                        <label htmlFor="name">Name</label>
+                        <legend>{t("list.filtering")}</legend>
+                        <label htmlFor="name">{t("common.name")}</label>
                         <input
                             name="name"
                             type="text"
                             value={entry.filter.name ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="templateName">Beschreibung</label>
+                        <label htmlFor="templateName">{t("formFields.templateName")}</label>
                         <input
                             name="templateName"
                             type="text"
                             value={entry.filter.templateName ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="tags">Tags</label>
+                        <label htmlFor="tags">{t("formFields.tags")}</label>
                         <input
                             name="tags"
                             type="text"
                             value={entry.filter.tags ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="username">Benutzername</label>
+                        <label htmlFor="username">{t("formFields.username")}</label>
                         <input
                             name="username"
                             type="text"
@@ -226,7 +240,7 @@ export default function EntriesLayout() {
                         />
                     </fieldset>
                     <fieldset style={{ display: "grid" }}>
-                        <legend>Sichtbarkeit</legend>
+                        <legend>{t("formFields.visibilityGroup")}</legend>
                         <div>
                             <input
                                 name="includeOwned"
@@ -234,7 +248,7 @@ export default function EntriesLayout() {
                                 checked={entry.filter.includeOwned === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="includeOwned">Eigene</label>
+                            <label htmlFor="includeOwned">{t("formFields.owned")}</label>
                         </div>
                         <div>
                             <input
@@ -243,7 +257,7 @@ export default function EntriesLayout() {
                                 checked={entry.filter.shared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="shared">Geteilt</label>
+                            <label htmlFor="shared">{t("formFields.shared")}</label>
                         </div>
                         <div>
                             <input
@@ -252,7 +266,7 @@ export default function EntriesLayout() {
                                 checked={entry.filter.publicShared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="public">Öffentliche</label>
+                            <label htmlFor="public">{t("formFields.public")}</label>
                         </div>
                         <div>
                             <input
@@ -261,7 +275,7 @@ export default function EntriesLayout() {
                                 checked={entry.filter.directUser === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="directUser">Genauer Benutzername</label>
+                            <label htmlFor="directUser">{t("formFields.directUser")}</label>
                         </div>
                     </fieldset>
                 </form>

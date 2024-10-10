@@ -18,6 +18,7 @@ import {
 } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import { useTranslation } from "react-i18next";
 
 const TemplatesList = () => {
     const template = useAppSelector(selectTemplate);
@@ -73,6 +74,7 @@ export default function TemplatesLayout() {
     const template = useAppSelector(selectTemplate);
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (template.items && template.items.length == 0) dispatch(listTemplates());
@@ -119,49 +121,49 @@ export default function TemplatesLayout() {
                                 if (typeof editor.data?.templateID !== "string") return;
                                 dispatch(copyTemplates({ id: editor.data.templateID }));
                             }}>
-                            Copy
+                            {t("common.copy")}
                         </button>
                         <button
                             onClick={() => {
                                 if (typeof editor.data?.templateID !== "string") return;
                                 dispatch(removeTemplates({ id: editor.data.templateID }));
                             }}>
-                            Delete
+                            {t("common.delete")}
                         </button>
                         <Link
                             to={Routes.Templates.Edit.replace(
                                 RouteParams.TemplateId,
                                 editor.data.templateID,
                             )}>
-                            Edit
+                            {t("common.edit")}
                         </Link>
                     </>
                 ) : null}
                 <form className={cls("header", template.hideFilters ? "hidden" : undefined)}>
                     <fieldset className="header">
                         <legend>Filter</legend>
-                        <label htmlFor="name">Name</label>
+                        <label htmlFor="name">{t("common.name")}</label>
                         <input
                             name="name"
                             type="text"
                             value={template.filter.name ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="description">Beschreibung</label>
+                        <label htmlFor="description">{t("formFields.description")}</label>
                         <input
                             name="description"
                             type="text"
                             value={template.filter.description ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="tags">Tags</label>
+                        <label htmlFor="tags">{t("formFields.tags")}</label>
                         <input
                             name="tags"
                             type="text"
                             value={template.filter.tags ?? ""}
                             onChange={dispatchFilter}
                         />
-                        <label htmlFor="username">Benutzername</label>
+                        <label htmlFor="username">{t("formFields.username")}</label>
                         <input
                             name="username"
                             type="text"
@@ -170,7 +172,7 @@ export default function TemplatesLayout() {
                         />
                     </fieldset>
                     <fieldset style={{ display: "grid" }}>
-                        <legend>Sichtbarkeit</legend>
+                        <legend>{t("formFields.visibilityGroup")}</legend>
                         <div>
                             <input
                                 name="includeOwned"
@@ -178,7 +180,7 @@ export default function TemplatesLayout() {
                                 checked={template.filter.includeOwned === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="includeOwned">Eigene</label>
+                            <label htmlFor="includeOwned">{t("formFields.owned")}</label>
                         </div>
                         <div>
                             <input
@@ -187,7 +189,7 @@ export default function TemplatesLayout() {
                                 checked={template.filter.shared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="shared">Geteilt</label>
+                            <label htmlFor="shared">{t("formFields.shared")}</label>
                         </div>
                         <div>
                             <input
@@ -196,7 +198,7 @@ export default function TemplatesLayout() {
                                 checked={template.filter.publicShared === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="public">Öffentliche</label>
+                            <label htmlFor="public">{t("formFields.public")}</label>
                         </div>
                         <div>
                             <input
@@ -205,7 +207,7 @@ export default function TemplatesLayout() {
                                 checked={template.filter.directUser === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="directUser">Genauer Benutzername</label>
+                            <label htmlFor="directUser">{t("formFields.directUser")}</label>
                         </div>
                     </fieldset>
                 </form>

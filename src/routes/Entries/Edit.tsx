@@ -7,11 +7,13 @@ import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { useTranslation } from "react-i18next";
 
 export default function EntriesEdit() {
     const { entryId } = useParams();
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!entryId) return;
@@ -23,11 +25,11 @@ export default function EntriesEdit() {
     }
 
     if (editor.status === "loading") {
-        return <div>Loading...</div>;
+        return <div>{t("common.loading")}</div>;
     }
 
     if (editor.status === "failed") {
-        return <div>Error...</div>;
+        return <div>{t("common.error")}</div>;
     }
 
     return (
@@ -43,14 +45,14 @@ export default function EntriesEdit() {
                                 if (typeof editor.data?.templateID !== "string") return;
                                 // dispatch(removeTemplates({ id: data.templateID }));
                             }}>
-                            Delete
+                            {t("common.delete")}
                         </button>
                         <Link
                             to={Routes.Entries.View.replace(
                                 RouteParams.EntryId,
                                 editor.data?.templateID,
                             )}>
-                            Edit
+                            {t("common.edit")}
                         </Link>
                     </>
                 ) : null}

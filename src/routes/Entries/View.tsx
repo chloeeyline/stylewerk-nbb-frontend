@@ -4,11 +4,13 @@ import { useEffect } from "react";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { getEditor, selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { useTranslation } from "react-i18next";
 
 export default function EntryView() {
     const { entryId } = useParams();
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!entryId) return;
@@ -20,11 +22,11 @@ export default function EntryView() {
     }
 
     if (editor.status === "loading") {
-        return <div>Loading...</div>;
+        return <div>{t("common.loading")}</div>;
     }
 
     if (editor.status === "failed") {
-        return <div>Error...</div>;
+        return <div>{t("common.error")}</div>;
     }
 
     return (
