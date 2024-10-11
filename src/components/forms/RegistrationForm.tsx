@@ -1,14 +1,16 @@
 import type React from "react";
 import { useRef, useState } from "react";
-import { validateEmail, validatePassword, validateUsername, register } from "~/redux/features/user/user-api";
+import { useTranslation } from "react-i18next";
+import {
+    register,
+    validateEmail,
+    validatePassword,
+    validateUsername,
+} from "~/redux/features/user/user-api";
+import { genders } from "~/redux/features/user/user-schemas";
 import styles from "./form-fields.module.scss";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
-import { useTranslation } from "react-i18next";
-
-const genders = ["NotSpecified", "Female", "Male", "NonBinary"] as const;
-
-export type Genders = typeof genders;
 
 type FormErrors = {
     username: string | null;
@@ -34,7 +36,7 @@ const initialFormErrors = {
 
 export default function RegistrationForm() {
     const { t } = useTranslation();
-    
+
     const [registration, setRegistration] = useState<{
         submitting: boolean;
         done: boolean;
@@ -101,37 +103,37 @@ export default function RegistrationForm() {
         let errorCount = 0;
 
         if (username.length <= 0) {
-            errors.username = t("formErrors.pleaseEnter", { what: t("formFields.username")});
+            errors.username = t("formErrors.pleaseEnter", { what: t("formFields.username") });
             errorCount++;
         } else {
             const usernameResult = await validateUsername(username);
 
             if (usernameResult.ok === false) {
-                errors.username = usernameResult.error.message;
+                errors.username = t(`errorCodes.${usernameResult.error.message}`);
                 errorCount++;
             }
         }
 
         if (email.length <= 0) {
-            errors.email = t("formErrors.pleaseEnter", { what: t("formFields.email")});
+            errors.email = t("formErrors.pleaseEnter", { what: t("formFields.email") });
             errorCount++;
         } else {
             const emailResult = await validateEmail(email);
 
             if (emailResult.ok === false) {
-                errors.email = emailResult.error.message;
+                errors.email = t(`errorCodes.${emailResult.error.message}`);
                 errorCount++;
             }
         }
 
         if (password.length <= 0) {
-            errors.password = "Please enter a password!";
+            errors.password = t("formErrors.pleaseEnter", { what: t("formFields.password") });
             errorCount++;
         } else {
             const passwordResult = await validatePassword(password);
 
             if (passwordResult.ok === false) {
-                errors.password = passwordResult.error.message;
+                errors.password = t(`errorCodes.${passwordResult.error.message}`);
                 errorCount++;
             }
         }
@@ -142,22 +144,22 @@ export default function RegistrationForm() {
         }
 
         if (firstName.length <= 0) {
-            errors.firstName = "Please enter a first name!";
+            errors.firstName = t("formErrors.pleaseEnter", { what: t("formFields.firstName") });
             errorCount++;
         }
 
         if (lastName.length <= 0) {
-            errors.lastName = "Please enter a last name!";
+            errors.lastName = t("formErrors.pleaseEnter", { what: t("formFields.lastName") });
             errorCount++;
         }
 
         if (genders.includes(gender) === false) {
-            errors.gender = "Please select a valid gender!";
+            errors.gender = t("formErrors.pleaseSelect", { what: t("formFields.gender") });
             errorCount++;
         }
 
         if (birthday.length <= 0) {
-            errors.birthday = "Please select a valid birthday!";
+            errors.birthday = t("formErrors.pleaseSelect", { what: t("formFields.birthday") });
             errorCount++;
         }
 
@@ -166,7 +168,7 @@ export default function RegistrationForm() {
             setRegistration({
                 ...registration,
                 submitting: false,
-                error: "Error validating form fields, please check!",
+                error: t("formErrors.general"),
             });
             return;
         }
@@ -185,7 +187,7 @@ export default function RegistrationForm() {
             setRegistration({
                 ...registration,
                 submitting: false,
-                error: `Error registering: ${registrationResult.error}`,
+                error: t(`errorCodes.${registrationResult.error}`),
             });
             return;
         }
@@ -196,13 +198,11 @@ export default function RegistrationForm() {
     return (
         <form className={styles.form} onSubmit={submitForm}>
             <fieldset className={styles.fieldset}>
-                <legend>Registration</legend>
-
-                {registration.submitting === true ? <div>{t("formStatus.registration")}...</div> : null}
+                <legend>{t("formNames.registration")}</legend>
                 {registration.error !== null ? <div>{registration.error}</div> : null}
 
                 <InputField
-                    label="Username"
+                    label={t("formFields.username")}
                     name="username"
                     required
                     ref={usernameRef}
@@ -210,7 +210,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
-                    label="Email"
+                    label={t("formFields.email")}
                     name="email"
                     required
                     ref={emailRef}
@@ -219,7 +219,7 @@ export default function RegistrationForm() {
 
                 <InputField
                     type="password"
-                    label="Password"
+                    label={t("formFields.password")}
                     name="password"
                     required
                     ref={passwordRef}
@@ -228,7 +228,7 @@ export default function RegistrationForm() {
 
                 <InputField
                     type="password"
-                    label="Repeat password"
+                    label={t("formFields.repeatPassword")}
                     name="repeatPassword"
                     required
                     ref={repeatPasswordRef}
@@ -236,7 +236,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
-                    label="First name"
+                    label={t("formFields.firstName")}
                     name="firstName"
                     required
                     ref={firstNameRef}
@@ -244,7 +244,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
-                    label="Last name"
+                    label={t("formFields.lastName")}
                     name="lastName"
                     required
                     ref={lastNameRef}
@@ -252,17 +252,19 @@ export default function RegistrationForm() {
                 />
 
                 <SelectField
-                    label="Gender"
+                    label={t("formFields.gender")}
                     name="gender"
                     required
                     ref={genderRef}
-                    options={genders.map((gender) => [gender, gender])}
+                    options={genders.map(
+                        (gender) => [gender, t(`userGenders.${gender}`)] as [string, string],
+                    )}
                     error={formError.gender}
                 />
 
                 <InputField
                     type="date"
-                    label="Birthday"
+                    label={t("formFields.birthday")}
                     name="birthday"
                     required
                     ref={birthdayRef}
@@ -270,7 +272,7 @@ export default function RegistrationForm() {
                 />
             </fieldset>
 
-            <button type="submit">Submit</button>
+            <button type="submit">{t("formSubmit.registration")}</button>
         </form>
     );
 }

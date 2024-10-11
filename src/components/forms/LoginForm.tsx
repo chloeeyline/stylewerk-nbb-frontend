@@ -1,14 +1,14 @@
 import Frontend from "#/routes";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { validatePassword } from "~/redux/features/user/user-api";
 import { loginUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import cls from "~/utils/class-name-helper";
 import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
-import { useTranslation } from "react-i18next";
-import cls from "~/utils/class-name-helper";
 
 type FormErrors = {
     username: string | null;
@@ -99,11 +99,12 @@ export default function LoginForm() {
             )}
             onSubmit={submitForm}>
             <fieldset className={styles.fieldset}>
-                <legend>{t("nav.login")}</legend>
+                <legend>{t("formNames.login")}</legend>
 
-                {login.submitting ? <h2>{t("formStatus.login")}...</h2> : null}
-                {login.error !== null ? <h2>{login.error}</h2> : null}
-                {typeof user.error?.text === "string" ? <h2>{user.error.text}</h2> : null}
+                {login.error !== null ? <span className={styles.error}>{login.error}</span> : null}
+                {typeof user.error?.text === "string" ? (
+                    <span className={styles.error}>{t(`errorCodes.${user.error.text}`)}</span>
+                ) : null}
 
                 <InputField
                     label={t("formFields.username")}

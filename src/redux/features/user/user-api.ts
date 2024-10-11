@@ -1,24 +1,29 @@
 import { Auth } from "~/constants/backend-routes";
 import { Token, tokenSchema } from "~/schemas/token";
 import Ajax from "~/utils/ajax";
-import { UserLoginApi, userLoginApiSchema } from "./user-schemas";
+import type { UserLoginApi } from "./user-schemas";
+import { userDataSchema, userLoginApiSchema } from "./user-schemas";
 
 export type UserNeedsRefresh = {
     status: "refresh";
+    dataStatus: "empty";
 };
 
 export type UserIsLoggedIn = {
     status: "loggedIn";
+    dataStatus: "empty" | "loading" | "loaded";
     username: string;
     admin: boolean;
 };
 
 export type UserIsGuest = {
     status: "guest";
+    dataStatus: "empty";
 };
 
 export type UserIsFailed = {
     status: "failed";
+    dataStatus: "empty";
     error: {
         code: number;
         text: string;
@@ -136,7 +141,7 @@ export const autoLogin = async (): Promise<UserIsLoggedIn | UserIsGuest> => {
     const refreshToken = getRefreshToken();
 
     if (refreshToken === null) {
-        return { status: "guest" };
+        return { status: "guest", dataStatus: "empty" };
     }
 
     const { token } = refreshToken;
@@ -154,9 +159,7 @@ export const autoLogin = async (): Promise<UserIsLoggedIn | UserIsGuest> => {
         console.error(response.error);
         clear();
 
-        return {
-            status: "guest",
-        };
+        return { status: "guest", dataStatus: "empty" };
     }
 
     const result = userLoginApiSchema.safeParse(response.result);
@@ -171,9 +174,7 @@ export const autoLogin = async (): Promise<UserIsLoggedIn | UserIsGuest> => {
         console.error(code, text);
         clear();
 
-        return {
-            status: "guest",
-        };
+        return { status: "guest", dataStatus: "empty" };
     }
 
     persistUser(result.data);
@@ -182,6 +183,7 @@ export const autoLogin = async (): Promise<UserIsLoggedIn | UserIsGuest> => {
 
     return {
         status: "loggedIn",
+        dataStatus: "empty",
         username,
         admin,
     };
@@ -202,6 +204,7 @@ export const login = async (body: {
 
         return {
             status: "failed",
+            dataStatus: "empty",
             error: {
                 code,
                 text: message,
@@ -220,6 +223,7 @@ export const login = async (body: {
 
         return {
             status: "failed",
+            dataStatus: "empty",
             error: {
                 code,
                 text,
@@ -231,6 +235,7 @@ export const login = async (body: {
 
     return {
         status: "loggedIn",
+        dataStatus: "empty",
         username: result.data.username,
         admin: result.data.admin,
     };
@@ -246,7 +251,7 @@ export const logout = async (): Promise<UserIsGuest> => {
 
     clear();
 
-    return { status: "guest" };
+    return { status: "guest", dataStatus: "empty" };
 };
 
 const validate = (route: string, toValidate: string) =>
@@ -296,6 +301,7 @@ export const setup = (): UserNeedsRefresh | UserIsGuest | UserIsLoggedIn => {
     if (user !== null) {
         return {
             status: "loggedIn",
+            dataStatus: "empty",
             username: user.username,
             admin: user.admin,
         };
@@ -304,8 +310,53 @@ export const setup = (): UserNeedsRefresh | UserIsGuest | UserIsLoggedIn => {
     const refreshToken = getRefreshToken();
 
     if (refreshToken === null) {
-        return { status: "guest" };
+        return { status: "guest", dataStatus: "empty" };
     }
 
-    return { status: "refresh" };
+    return { status: "refresh", dataStatus: "empty" };
 };
+
+export const fetchUserData = async () => {
+    const token = await getAccessToken();
+
+    if (token === null) {
+        return false;
+    }
+
+    const response = await Ajax.get(Auth.GetUserData, { auth: true });
+
+    if (response.ok === false) {
+        return false;
+    }
+
+    const user = await userDataSchema.safeParseAsync(response.result);
+
+    if (user.success === false) {
+        return false;
+    }
+
+    return user.data;
+};
+
+export const updateEmail = (email: string) =>
+    Ajax.post(Auth.UpdateEmail, {
+        auth: true,
+        search: { email },
+    });
+
+export const verifyUpdateEmail = (code: string) =>
+    Ajax.post(Auth.VerifyUpdatedEmail, {
+        auth: true,
+        search: { code },
+    });
+
+export const updateUserData = (body: {
+    password?: string;
+    firstName?: string;
+    lastName?: string;
+    gender?: string;
+}) =>
+    Ajax.post(Auth.UpdateUserData, {
+        auth: true,
+        body,
+    });
