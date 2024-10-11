@@ -24,7 +24,7 @@ export default forwardRef(function SelectField(
             <label htmlFor={`${name}-${id}`}>{label}</label>
             <select ref={ref} name={`${name}-${id}`} {...props}>
                 {options.map(([key, value]) => (
-                    <option key={key}>{value}</option>
+                    <option key={key} value={key}>{value}</option>
                 ))}
             </select>
             {error !== null ? <span>{error}</span> : null}

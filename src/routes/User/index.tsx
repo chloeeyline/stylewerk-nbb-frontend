@@ -1,5 +1,11 @@
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
+import UpdateEmailForm from "~/components/forms/UpdateEmailForm";
+import UpdateUserForm from "~/components/forms/UpdateUserForm";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
+import { removeSessions } from "~/redux/features/user/user-api";
+import { getUserData, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function User() {
@@ -8,52 +14,77 @@ export default function User() {
 
     const dispatch = useAppDispatch();
 
-    if (user.status === "loggingOut") {
+    const [sessions, setSessions] = useState<boolean | undefined>();
+
+    useEffect(() => {
+        if (user.status === "loggedIn" && user.dataStatus === "empty") {
+            dispatch(getUserData());
+        }
+    }, [user.status, user.dataStatus]);
+
+    if (user.status !== "loggedIn") {
         return (
             <div>
-                <h1>User - {user.username} - Logging out...</h1>
+                <h1>{t("userStates.notLoggedIn")}</h1>
             </div>
         );
     }
 
-    if (user.status === "guest") {
+    if (user.dataStatus === "loading") {
         return (
             <div>
-                <h1>User - Guest</h1>
+                <h1>{t("userDataStates.loading")}</h1>
             </div>
         );
     }
 
-    if (user.status === "loggingIn") {
+    if (user.dataStatus === "error" || typeof user.data === "undefined") {
         return (
             <div>
-                <h1>User - Logging in...</h1>
+                <h1>{t("userDataStates.error")}</h1>
             </div>
         );
     }
 
-    if (user.status === "failed") {
-        return (
-            <div>
-                <h1>User - Failure</h1>
-            </div>
-        );
-    }
-
-    const { username, admin } = user;
+    const { username, email, firstName, lastName, gender } = user.data;
+    const admin = user.admin ?? false;
 
     return (
-        <div>
+        <Grid layout="header" className="size-block-100">
             <h1>
                 {t("common.user", { count: 1 })}: {username}
-                {admin === true ? " - is admin" : ""}
+                {admin === true ? ` ${t("common.isAdmin")}` : ""}
             </h1>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum veniam ipsa
-                provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
-                harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
-            </p>
-            <button onClick={() => dispatch(logoutUser())}>{t("common.logout")}</button>
-        </div>
+            <Grid layout="contentCenter">
+                <ScrollContainer direction="vertical">
+                    <div>
+                        <UpdateEmailForm email={email} />
+                        <UpdateUserForm firstName={firstName} lastName={lastName} gender={gender} />
+                        <button
+                            onClick={async () => {
+                                if (sessions === false) {
+                                    return;
+                                }
+
+                                setSessions(false);
+
+                                await removeSessions();
+
+                                setSessions(true);
+                            }}>
+                            {t(
+                                `common.${
+                                    typeof sessions === "undefined"
+                                        ? "clearOtherSessions"
+                                        : sessions === true
+                                        ? "otherSessionsCleared"
+                                        : "clearingOtherSessions"
+                                }`,
+                            )}
+                        </button>
+                    </div>
+                </ScrollContainer>
+            </Grid>
+        </Grid>
     );
 }

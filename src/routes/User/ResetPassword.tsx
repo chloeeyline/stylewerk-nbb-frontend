@@ -1,12 +1,19 @@
+import { useTranslation } from "react-i18next";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
+import ResetPasswordForm from "~/components/forms/ResetPasswordForm";
+
 export default function UserResetPassword() {
+    const { t } = useTranslation();
+
     return (
-        <div>
-            <h1>User - ResetPassword</h1>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum veniam ipsa
-                provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
-                harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
-            </p>
-        </div>
+        <Grid layout="header" className="size-block-100">
+            <h1>{t("nav.resetPassword")}</h1>
+            <Grid layout="contentCenter">
+                <ScrollContainer direction="vertical">
+                    <ResetPasswordForm />
+                </ScrollContainer>
+            </Grid>
+        </Grid>
     );
 }

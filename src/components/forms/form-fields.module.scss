@@ -12,6 +12,23 @@
     transition: opacity 0.25ms ease-in-out, filter 0.25ms ease-in-out;
 }
 
+.columns {
+    display: grid;
+    grid-template-columns: repeat(var(--columns, 2), 1fr);
+    gap: 0.5em;
+}
+
+.error {
+    display: block;
+    border-style: solid;
+    border-width: thin;
+    border-radius: 0.25em;
+    border-color: darkred;
+    padding: 0.25em;
+    line-height: 1;
+    margin: 0.125em;
+}
+
 .spinner::after {
     position: absolute;
     content: "";
@@ -24,7 +41,7 @@
     border-style: solid;
     border-width: medium;
     border-radius: 50%;
-    border-color: white;
+    border-color: currentColor;
     border-block-start-color: transparent;
 
     animation: spin 1s linear infinite;
