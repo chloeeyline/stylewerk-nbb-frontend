@@ -1,11 +1,11 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import InputField from "~/components/forms/InputField";
 import UpdateEmailForm from "~/components/forms/UpdateEmailForm";
 import UpdateUserForm from "~/components/forms/UpdateUserForm";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { getUserData, logoutUser, selectUser } from "~/redux/features/user/user-slice";
+import { removeSessions } from "~/redux/features/user/user-api";
+import { getUserData, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function User() {
@@ -13,6 +13,8 @@ export default function User() {
     const user = useAppSelector(selectUser);
 
     const dispatch = useAppDispatch();
+
+    const [sessions, setSessions] = useState<boolean | undefined>();
 
     useEffect(() => {
         if (user.status === "loggedIn" && user.dataStatus === "empty") {
@@ -23,7 +25,7 @@ export default function User() {
     if (user.status !== "loggedIn") {
         return (
             <div>
-                <h1>User - not loggedn in...</h1>
+                <h1>{t("userStates.notLoggedIn")}</h1>
             </div>
         );
     }
@@ -31,7 +33,7 @@ export default function User() {
     if (user.dataStatus === "loading") {
         return (
             <div>
-                <h1>User - loading</h1>
+                <h1>{t("userDataStates.loading")}</h1>
             </div>
         );
     }
@@ -39,27 +41,47 @@ export default function User() {
     if (user.dataStatus === "error" || typeof user.data === "undefined") {
         return (
             <div>
-                <h1>User - Error loading data...</h1>
+                <h1>{t("userDataStates.error")}</h1>
             </div>
         );
     }
 
-    const { username, email, birthday, firstName, lastName, gender } = user.data;
+    const { username, email, firstName, lastName, gender } = user.data;
     const admin = user.admin ?? false;
-
-    console.log(username, email, birthday, firstName, lastName, gender);
 
     return (
         <Grid layout="header" className="size-block-100">
             <h1>
                 {t("common.user", { count: 1 })}: {username}
-                {admin === true ? " - is admin" : ""}
+                {admin === true ? ` ${t("common.isAdmin")}` : ""}
             </h1>
             <Grid layout="contentCenter">
                 <ScrollContainer direction="vertical">
                     <div>
                         <UpdateEmailForm email={email} />
                         <UpdateUserForm firstName={firstName} lastName={lastName} gender={gender} />
+                        <button
+                            onClick={async () => {
+                                if (sessions === false) {
+                                    return;
+                                }
+
+                                setSessions(false);
+
+                                await removeSessions();
+
+                                setSessions(true);
+                            }}>
+                            {t(
+                                `common.${
+                                    typeof sessions === "undefined"
+                                        ? "clearOtherSessions"
+                                        : sessions === true
+                                        ? "otherSessionsCleared"
+                                        : "clearingOtherSessions"
+                                }`,
+                            )}
+                        </button>
                     </div>
                 </ScrollContainer>
             </Grid>

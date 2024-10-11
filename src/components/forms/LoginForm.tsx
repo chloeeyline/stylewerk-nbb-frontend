@@ -40,7 +40,7 @@ export default function LoginForm() {
 
     useEffect(() => {
         if (user.status === "loggedIn") {
-            navigate(Frontend.User.Index);
+            navigate(Frontend.Entries.List);
         }
     }, [user.status]);
 

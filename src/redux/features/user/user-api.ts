@@ -360,3 +360,16 @@ export const updateUserData = (body: {
         auth: true,
         body,
     });
+
+export const requestPasswordReset = (email: string) =>
+    Ajax.post(Auth.RequestPasswordReset, { body: { toValidate: email } });
+
+export const resetPassword = (token: string, password: string) =>
+    Ajax.post(Auth.ResetPassword, {
+        body: {
+            token,
+            password,
+        },
+    });
+
+export const removeSessions = () => Ajax.post(Auth.RemoveSessions, { auth: true });
