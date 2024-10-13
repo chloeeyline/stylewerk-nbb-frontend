@@ -271,7 +271,7 @@ const editorSlice = createSlice({
             }
         },
         removeTemplateRow: (state) => {
-            if (state.data && state.data.items.length > 0) {
+            if (state.data && state.data.items.length > 1) {
                 state.data.items = state.data.items.filter((row) => {
                     if (row.templateID !== state.selectedTemplateRow) return row;
                 });
@@ -282,9 +282,11 @@ const editorSlice = createSlice({
             }
         },
         removeTemplateCell: (state) => {
-            if (state.data && state.data.items.length > 0) {
-                state.data.items = state.data.items.map((row) => {
-                    if (row.templateID === state.selectedTemplateRow) {
+            if (state.data && state.data.items.length > 1) {
+                let stop = false;
+                const tempRoowList = state.data.items.map((row) => {
+                    if (row.templateID === state.selectedTemplateRow && row.items.length > 0) {
+                        if (row.items.length === 1) stop = true;
                         const tempCellList = row.items.filter((cell) => {
                             if (cell.templateID !== state.selectedTemplateCell) return cell;
                         });
@@ -295,6 +297,13 @@ const editorSlice = createSlice({
                     }
                     return row;
                 });
+
+                if (stop) return;
+                state.data.items = tempRoowList;
+                state.selectedTemplateRow = "";
+                state.selectedTemplateCell = "";
+                state.selectedEntryRow = "";
+                state.selectedEntryCell = "";
             }
         },
         setMode(state, action: PayloadAction<{ isTemplate: boolean; isPreview: boolean }>) {
@@ -318,6 +327,10 @@ const editorSlice = createSlice({
         reset: (state) => {
             state.status = "idle";
             state.data = null;
+            state.selectedTemplateRow = "";
+            state.selectedTemplateCell = "";
+            state.selectedEntryRow = "";
+            state.selectedEntryCell = "";
         },
     },
     // The `extraReducers` field lets the slice handle actions defined elsewhere,

@@ -53,10 +53,10 @@ const CreateEntryCell = (templateCellID: string): EntryCell => {
 const CreateTemplateCell = (templateCellID: string): TemplateCell => {
     return {
         id: templateCellID,
-        inputHelper: 0,
+        inputHelper: 1,
         hideOnEmpty: false,
         isRequired: false,
-        text: null,
+        text: "Feld",
         description: null,
         metaData: null,
     };
@@ -64,9 +64,9 @@ const CreateTemplateCell = (templateCellID: string): TemplateCell => {
 
 export {
     CreateEditor,
-    CreateTemplate,
-    CreateEntryRow,
-    CreateTemplateRow,
     CreateEntryCell,
+    CreateEntryRow,
+    CreateTemplate,
     CreateTemplateCell,
+    CreateTemplateRow,
 };
