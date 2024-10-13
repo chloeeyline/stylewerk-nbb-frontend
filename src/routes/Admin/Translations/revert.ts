@@ -6,7 +6,7 @@ fetch(
         Accept: "application/json",
         "Content-Type": "application/json",
         Authorization:
-          "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiI2YTE0M2Y1Mi03MTE3LTRlZWYtOWFmMy0wNDllYTgxODJmNjkiLCJleHAiOjE3Mjg2NTg4MzcsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCJ9.1zBUEdT4CDZYqcH1wyYFsvH-3sndijDarX2JO6lDKw0",
+          "Bearer foo",
       },
       body: JSON.stringify({
         code: "de",
