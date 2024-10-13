@@ -1,6 +1,6 @@
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useParams } from "react-router-dom";
 import Grid from "~/components/layout/Grid";
@@ -77,6 +77,7 @@ const TemplateMenuBar = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
+    const selectRef = useRef<HTMLSelectElement>(null);
 
     const selectedRowSettings = () => {
         if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;
@@ -124,6 +125,40 @@ const TemplateMenuBar = () => {
             }),
         );
     };
+
+    const handleWheelEvent = (e: WheelEvent) => {
+        if (selectRef.current) {
+            e.preventDefault(); // Prevent page scroll
+            const selectElement = selectRef.current;
+            const currentIndex = selectElement.selectedIndex;
+
+            if (e.deltaY < 0 && currentIndex > 0) {
+                // Scroll up, select previous option
+                selectElement.selectedIndex = currentIndex - 1;
+            } else if (e.deltaY > 0 && currentIndex < selectElement.options.length - 1) {
+                // Scroll down, select next option
+                selectElement.selectedIndex = currentIndex + 1;
+            }
+
+            // Trigger the onChange event programmatically
+            const event = new Event("change", { bubbles: true });
+            selectElement.dispatchEvent(event);
+        }
+    };
+
+    useEffect(() => {
+        const selectElement = selectRef.current;
+
+        if (selectElement) {
+            selectElement.addEventListener("wheel", handleWheelEvent);
+        }
+
+        return () => {
+            if (selectElement) {
+                selectElement.removeEventListener("wheel", handleWheelEvent);
+            }
+        };
+    }, []);
 
     return (
         <div>
@@ -255,7 +290,8 @@ const TemplateMenuBar = () => {
                         <select
                             name="inputHelper"
                             value={selectedCellSettings()?.inputHelper}
-                            onChange={dispatchCellSettings}>
+                            onChange={dispatchCellSettings}
+                            ref={selectRef}>
                             <option value="1">Fix Text</option>
                             <option value="2">Kurze Texteingabe</option>
                             <option value="3">Lange Texteingabe</option>
