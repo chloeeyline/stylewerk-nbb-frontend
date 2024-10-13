@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplate } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
 
@@ -21,27 +22,32 @@ const TemplateSettings = () => {
     }
 
     return (
-        <fieldset>
+        <fieldset className="lrow">
             <legend>Allgemein</legend>
-            <label htmlFor="name">{t("common.name")}</label>
-            <input
-                name="name"
+            <InputField
+                label={t("common.name")}
+                name={"name"}
+                useNameAsIs={true}
                 type="text"
                 maxLength={100}
                 value={editor.data.template.name ?? ""}
                 onChange={dispatchGeneral}
             />
-            <label htmlFor="description">{t("formFields.description")}</label>
-            <input
-                name="description"
+            <InputField
+                label={t("formFields.description")}
+                name={"description"}
+                useNameAsIs={true}
                 type="text"
+                maxLength={100}
                 value={editor.data.template.description ?? ""}
                 onChange={dispatchGeneral}
             />
-            <label htmlFor="tags">{t("formFields.tags")}</label>
-            <input
-                name="tags"
+            <InputField
+                label={t("formFields.tags")}
+                name={"tags"}
+                useNameAsIs={true}
                 type="text"
+                maxLength={100}
                 value={editor.data.template.tags ?? ""}
                 onChange={dispatchGeneral}
             />

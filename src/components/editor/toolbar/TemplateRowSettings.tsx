@@ -1,4 +1,5 @@
 import { useTranslation } from "react-i18next";
+import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplateRow } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
 
@@ -25,36 +26,30 @@ const TemplateRowSettings = () => {
     return (
         <fieldset className="lrow">
             <legend>Zeilen Einstellung</legend>
-            <div>
-                <input
-                    name="canWrapCells"
-                    type="checkbox"
-                    maxLength={100}
-                    checked={selectedRowSettings()?.canWrapCells ?? false}
-                    onChange={dispatchRowSettings}
-                />
-                <label htmlFor="canWrapCells">CanWrapCells</label>
-            </div>
-            <div>
-                <input
-                    name="canRepeat"
-                    type="checkbox"
-                    maxLength={100}
-                    checked={selectedRowSettings()?.canRepeat ?? false}
-                    onChange={dispatchRowSettings}
-                />
-                <label htmlFor="canRepeat">CanRepeat</label>
-            </div>
-            <div>
-                <input
-                    name="hideOnNoInput"
-                    type="checkbox"
-                    maxLength={100}
-                    checked={selectedRowSettings()?.hideOnNoInput ?? false}
-                    onChange={dispatchRowSettings}
-                />
-                <label htmlFor="hideOnNoInput">HideOnNoInput</label>
-            </div>
+            <InputField
+                label={"CanWrapCells"}
+                name={"canWrapCells"}
+                useNameAsIs={true}
+                type="checkbox"
+                checked={selectedRowSettings()?.canWrapCells ?? false}
+                onChange={dispatchRowSettings}
+            />
+            <InputField
+                label={"CanRepeat"}
+                name={"canRepeat"}
+                useNameAsIs={true}
+                type="checkbox"
+                checked={selectedRowSettings()?.canRepeat ?? false}
+                onChange={dispatchRowSettings}
+            />
+            <InputField
+                label={"HideOnNoInput"}
+                name={"hideOnNoInput"}
+                useNameAsIs={true}
+                type="checkbox"
+                checked={selectedRowSettings()?.hideOnNoInput ?? false}
+                onChange={dispatchRowSettings}
+            />
         </fieldset>
     );
 };

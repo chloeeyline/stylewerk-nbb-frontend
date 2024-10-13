@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { z } from "zod";
+import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch } from "~/redux/hooks";
@@ -32,16 +33,17 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <>
-            <input
+            <InputField
+                label={cell.template.text ?? ""}
+                name={`templaceCell-${cell.templateID}`}
+                useNameAsIs={true}
                 type="number"
-                placeholder={cell.template.text ?? ""}
                 disabled={isReadOnly}
                 required={cell.template.isRequired}
                 min={temp.data?.min}
                 max={temp.data?.max}
                 onChange={() => {}}
             />
-            <label>{cell.template.text ?? ""}</label>
         </>
     );
 };

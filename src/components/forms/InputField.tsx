@@ -7,11 +7,13 @@ export default forwardRef(function InputField(
         name,
         label,
         error,
+        useNameAsIs,
         ...props
     }: React.InputHTMLAttributes<HTMLInputElement> & {
         name: string;
         label: string;
         error?: string | null;
+        useNameAsIs?: boolean;
     },
     ref: React.ForwardedRef<HTMLInputElement>,
 ) {
@@ -19,8 +21,13 @@ export default forwardRef(function InputField(
 
     return (
         <div className={`${styles.inputWrapper} ${styles[props?.type ?? ""]}`}>
-            <label htmlFor={`${name}-${id}`}>{label}</label>
-            <input ref={ref} name={`${name}-${id}`} placeholder={label} {...props} />
+            <label htmlFor={useNameAsIs ? name : `${name}-${id}`}>{label}</label>
+            <input
+                ref={ref}
+                name={useNameAsIs ? name : `${name}-${id}`}
+                placeholder={label}
+                {...props}
+            />
             {error !== null ? <span>{error}</span> : null}
         </div>
     );
