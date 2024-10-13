@@ -170,44 +170,14 @@ export default function TemplatesLayout() {
                             value={template.filter.username ?? ""}
                             onChange={dispatchFilter}
                         />
-                    </fieldset>
-                    <fieldset style={{ display: "grid" }}>
-                        <legend>{t("formFields.visibilityGroup")}</legend>
                         <div>
                             <input
-                                name="includeOwned"
+                                name="includePublic"
                                 type="checkbox"
-                                checked={template.filter.includeOwned === "true"}
+                                checked={template.filter.includePublic === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="includeOwned">{t("formFields.owned")}</label>
-                        </div>
-                        <div>
-                            <input
-                                name="shared"
-                                type="checkbox"
-                                checked={template.filter.shared === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="shared">{t("formFields.shared")}</label>
-                        </div>
-                        <div>
-                            <input
-                                name="publicShared"
-                                type="checkbox"
-                                checked={template.filter.publicShared === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="public">{t("formFields.public")}</label>
-                        </div>
-                        <div>
-                            <input
-                                name="directUser"
-                                type="checkbox"
-                                checked={template.filter.directUser === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="directUser">{t("formFields.directUser")}</label>
                         </div>
                     </fieldset>
                 </form>

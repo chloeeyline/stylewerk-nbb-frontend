@@ -1,17 +1,16 @@
 import { z } from "zod";
-import { shareVisibilitySchema } from "~/schemas/share-visibility";
 
 const entryItemSchema = z.object({
     id: z.string().uuid(),
-    folderID: z.string().uuid(),
     name: z.string(),
     isEncrypted: z.boolean(),
+    isPublic: z.boolean(),
     tags: z.string().nullable(),
     createdAt: z.number().int().safe().nonnegative(),
     lastUpdatedAt: z.number().int().safe().nonnegative(),
     templateName: z.string(),
     username: z.string(),
-    visibility: shareVisibilitySchema,
+    owned: z.boolean(),
 });
 
 const entryItemsSchema = entryItemSchema.array();
@@ -20,6 +19,7 @@ const entryFolderSchema = z.object({
     id: z.string().uuid(),
     name: z.string().nullable(),
     items: entryItemsSchema,
+    count: z.number().int().safe().nonnegative(),
 });
 
 const entryFoldersSchema = entryFolderSchema.array();
@@ -29,10 +29,7 @@ type EntrySearchParams = {
     username?: string;
     templateName?: string;
     tags?: string;
-    publicShared?: "true" | "false";
-    shared?: "true" | "false";
-    includeOwned?: "true" | "false";
-    directUser?: "true" | "false";
+    includePublic?: "true" | "false";
 };
 
 type EntryItem = z.infer<typeof entryItemSchema>;

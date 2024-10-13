@@ -19,9 +19,7 @@ const initialState: EntryState = {
     status: "idle",
     folders: [],
     items: [],
-    filter: {
-        includeOwned: "true",
-    },
+    filter: {},
     hideFilters: true,
     hideList: false,
     dragMode: false,
@@ -340,23 +338,11 @@ const entrySlice = createSlice({
                         state.filter[action.payload.type] = undefined;
                     }
                     break;
-                case "publicShared":
-                case "shared":
-                case "includeOwned":
-                case "directUser":
+                case "includePublic":
                     if (action.payload.value === "true" || action.payload.value === "false") {
                         state.filter[action.payload.type] = action.payload.value;
                     } else {
                         state.filter[action.payload.type] = undefined;
-                    }
-                    if (
-                        (state.filter.publicShared === undefined ||
-                            state.filter.publicShared === "false") &&
-                        (state.filter.shared === undefined || state.filter.shared === "false") &&
-                        (state.filter.includeOwned === undefined ||
-                            state.filter.includeOwned === "false")
-                    ) {
-                        state.filter.includeOwned = "true";
                     }
                     break;
             }
@@ -372,9 +358,7 @@ const entrySlice = createSlice({
         },
         resetFilter: (state) => {
             state.items = [];
-            state.filter = {
-                includeOwned: "true",
-            };
+            state.filter = {};
         },
         setFolders: (state, action: PayloadAction<EntryFolders>) => {
             state.folders = action.payload;

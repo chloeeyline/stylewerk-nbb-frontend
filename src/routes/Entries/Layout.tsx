@@ -16,7 +16,8 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useState } from "react";
+import { BlobOptions } from "buffer";
+import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "react-router-dom";
 import Move from "~/components/Icon/Move";
@@ -36,6 +37,7 @@ import {
     toggleDragMode,
     toggleHideFilters,
     toggleHideList,
+    updateFolder,
 } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
@@ -121,10 +123,43 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
     );
 };
 
+const CreateFolderDialog = ({
+    isOpen,
+    name,
+    onClose,
+}: {
+    isOpen: boolean;
+    name: string;
+    onClose: (name: string | null) => void;
+}) => {
+    const dialogRef = useRef<HTMLDialogElement>(null);
+    const [folderName, setFolderName] = useState(name);
+
+    // Show or hide the dialog based on isOpen prop
+    useEffect(() => {
+        if (!dialogRef.current) return;
+        if (isOpen) {
+            dialogRef.current.showModal(); // Open the modal
+        } else {
+            dialogRef.current.close(); // Close the modal
+        }
+    }, [isOpen]);
+
+    return (
+        <dialog ref={dialogRef} style={styles}>
+            <h2>Name des Ordners</h2>
+            <input type="text" value={folderName} onChange={(e) => setFolderName(e.target.value)} />
+            <button onClick={() => onClose(null)}>Abbruch</button>
+            <button onClick={() => onClose(folderName)}>Speichern</button>
+        </dialog>
+    );
+};
+
 export default function EntriesLayout() {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
+    const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
         if (entry.hideFilters) dispatch(listFolder());
@@ -172,6 +207,21 @@ export default function EntriesLayout() {
         }
     };
 
+    const closeModal = (name: string | null) => {
+        if (!name) return;
+        setDialogIsOpen(false);
+        dispatch(
+            updateFolder({
+                model: {
+                    id: crypto.randomUUID(),
+                    name: name,
+                    items: [],
+                    count: 0,
+                },
+            }),
+        );
+    };
+
     return (
         <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
             <div>
@@ -203,6 +253,9 @@ export default function EntriesLayout() {
                         ? t("list.dragFolderModeActive")
                         : t("list.dragFolderModeDeactive")}
                 </button>
+                {entry.hideFilters && !entry.dragMode && (
+                    <button onClick={() => setDialogIsOpen(true)}>Neuen Ordner anlegen</button>
+                )}
                 <form
                     className={cls(
                         "header",
@@ -238,48 +291,19 @@ export default function EntriesLayout() {
                             value={entry.filter.username ?? ""}
                             onChange={dispatchFilter}
                         />
-                    </fieldset>
-                    <fieldset style={{ display: "grid" }}>
-                        <legend>{t("formFields.visibilityGroup")}</legend>
                         <div>
                             <input
-                                name="includeOwned"
+                                name="includePublic"
                                 type="checkbox"
-                                checked={entry.filter.includeOwned === "true"}
+                                checked={entry.filter.includePublic === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
                             <label htmlFor="includeOwned">{t("formFields.owned")}</label>
                         </div>
-                        <div>
-                            <input
-                                name="shared"
-                                type="checkbox"
-                                checked={entry.filter.shared === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="shared">{t("formFields.shared")}</label>
-                        </div>
-                        <div>
-                            <input
-                                name="publicShared"
-                                type="checkbox"
-                                checked={entry.filter.publicShared === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="public">{t("formFields.public")}</label>
-                        </div>
-                        <div>
-                            <input
-                                name="directUser"
-                                type="checkbox"
-                                checked={entry.filter.directUser === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="directUser">{t("formFields.directUser")}</label>
-                        </div>
                     </fieldset>
                 </form>
             </div>
+            <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} name={""} />
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <div>
                     <ScrollContainer
@@ -309,3 +333,13 @@ export default function EntriesLayout() {
         </Grid>
     );
 }
+
+const styles: CSSProperties = {
+    position: "fixed", // Use fixed positioning to allow centering relative to the viewport
+    top: "50%", // Move the dialog to the center vertically
+    left: "50%", // Move the dialog to the center horizontally
+    transform: "translate(-50%, -50%)", // Shift back by 50% of its own width and height to center it
+    border: "none",
+    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: semi-transparent background
+    zIndex: 1000, // Ensure it's on top of other elements
+};
