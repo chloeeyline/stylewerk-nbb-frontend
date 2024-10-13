@@ -124,12 +124,13 @@ const TemplateMenuBar = () => {
     };
 
     return (
-        <>
+        <div>
             {typeof editor.data?.templateID === "string" ? (
                 <fieldset className="lrow">
                     <legend>Allgemeine Actions</legend>
                     <button
-                        className="lcell"
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
                         onClick={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(copyTemplates({ id: editor.data?.templateID }));
@@ -137,7 +138,8 @@ const TemplateMenuBar = () => {
                         {t("common.copy")}
                     </button>
                     <button
-                        className="lcell"
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
                         onClick={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(removeTemplates({ id: editor.data?.templateID }));
@@ -145,12 +147,37 @@ const TemplateMenuBar = () => {
                         {t("common.delete")}
                     </button>
                     <button
-                        className="lcell"
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
                         onClick={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(updateEditor({ isTemplate: true }));
                         }}>
                         {t("common.save")}
+                    </button>
+                    <button
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
+                        onClick={() => dispatch(addTemplateRow())}>
+                        neue Zelle hinzufügen
+                    </button>
+                    <button
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
+                        onClick={() => dispatch(addTemplateCell())}>
+                        neue Zelle zur Zeile hinzufügen
+                    </button>
+                    <button
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
+                        onClick={() => dispatch(removeTemplateRow())}>
+                        zeile löschen
+                    </button>
+                    <button
+                        className="lcell margin"
+                        style={{ "--margin": "0 0.5rem 0 0" }}
+                        onClick={() => dispatch(removeTemplateCell())}>
+                        Zelle löschen
                     </button>
                     <Link
                         className="lcell"
@@ -162,9 +189,9 @@ const TemplateMenuBar = () => {
                     </Link>
                 </fieldset>
             ) : null}
-            <fieldset className="lrow">
-                <legend>Zeilen Actions</legend>
-                {editor.selectedTemplateRow.length > 0 ? (
+            {editor.selectedTemplateRow.length > 0 ? (
+                <fieldset className="lrow">
+                    <legend>Zeilen Einstellung</legend>
                     <>
                         <div>
                             <input
@@ -197,74 +224,64 @@ const TemplateMenuBar = () => {
                             <label htmlFor="hideOnNoInput">HideOnNoInput</label>
                         </div>
                     </>
-                ) : null}
-                <button onClick={() => dispatch(addTemplateRow())}>neue Zelle hinzufügen</button>
-                <button onClick={() => dispatch(addTemplateCell())}>
-                    neue Zelle zur Zeile hinzufügen
-                </button>
-                <button onClick={() => dispatch(removeTemplateRow())}>zeile löschen</button>
-                <button onClick={() => dispatch(removeTemplateCell())}>Zelle löschen</button>
-            </fieldset>
-            {editor.selectedTemplateCell.length > 0 ? (
-                <fieldset className="lrow">
-                    <legend>Zellen Actions</legend>
-                    {editor.selectedTemplateRow.length > 0 ? (
-                        <>
-                            <div>
-                                <input
-                                    name="hideOnEmpty"
-                                    type="checkbox"
-                                    maxLength={100}
-                                    checked={selectedCellSettings()?.hideOnEmpty}
-                                    onChange={dispatchCellSettingsCheckbox}
-                                />
-                                <label htmlFor="hideOnEmpty">hideOnEmpty</label>
-                            </div>
-                            <div>
-                                <input
-                                    name="isRequired"
-                                    type="checkbox"
-                                    maxLength={100}
-                                    checked={selectedCellSettings()?.isRequired}
-                                    onChange={dispatchCellSettingsCheckbox}
-                                />
-                                <label htmlFor="isRequired">isRequired</label>
-                            </div>
-                            <div>
-                                <input
-                                    name="inputHelper"
-                                    type="number"
-                                    maxLength={100}
-                                    value={selectedCellSettings()?.inputHelper}
-                                    onChange={dispatchCellSettings}
-                                />
-                                <label htmlFor="inputHelper">inputHelper</label>
-                            </div>
-                            <div>
-                                <input
-                                    name="text"
-                                    type="text"
-                                    maxLength={100}
-                                    value={selectedCellSettings()?.text ?? ""}
-                                    onChange={dispatchCellSettings}
-                                />
-                                <label htmlFor="text">text</label>
-                            </div>
-                            <div>
-                                <input
-                                    name="description"
-                                    type="text"
-                                    maxLength={100}
-                                    value={selectedCellSettings()?.description ?? ""}
-                                    onChange={dispatchCellSettings}
-                                />
-                                <label htmlFor="description">description</label>
-                            </div>
-                        </>
-                    ) : null}
                 </fieldset>
             ) : null}
-        </>
+            {editor.selectedTemplateCell.length > 0 ? (
+                <fieldset className="lrow">
+                    <legend>Zellen Einstellung</legend>
+                    <div>
+                        <input
+                            name="hideOnEmpty"
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedCellSettings()?.hideOnEmpty}
+                            onChange={dispatchCellSettingsCheckbox}
+                        />
+                        <label htmlFor="hideOnEmpty">hideOnEmpty</label>
+                    </div>
+                    <div>
+                        <input
+                            name="isRequired"
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedCellSettings()?.isRequired}
+                            onChange={dispatchCellSettingsCheckbox}
+                        />
+                        <label htmlFor="isRequired">isRequired</label>
+                    </div>
+                    <div>
+                        <input
+                            name="inputHelper"
+                            type="number"
+                            maxLength={100}
+                            value={selectedCellSettings()?.inputHelper}
+                            onChange={dispatchCellSettings}
+                        />
+                        <label htmlFor="inputHelper">inputHelper</label>
+                    </div>
+                    <div>
+                        <input
+                            name="text"
+                            type="text"
+                            maxLength={100}
+                            value={selectedCellSettings()?.text ?? ""}
+                            onChange={dispatchCellSettings}
+                        />
+                        <label htmlFor="text">text</label>
+                    </div>
+                    <div>
+                        <input
+                            name="description"
+                            type="text"
+                            maxLength={100}
+                            value={selectedCellSettings()?.description ?? ""}
+                            onChange={dispatchCellSettings}
+                        />
+                        <label htmlFor="description">description</label>
+                    </div>
+                </fieldset>
+            ) : null}
+        </div>
     );
 };
 
@@ -330,6 +347,7 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
                     cell={cell}
                     entryRowID={row.id}
                     templateRowID={row.templateID}
+                    isReadOnly={true}
                 />
             ))}
         </div>
@@ -340,10 +358,12 @@ const EditorCell = ({
     cell,
     entryRowID,
     templateRowID,
+    isReadOnly,
 }: {
     cell: EntryCell;
     entryRowID: string;
     templateRowID: string;
+    isReadOnly: boolean;
 }) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
@@ -361,8 +381,22 @@ const EditorCell = ({
 
     const getInputHelper = () => {
         switch (cell.template.inputHelper) {
+            case 1:
+                return <IhStatic cell={cell} isReadOnly={isReadOnly} />;
             case 2:
-                return <IhStatic cell={cell} />;
+                return <IhTextShort cell={cell} isReadOnly={isReadOnly} />;
+            case 3:
+                return <IhTextLong cell={cell} isReadOnly={isReadOnly} />;
+            case 4:
+                return <IhNumber cell={cell} isReadOnly={isReadOnly} />;
+            case 5:
+                return <IhCheckbox cell={cell} isReadOnly={isReadOnly} />;
+            case 6:
+                return <IhDate cell={cell} isReadOnly={isReadOnly} />;
+            case 7:
+                return <IhTime cell={cell} isReadOnly={isReadOnly} />;
+            case 8:
+                return <IhDateTime cell={cell} isReadOnly={isReadOnly} />;
             default:
                 return (
                     <pre>
@@ -377,6 +411,7 @@ const EditorCell = ({
             onClick={select}
             style={{
                 backgroundColor: cell.templateID == editor.selectedTemplateCell ? "blue" : "",
+                padding: "0.5rem",
             }}
             className="lcell"
             title={cell.template?.description ?? ""}>
@@ -385,7 +420,89 @@ const EditorCell = ({
     );
 };
 
-const IhStatic = ({ cell }: { cell: EntryCell }) => {
-    const editor = useAppSelector(selectEditor);
-    return <>{editor.isTemplate ? <input /> : cell.template.text ?? cell.template.text ?? ""}</>;
+const IhStatic = ({ cell }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return <div>{cell.template.text ?? cell.template.text ?? ""}</div>;
+};
+
+const IhTextShort = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="text"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhTextLong = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <textarea
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhNumber = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="number"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhCheckbox = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="checkbox"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhDate = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="date"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhTime = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="time"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
+};
+
+const IhDateTime = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+    return (
+        <input
+            type="datetime"
+            placeholder={cell.template.text ?? ""}
+            disabled={isReadOnly}
+            required={cell.template.isRequired}
+            onChange={() => {}}
+        />
+    );
 };
