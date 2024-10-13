@@ -19,6 +19,7 @@ import {
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import { useTranslation } from "react-i18next";
+import { DEFAULT_UUID } from "~/constants/general";
 
 const TemplatesList = () => {
     const template = useAppSelector(selectTemplate);
@@ -114,6 +115,9 @@ export default function TemplatesLayout() {
                     }}>
                     {template.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
                 </button>
+                <Link to={Routes.Templates.Edit.replace(RouteParams.TemplateId, DEFAULT_UUID)}>
+                    Create new Template
+                </Link>
                 {typeof editor.data?.templateID === "string" ? (
                     <>
                         <button
@@ -177,7 +181,7 @@ export default function TemplatesLayout() {
                                 checked={template.filter.includePublic === "true"}
                                 onChange={dispatchFilterCheckbox}
                             />
-                            <label htmlFor="includeOwned">{t("formFields.owned")}</label>
+                            <label htmlFor="includePublic">{t("formFields.public")}</label>
                         </div>
                     </fieldset>
                 </form>

@@ -4,6 +4,7 @@ import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import type { Editor } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
+import { CreateEntryCell, CreateEntryRow, CreateTemplateRow } from "./editor-create";
 
 type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -143,6 +144,10 @@ const editorSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
+        setEditor: (state, action: PayloadAction<Editor>) => {
+            state.data = action.payload;
+            state.status = "succeeded";
+        },
         setTemplate: (
             state,
             action: PayloadAction<{
@@ -190,29 +195,66 @@ const editorSlice = createSlice({
                     break;
             }
         },
+        setTemplateCell: (
+            state,
+            action: PayloadAction<{
+                type: string;
+                value: boolean | number | string;
+            }>,
+        ) => {
+            switch (action.payload.type) {
+                case "hideOnEmpty":
+                case "isRequired":
+                case "inputHelper":
+                case "text":
+                case "description":
+                case "metaData":
+                    if (state.data && state.data.items.length > 0) {
+                        state.data.items = state.data.items.map((row) => {
+                            if (row.templateID === state.selectedTemplateRow) {
+                                const tempCellList = row.items.map((cell) => {
+                                    if (cell.templateID === state.selectedTemplateCell) {
+                                        const tempCell = { ...cell };
+                                        tempCell.template = {
+                                            ...tempCell.template,
+                                            [action.payload.type]: action.payload.value,
+                                        };
+                                        return {
+                                            ...tempCell,
+                                        };
+                                    }
+                                    return cell;
+                                });
+                                const tempRow = { ...row };
+                                return {
+                                    ...tempRow,
+                                    items: tempCellList,
+                                };
+                            }
+                            return row;
+                        });
+                    }
+                    break;
+            }
+        },
         addTemplateRow: (state) => {
+            if (state.data) {
+                const templateRowID = crypto.randomUUID();
+                const templatecellID = crypto.randomUUID();
+                state.data.items = [
+                    ...state.data.items,
+                    CreateEntryRow(templateRowID, templatecellID),
+                ];
+            }
+        },
+        addTemplateCell: (state) => {
             if (state.data && state.data.items.length > 0) {
                 state.data.items = state.data.items.map((row) => {
                     if (row.templateID === state.selectedTemplateRow) {
                         const temp = { ...row };
 
                         const templateID = crypto.randomUUID();
-                        const ID = crypto.randomUUID();
-
-                        temp.items.push({
-                            id: ID,
-                            data: "",
-                            templateID: crypto.randomUUID(),
-                            template: {
-                                id: templateID,
-                                inputHelper: 0,
-                                hideOnEmpty: false,
-                                isRequired: false,
-                                text: "",
-                                description: "",
-                                metaData: "",
-                            },
-                        });
+                        temp.items.push(CreateEntryCell(templateID));
 
                         return {
                             ...temp,
@@ -225,12 +267,28 @@ const editorSlice = createSlice({
         removeTemplateRow: (state) => {
             if (state.data && state.data.items.length > 0) {
                 state.data.items = state.data.items.filter((row) => {
-                    row.templateID !== state.selectedTemplateRow;
+                    if (row.templateID !== state.selectedTemplateRow) return row;
                 });
                 state.selectedTemplateRow = "";
                 state.selectedTemplateCell = "";
                 state.selectedEntryRow = "";
                 state.selectedEntryCell = "";
+            }
+        },
+        removeTemplateCell: (state) => {
+            if (state.data && state.data.items.length > 0) {
+                state.data.items = state.data.items.map((row) => {
+                    if (row.templateID === state.selectedTemplateRow) {
+                        const tempCellList = row.items.filter((cell) => {
+                            if (cell.templateID !== state.selectedTemplateCell) return cell;
+                        });
+                        return {
+                            ...row,
+                            items: tempCellList,
+                        };
+                    }
+                    return row;
+                });
             }
         },
         setIsTemplate(state, action: PayloadAction<boolean>) {
@@ -284,7 +342,18 @@ const editorSlice = createSlice({
     },
 });
 
-export const { setTemplate, setSelected, reset, setTemplateRow, setIsTemplate, addTemplateRow } =
-    editorSlice.actions;
+export const {
+    setEditor,
+    setTemplate,
+    setSelected,
+    reset,
+    setTemplateRow,
+    setIsTemplate,
+    addTemplateCell,
+    addTemplateRow,
+    removeTemplateRow,
+    removeTemplateCell,
+    setTemplateCell,
+} = editorSlice.actions;
 export const selectEditor = (state: RootState) => state.editor;
 export default editorSlice.reducer;

@@ -1,24 +1,30 @@
-import { Link, useParams } from "react-router-dom";
-
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
+import { Link, useParams } from "react-router-dom";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
+import { DEFAULT_UUID } from "~/constants/general";
+import { CreateEditor } from "~/redux/features/editor/editor-create";
+import { Editor, EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
+    addTemplateCell,
     addTemplateRow,
     getEditor,
+    removeTemplateCell,
+    removeTemplateRow,
     reset,
     selectEditor,
+    setEditor,
     setSelected,
     setTemplate,
+    setTemplateCell,
     setTemplateRow,
     updateEditor,
 } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import { useTranslation } from "react-i18next";
-import { EntryCell, EntryRow, Template } from "~/redux/features/editor/editor-schemas";
 
 export default function TemplatesEdit() {
     const { templateId } = useParams();
@@ -27,7 +33,10 @@ export default function TemplatesEdit() {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        if (!templateId) return;
+        if (!templateId || templateId == DEFAULT_UUID) {
+            dispatch(setEditor(CreateEditor()));
+            return;
+        }
         dispatch(getEditor({ id: templateId, isTemplate: true }));
         return () => {
             dispatch(reset());
@@ -72,8 +81,19 @@ const TemplateMenuBar = () => {
     const selectedRowSettings = () => {
         if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;
         const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
-        console.log(row);
         return row?.template;
+    };
+    const selectedCellSettings = () => {
+        if (
+            editor.selectedTemplateRow.length == 0 ||
+            editor.selectedTemplateCell.length == 0 ||
+            editor.data === null
+        )
+            return null;
+        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
+        if (!row) return null;
+        const cell = row?.items.find((cell) => cell.templateID === editor.selectedTemplateCell);
+        return cell?.template;
     };
 
     const dispatchRowSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -81,6 +101,24 @@ const TemplateMenuBar = () => {
             setTemplateRow({
                 type: e.target.name,
                 value: e.target.checked,
+            }),
+        );
+    };
+
+    const dispatchCellSettingsCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setTemplateCell({
+                type: e.target.name,
+                value: e.target.checked,
+            }),
+        );
+    };
+
+    const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setTemplateCell({
+                type: e.target.name,
+                value: e.target.value,
             }),
         );
     };
@@ -124,49 +162,106 @@ const TemplateMenuBar = () => {
                     </Link>
                 </fieldset>
             ) : null}
-            {editor.selectedTemplateRow.length > 0 ? (
-                <fieldset className="lrow">
-                    <legend>Zeilen Actions</legend>
-                    <div>
-                        <input
-                            name="canWrapCells"
-                            type="checkbox"
-                            maxLength={100}
-                            checked={selectedRowSettings()?.canWrapCells}
-                            onChange={dispatchRowSettings}
-                        />
-                        <label htmlFor="canWrapCells">CanWrapCells</label>
-                    </div>
-                    <div>
-                        <input
-                            name="canRepeat"
-                            type="checkbox"
-                            maxLength={100}
-                            checked={selectedRowSettings()?.canRepeat}
-                            onChange={dispatchRowSettings}
-                        />
-                        <label htmlFor="canRepeat">CanRepeat</label>
-                    </div>
-                    <div>
-                        <input
-                            name="hideOnNoInput"
-                            type="checkbox"
-                            maxLength={100}
-                            checked={selectedRowSettings()?.hideOnNoInput}
-                            onChange={dispatchRowSettings}
-                        />
-                        <label htmlFor="hideOnNoInput">HideOnNoInput</label>
-                    </div>
-                    <button onClick={() => dispatch(addTemplateRow())}>
-                        neue Zelle zur Zeile hinzufügen
-                    </button>
-                    <button onClick={() => dispatch(addTemplateRow())}>zeile löschen</button>
-                </fieldset>
-            ) : null}
+            <fieldset className="lrow">
+                <legend>Zeilen Actions</legend>
+                {editor.selectedTemplateRow.length > 0 ? (
+                    <>
+                        <div>
+                            <input
+                                name="canWrapCells"
+                                type="checkbox"
+                                maxLength={100}
+                                checked={selectedRowSettings()?.canWrapCells}
+                                onChange={dispatchRowSettings}
+                            />
+                            <label htmlFor="canWrapCells">CanWrapCells</label>
+                        </div>
+                        <div>
+                            <input
+                                name="canRepeat"
+                                type="checkbox"
+                                maxLength={100}
+                                checked={selectedRowSettings()?.canRepeat}
+                                onChange={dispatchRowSettings}
+                            />
+                            <label htmlFor="canRepeat">CanRepeat</label>
+                        </div>
+                        <div>
+                            <input
+                                name="hideOnNoInput"
+                                type="checkbox"
+                                maxLength={100}
+                                checked={selectedRowSettings()?.hideOnNoInput}
+                                onChange={dispatchRowSettings}
+                            />
+                            <label htmlFor="hideOnNoInput">HideOnNoInput</label>
+                        </div>
+                    </>
+                ) : null}
+                <button onClick={() => dispatch(addTemplateRow())}>neue Zelle hinzufügen</button>
+                <button onClick={() => dispatch(addTemplateCell())}>
+                    neue Zelle zur Zeile hinzufügen
+                </button>
+                <button onClick={() => dispatch(removeTemplateRow())}>zeile löschen</button>
+                <button onClick={() => dispatch(removeTemplateCell())}>Zelle löschen</button>
+            </fieldset>
             {editor.selectedTemplateCell.length > 0 ? (
                 <fieldset className="lrow">
                     <legend>Zellen Actions</legend>
-                    <button className="lcell">{t("common.copy")}</button>
+                    {editor.selectedTemplateRow.length > 0 ? (
+                        <>
+                            <div>
+                                <input
+                                    name="hideOnEmpty"
+                                    type="checkbox"
+                                    maxLength={100}
+                                    checked={selectedCellSettings()?.hideOnEmpty}
+                                    onChange={dispatchCellSettingsCheckbox}
+                                />
+                                <label htmlFor="hideOnEmpty">hideOnEmpty</label>
+                            </div>
+                            <div>
+                                <input
+                                    name="isRequired"
+                                    type="checkbox"
+                                    maxLength={100}
+                                    checked={selectedCellSettings()?.isRequired}
+                                    onChange={dispatchCellSettingsCheckbox}
+                                />
+                                <label htmlFor="isRequired">isRequired</label>
+                            </div>
+                            <div>
+                                <input
+                                    name="inputHelper"
+                                    type="number"
+                                    maxLength={100}
+                                    value={selectedCellSettings()?.inputHelper}
+                                    onChange={dispatchCellSettings}
+                                />
+                                <label htmlFor="inputHelper">inputHelper</label>
+                            </div>
+                            <div>
+                                <input
+                                    name="text"
+                                    type="text"
+                                    maxLength={100}
+                                    value={selectedCellSettings()?.text ?? ""}
+                                    onChange={dispatchCellSettings}
+                                />
+                                <label htmlFor="text">text</label>
+                            </div>
+                            <div>
+                                <input
+                                    name="description"
+                                    type="text"
+                                    maxLength={100}
+                                    value={selectedCellSettings()?.description ?? ""}
+                                    onChange={dispatchCellSettings}
+                                />
+                                <label htmlFor="description">description</label>
+                            </div>
+                        </>
+                    ) : null}
                 </fieldset>
             ) : null}
         </>
@@ -271,7 +366,7 @@ const EditorCell = ({
             default:
                 return (
                     <pre>
-                        <code>{JSON.stringify(cell, undefined, 2)}</code>
+                        <code>{JSON.stringify(cell.template, undefined, 2)}</code>
                     </pre>
                 );
         }
