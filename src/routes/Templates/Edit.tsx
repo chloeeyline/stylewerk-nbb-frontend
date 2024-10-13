@@ -114,7 +114,9 @@ const TemplateMenuBar = () => {
         );
     };
 
-    const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dispatchCellSettings = (
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+    ) => {
         dispatch(
             setTemplateCell({
                 type: e.target.name,
@@ -250,15 +252,20 @@ const TemplateMenuBar = () => {
                         <label htmlFor="isRequired">isRequired</label>
                     </div>
                     <div>
-                        <input
+                        <select
                             name="inputHelper"
-                            type="number"
-                            maxLength={100}
                             value={selectedCellSettings()?.inputHelper}
-                            onChange={dispatchCellSettings}
-                            min={1}
-                            max={9}
-                        />
+                            onChange={dispatchCellSettings}>
+                            <option value="1">Fix Text</option>
+                            <option value="2">Kurze Texteingabe</option>
+                            <option value="3">Lange Texteingabe</option>
+                            <option value="4">Zahleneingabe</option>
+                            <option value="5">Checkbox</option>
+                            <option value="6">Datum</option>
+                            <option value="7">Zeit</option>
+                            <option value="8">Datetime</option>
+                            <option value="9">Farbe</option>
+                        </select>
                         <label htmlFor="inputHelper">inputHelper</label>
                     </div>
                     <div>
@@ -449,12 +456,15 @@ const IhTextShort = ({ cell, isReadOnly }: InputHelperProps) => {
 
 const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <textarea
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <textarea
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
