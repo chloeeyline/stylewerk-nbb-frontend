@@ -43,7 +43,9 @@ const builtInThemes: Theme[] = [
     },
 ];
 
-const getThemes = async () => {};
+const getThemes = async () => {
+    return builtInThemes;
+};
 
 export type { Theme, ThemeEditable };
 export { themeSchema, themeEditableSchema, getThemes };
