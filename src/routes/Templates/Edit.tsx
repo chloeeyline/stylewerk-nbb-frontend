@@ -256,6 +256,8 @@ const TemplateMenuBar = () => {
                             maxLength={100}
                             value={selectedCellSettings()?.inputHelper}
                             onChange={dispatchCellSettings}
+                            min={1}
+                            max={9}
                         />
                         <label htmlFor="inputHelper">inputHelper</label>
                     </div>
@@ -379,24 +381,28 @@ const EditorCell = ({
         );
     };
 
-    const getInputHelper = () => {
-        switch (cell.template.inputHelper) {
+    const getInputHelper = (inputHelper: number) => {
+        const props: InputHelperProps = { cell, isReadOnly };
+
+        switch (inputHelper) {
             case 1:
-                return <IhStatic cell={cell} isReadOnly={isReadOnly} />;
+                return <IhStatic {...props} />;
             case 2:
-                return <IhTextShort cell={cell} isReadOnly={isReadOnly} />;
+                return <IhTextShort {...props} />;
             case 3:
-                return <IhTextLong cell={cell} isReadOnly={isReadOnly} />;
+                return <IhTextLong {...props} />;
             case 4:
-                return <IhNumber cell={cell} isReadOnly={isReadOnly} />;
+                return <IhNumber {...props} />;
             case 5:
-                return <IhCheckbox cell={cell} isReadOnly={isReadOnly} />;
+                return <IhCheckbox {...props} />;
             case 6:
-                return <IhDate cell={cell} isReadOnly={isReadOnly} />;
+                return <IhDate {...props} />;
             case 7:
-                return <IhTime cell={cell} isReadOnly={isReadOnly} />;
+                return <IhTime {...props} />;
             case 8:
-                return <IhDateTime cell={cell} isReadOnly={isReadOnly} />;
+                return <IhDateTime {...props} />;
+            case 9:
+                return <IhColor {...props} />;
             default:
                 return (
                     <pre>
@@ -415,28 +421,33 @@ const EditorCell = ({
             }}
             className="lcell"
             title={cell.template?.description ?? ""}>
-            {getInputHelper()}
+            {getInputHelper(cell.template.inputHelper)}
         </div>
     );
 };
 
-const IhStatic = ({ cell }: { cell: EntryCell; isReadOnly: boolean }) => {
+type InputHelperProps = { cell: EntryCell; isReadOnly: boolean };
+
+const IhStatic = ({ cell }: InputHelperProps) => {
     return <div>{cell.template.text ?? cell.template.text ?? ""}</div>;
 };
 
-const IhTextShort = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhTextShort = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="text"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="text"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
-const IhTextLong = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
         <textarea
             placeholder={cell.template.text ?? ""}
@@ -447,62 +458,92 @@ const IhTextLong = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean
     );
 };
 
-const IhNumber = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="number"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="number"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
-const IhCheckbox = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="checkbox"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="checkbox"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
-const IhDate = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhDate = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="date"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="date"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
-const IhTime = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhTime = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="time"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="time"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
 
-const IhDateTime = ({ cell, isReadOnly }: { cell: EntryCell; isReadOnly: boolean }) => {
+const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
-        <input
-            type="datetime"
-            placeholder={cell.template.text ?? ""}
-            disabled={isReadOnly}
-            required={cell.template.isRequired}
-            onChange={() => {}}
-        />
+        <>
+            <input
+                type="datetime"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
+    );
+};
+
+const IhColor = ({ cell, isReadOnly }: InputHelperProps) => {
+    return (
+        <>
+            <input
+                type="color"
+                placeholder={cell.template.text ?? ""}
+                disabled={isReadOnly}
+                required={cell.template.isRequired}
+                onChange={() => {}}
+            />
+            <label>{cell.template.text ?? ""}</label>
+        </>
     );
 };
