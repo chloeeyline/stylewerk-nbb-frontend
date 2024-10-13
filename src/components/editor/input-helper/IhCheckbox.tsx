@@ -1,4 +1,4 @@
-import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 
 export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
@@ -12,5 +12,13 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
             />
             <label>{cell.template.text ?? ""}</label>
         </>
+    );
+};
+
+export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
+    return (
+        <div>
+            <div>adsadasdas</div>
+        </div>
     );
 };

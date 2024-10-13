@@ -1,4 +1,4 @@
-import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 
 export const IhColor = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
@@ -12,5 +12,13 @@ export const IhColor = ({ cell, isReadOnly }: InputHelperProps) => {
             />
             <label>{cell.template.text ?? ""}</label>
         </>
+    );
+};
+
+export const IhColorSettings = ({ cell }: { cell: EntryCell }) => {
+    return (
+        <div>
+            <div></div>
+        </div>
     );
 };

@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
+import InputHelperSettings from "./InputHelperSettings";
 
 const TemplateCellSettings = () => {
     const editor = useAppSelector(selectEditor);
@@ -19,7 +20,7 @@ const TemplateCellSettings = () => {
         const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
         if (!row) return null;
         const cell = row?.items.find((cell) => cell.templateID === editor.selectedTemplateCell);
-        return cell?.template;
+        return cell ?? null;
     };
 
     const dispatchCellSettingsCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +95,7 @@ const TemplateCellSettings = () => {
                     name="hideOnEmpty"
                     type="checkbox"
                     maxLength={100}
-                    checked={selectedCellSettings()?.hideOnEmpty ?? false}
+                    checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
                     onChange={dispatchCellSettingsCheckbox}
                 />
                 <label htmlFor="hideOnEmpty">hideOnEmpty</label>
@@ -104,7 +105,7 @@ const TemplateCellSettings = () => {
                     name="isRequired"
                     type="checkbox"
                     maxLength={100}
-                    checked={selectedCellSettings()?.isRequired ?? false}
+                    checked={selectedCellSettings()?.template.isRequired ?? false}
                     onChange={dispatchCellSettingsCheckbox}
                 />
                 <label htmlFor="isRequired">isRequired</label>
@@ -112,7 +113,7 @@ const TemplateCellSettings = () => {
             <div>
                 <select
                     name="inputHelper"
-                    value={selectedCellSettings()?.inputHelper ?? 1}
+                    value={selectedCellSettings()?.template.inputHelper ?? 1}
                     onChange={dispatchCellSettings}
                     ref={selectRef}>
                     <option value="1">Fix Text</option>
@@ -132,7 +133,7 @@ const TemplateCellSettings = () => {
                     name="text"
                     type="text"
                     maxLength={100}
-                    value={selectedCellSettings()?.text ?? ""}
+                    value={selectedCellSettings()?.template.text ?? ""}
                     onChange={dispatchCellSettings}
                 />
                 <label htmlFor="text">text</label>
@@ -142,11 +143,12 @@ const TemplateCellSettings = () => {
                     name="description"
                     type="text"
                     maxLength={100}
-                    value={selectedCellSettings()?.description ?? ""}
+                    value={selectedCellSettings()?.template.description ?? ""}
                     onChange={dispatchCellSettings}
                 />
                 <label htmlFor="description">description</label>
             </div>
+            <InputHelperSettings cell={selectedCellSettings()} />
         </fieldset>
     );
 };

@@ -3,16 +3,17 @@ import { useTranslation } from "react-i18next";
 import { DEFAULT_UUID } from "~/constants/general";
 import { CreateEditor } from "~/redux/features/editor/editor-create";
 import {
-    selectEditor,
-    setEditor,
     getEditor,
     reset,
+    selectEditor,
+    setEditor,
     setMode,
 } from "~/redux/features/editor/editor-slice";
-import { useAppSelector, useAppDispatch } from "~/redux/hooks";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
 import EditorRow from "./EditorRow";
+import InputHelperSettings from "./toolbar/InputHelperSettings";
 import TemplateActions from "./toolbar/TemplateActions";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateRowSettings from "./toolbar/TemplateRowSettings";

@@ -1,4 +1,4 @@
-import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 
 export const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
@@ -11,5 +11,13 @@ export const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
             />
             <label>{cell.template.text ?? ""}</label>
         </>
+    );
+};
+
+export const IhTextLongSettings = ({ cell }: { cell: EntryCell }) => {
+    return (
+        <div>
+            <div></div>
+        </div>
     );
 };
