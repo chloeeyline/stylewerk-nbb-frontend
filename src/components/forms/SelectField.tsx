@@ -13,7 +13,7 @@ export default forwardRef(function SelectField(
         name: string;
         label: string;
         options: [string, string][];
-        error: string | null;
+        error?: string | null;
     },
     ref: React.ForwardedRef<HTMLSelectElement>,
 ) {
