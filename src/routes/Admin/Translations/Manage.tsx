@@ -1,113 +1,237 @@
-import Grid from "~/components/layout/Grid";
-import { updateLanguage } from "./update";
-import ScrollContainer from "~/components/layout/ScrollContainer";
-import { useEffect, useRef, useState } from "react";
-import InputField from "~/components/forms/InputField";
+import type React from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import InputField from "~/components/forms/InputField";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
+import BackendRoutes from "~/constants/backend-routes";
+import RouteParams from "~/constants/route-params";
+import { translationContentSchema, translationSchema } from "~/schemas/translations-schema";
+import type { Translation, TranslationContent } from "~/schemas/translations-schema";
 import Ajax from "~/utils/ajax";
-import { Language } from "~/constants/backend-routes";
+import { updateLanguage } from "./update";
 
-const isRecordRecord = (input: unknown): input is Record<string, Record<string, string>> => {
-    if (
-        typeof input !== "object" ||
-        input === null ||
-        Object.values(input).some((outer) => {
-            if (
-                typeof outer !== "object" ||
-                outer === null ||
-                Object.values(outer).some((inner) => typeof inner !== "string")
-            ) {
-                return true;
-            }
+type TranslationState = {
+    loading: boolean;
+    error: string | null;
+    code: string;
+    name: string;
+    data: TranslationContent;
+};
 
-            return false;
-        })
-    ) {
-        return false;
+const getLanguage = async (
+    code: string,
+    failureCode?: string,
+): Promise<
+    | { ok: true; code: string; name: string; data: TranslationContent }
+    | { ok: false; error: string }
+> => {
+    const response = await Ajax.get(BackendRoutes.Language.Details, { search: { code } });
+
+    if (response.ok === false) {
+        if (code === "de")
+            return {
+                ok: false,
+                error: response.error.message,
+            };
+        return await getLanguage("de", code);
     }
 
-    return true;
+    const result = await translationSchema.safeParseAsync(response.result);
+
+    if (result.success === false || result.data.data === null) {
+        if (code === "de")
+            return {
+                ok: false,
+                error: result?.error?.message ?? "Data is unset",
+            };
+        return await getLanguage("de", code);
+    }
+
+    try {
+        const translationResult = await translationContentSchema.safeParseAsync(
+            JSON.parse(result.data.data),
+        );
+
+        if (translationResult.success === false) {
+            if (code === "de") {
+                return {
+                    ok: false,
+                    error: translationResult.error.message,
+                };
+            }
+            return await getLanguage("de", code);
+        }
+
+        return {
+            ok: true,
+            code: typeof failureCode === "string" ? failureCode : result.data.code,
+            name: typeof failureCode === "string" ? "" : result.data.name,
+            data: translationResult.data,
+        };
+    } catch (error) {
+        if (code === "de") {
+            return {
+                ok: false,
+                error: "Something went wrong!",
+            };
+        }
+        return await getLanguage("de", code);
+    }
+};
+
+const Editor = ({
+    translationState,
+    setTranslationState,
+}: {
+    translationState: TranslationState;
+    setTranslationState: React.Dispatch<TranslationState>;
+}) => {
+    return (
+        <div style={{ display: "grid" }} className="gap-1">
+            {Object.entries(translationState.data).map(([ns, translations]) => (
+                <div key={ns} style={{ display: "grid" }} className="gap-1">
+                    {Object.entries(translations).map(([key, value]) => (
+                        <div key={key} style={{ display: "grid", gridTemplateColumns: "auto 1fr" }} className="gap-1">
+                            <span>
+                                {ns}.{key}:
+                            </span>
+                            <input
+                                type="text"
+                                value={value}
+                                onChange={(e) => {
+                                    const newTranslationState = { ...translationState };
+
+                                    newTranslationState.data[ns][key] = e.target.value;
+
+                                    setTranslationState(newTranslationState);
+                                }}
+                            />
+                        </div>
+                    ))}
+                </div>
+            ))}
+        </div>
+    );
 };
 
 export default function AdminTranslationsManage() {
     const { translationId } = useParams();
-    const jsonRef = useRef<HTMLTextAreaElement>(null);
-    const nameRef = useRef<HTMLInputElement>(null);
 
-    console.log(translationId);
+    const [translationState, setTranslationState] = useState<TranslationState>({
+        loading: false,
+        error: null,
+        code: translationId ?? RouteParams.TranslationId,
+        name: "",
+        data: {},
+    });
 
-    const refetch = async (code: string) => {
-        if (nameRef.current === null || jsonRef.current === null) {
+    const fetchTranslationContent = async () => {
+        if (translationState.loading === true) return;
+
+        setTranslationState({
+            ...translationState,
+            loading: true,
+        });
+
+        if (translationState.code === RouteParams.TranslationId) {
+            setTranslationState({
+                ...translationState,
+                error: "Invalid translation-id",
+                loading: false,
+            });
             return;
         }
-        const response = await Ajax.get(Language.Details, { search: { code } });
 
-        if (
-            response.ok === false ||
-            typeof response.result !== "object" ||
-            response.result === null ||
-            !("name" in response.result) ||
-            typeof response.result.name !== "string" ||
-            !("data" in response.result) ||
-            typeof response.result.data !== "string"
-        ) {
+        const result = await getLanguage(translationState.code);
+
+        if (result.ok === false) {
+            setTranslationState({
+                ...translationState,
+                error: result.error,
+                loading: false,
+            });
             return;
         }
 
-        nameRef.current.value = response.result.name;
-        jsonRef.current.value = response.result.data;
+        setTranslationState({
+            ...translationState,
+            name: result.name,
+            error: null,
+            data: result.data,
+            loading: false,
+        });
     };
 
     useEffect(() => {
-        if (typeof translationId !== "string") return;
-        refetch(translationId);
+        fetchTranslationContent();
     }, [translationId]);
 
-    if (typeof translationId !== "string") {
+    if (translationState.code === RouteParams.TranslationId) {
         return <div>No id given</div>;
     }
 
     return (
-        <Grid layout="header" className="block-size-100">
+        <Grid layout="header" className="size-block-100">
             <h1>Admin - TranslationsManage</h1>
-            <Grid layout="headerFooter" className="block-size-100">
-                <div>
-                    <InputField label="Code" name="code" value="translationId" readOnly />
-                    <InputField label="Name" name="name" ref={nameRef} />
-                </div>
-                <ScrollContainer direction="both">
-                    <textarea ref={jsonRef} />
-                </ScrollContainer>
-                <div>
-                    <button
-                        type="button"
-                        onClick={async () => {
-                            if (
-                                typeof nameRef.current?.value !== "string" ||
-                                typeof jsonRef.current?.value !== "string"
-                            ) {
-                                return;
-                            }
+            <ScrollContainer direction="vertical">
+                <Grid layout="headerFooter" className="size-block-100 gap-1-rem">
+                    <div>
+                        <InputField
+                            label="Code"
+                            name="code"
+                            value={translationState.code}
+                            readOnly
+                        />
+                        <InputField
+                            label="Name"
+                            name="name"
+                            value={translationState.name}
+                            onChange={(e) => {
+                                setTranslationState({
+                                    ...translationState,
+                                    name: e.target.value,
+                                });
+                            }}
+                        />
+                    </div>
+                    <ScrollContainer direction="vertical">
+                        <Editor
+                            translationState={translationState}
+                            setTranslationState={setTranslationState}
+                        />
+                    </ScrollContainer>
+                    <div>
+                        <button
+                            type="button"
+                            onClick={async () => {
+                                const { code, name, data } = translationState;
 
-                            const parsed = JSON.parse(jsonRef.current.value);
+                                if (name.trim() === "") {
+                                    setTranslationState({
+                                        ...translationState,
+                                        error: "Please enter a name!",
+                                    });
+                                    return;
+                                }
 
-                            if (isRecordRecord(parsed) === false) {
-                                return;
-                            }
+                                const result = await updateLanguage(code, name, data);
 
-                            const result = await updateLanguage(translationId, nameRef.current.value, parsed);
+                                if (result.ok === false) {
+                                    setTranslationState({
+                                        ...translationState,
+                                        error: result.error.message,
+                                    });
+                                    return;
+                                }
 
-                            if (result.ok === false) {
-                                console.error("Fuck");
-                                return;
-                            }
-
-                            await refetch(translationId);
-                        }}>
-                        Button
-                    </button>
-                </div>
-            </Grid>
+                                await fetchTranslationContent();
+                            }}>
+                            Save
+                        </button>
+                    </div>
+                </Grid>
+            </ScrollContainer>
         </Grid>
     );
 }

@@ -55,36 +55,34 @@ export default function User() {
                 {t("common.user", { count: 1 })}: {username}
                 {admin === true ? ` ${t("common.isAdmin")}` : ""}
             </h1>
-            <Grid layout="contentCenter">
-                <ScrollContainer direction="vertical">
-                    <div>
-                        <UpdateEmailForm email={email} />
-                        <UpdateUserForm firstName={firstName} lastName={lastName} gender={gender} />
-                        <button
-                            onClick={async () => {
-                                if (sessions === false) {
-                                    return;
-                                }
+            <ScrollContainer direction="vertical">
+                <Grid layout="contentCenter" className="size-block-100">
+                    <UpdateEmailForm email={email} />
+                    <UpdateUserForm firstName={firstName} lastName={lastName} gender={gender} />
+                    <button
+                        onClick={async () => {
+                            if (sessions === false) {
+                                return;
+                            }
 
-                                setSessions(false);
+                            setSessions(false);
 
-                                await removeSessions();
+                            await removeSessions();
 
-                                setSessions(true);
-                            }}>
-                            {t(
-                                `common.${
-                                    typeof sessions === "undefined"
-                                        ? "clearOtherSessions"
-                                        : sessions === true
-                                        ? "otherSessionsCleared"
-                                        : "clearingOtherSessions"
-                                }`,
-                            )}
-                        </button>
-                    </div>
-                </ScrollContainer>
-            </Grid>
+                            setSessions(true);
+                        }}>
+                        {t(
+                            `common.${
+                                typeof sessions === "undefined"
+                                    ? "clearOtherSessions"
+                                    : sessions === true
+                                    ? "otherSessionsCleared"
+                                    : "clearingOtherSessions"
+                            }`,
+                        )}
+                    </button>
+                </Grid>
+            </ScrollContainer>
         </Grid>
     );
 }
