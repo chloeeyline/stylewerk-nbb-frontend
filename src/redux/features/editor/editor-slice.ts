@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Backend, { Entry } from "~/constants/backend-routes";
+import Backend from "~/constants/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import { editorSchema, EntryCell, EntryRow, type Editor } from "./editor-schemas";
+import type { Editor } from "./editor-schemas";
+import { editorSchema } from "./editor-schemas";
 
 type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";

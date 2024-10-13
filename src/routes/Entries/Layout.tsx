@@ -16,7 +16,6 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { BlobOptions } from "buffer";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet } from "react-router-dom";
@@ -30,10 +29,13 @@ import {
     detailFolder,
     listEntry,
     listFolder,
+    removeFolder,
     reorderFolder,
     selectEntry,
     setFilter,
     setFolders,
+    setSelectedFolder,
+    setSelectedFolderName,
     toggleDragMode,
     toggleHideFilters,
     toggleHideList,
@@ -89,7 +91,12 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
     };
 
     return (
-        <div ref={setNodeRef} className="lcontainer m-be-1" style={style} {...attributes}>
+        <div
+            ref={setNodeRef}
+            className="lcontainer m-be-1"
+            style={style}
+            {...attributes}
+            onClick={() => dispatch(setSelectedFolder(item))}>
             <div
                 className="lrow"
                 onClick={() => {
@@ -125,15 +132,14 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
 
 const CreateFolderDialog = ({
     isOpen,
-    name,
     onClose,
 }: {
     isOpen: boolean;
-    name: string;
-    onClose: (name: string | null) => void;
+    onClose: (name: boolean) => void;
 }) => {
+    const entry = useAppSelector(selectEntry);
+    const dispatch = useAppDispatch();
     const dialogRef = useRef<HTMLDialogElement>(null);
-    const [folderName, setFolderName] = useState(name);
 
     // Show or hide the dialog based on isOpen prop
     useEffect(() => {
@@ -148,9 +154,13 @@ const CreateFolderDialog = ({
     return (
         <dialog ref={dialogRef} style={styles}>
             <h2>Name des Ordners</h2>
-            <input type="text" value={folderName} onChange={(e) => setFolderName(e.target.value)} />
-            <button onClick={() => onClose(null)}>Abbruch</button>
-            <button onClick={() => onClose(folderName)}>Speichern</button>
+            <input
+                type="text"
+                value={entry.selectedFolder?.name ?? ""}
+                onChange={(e) => dispatch(setSelectedFolderName(e.target.value))}
+            />
+            <button onClick={() => onClose(false)}>Abbruch</button>
+            <button onClick={() => onClose(true)}>Speichern</button>
         </dialog>
     );
 };
@@ -207,14 +217,14 @@ export default function EntriesLayout() {
         }
     };
 
-    const closeModal = (name: string | null) => {
-        if (!name) return;
+    const closeModal = (success: boolean) => {
         setDialogIsOpen(false);
+        if (success === false) return;
         dispatch(
             updateFolder({
                 model: {
-                    id: crypto.randomUUID(),
-                    name: name,
+                    id: entry.selectedFolder?.id ?? crypto.randomUUID(),
+                    name: entry.selectedFolder?.name ?? "",
                     items: [],
                     count: 0,
                 },
@@ -254,8 +264,15 @@ export default function EntriesLayout() {
                         : t("list.dragFolderModeDeactive")}
                 </button>
                 {entry.hideFilters && !entry.dragMode && (
-                    <button onClick={() => setDialogIsOpen(true)}>Neuen Ordner anlegen</button>
+                    <button onClick={() => setDialogIsOpen(true)}>
+                        {entry.selectedFolder.isNew ? "Neuen Ordner anlegen" : "Ordner bearbeiten"}
+                    </button>
                 )}
+                <button
+                    className={entry.selectedFolder.isNew === true ? "hidden" : undefined}
+                    onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
+                    Ordner Löschen
+                </button>
                 <form
                     className={cls(
                         "header",
@@ -303,7 +320,7 @@ export default function EntriesLayout() {
                     </fieldset>
                 </form>
             </div>
-            <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} name={""} />
+            <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
                 <div>
                     <ScrollContainer
