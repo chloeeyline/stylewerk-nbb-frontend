@@ -7,7 +7,7 @@ import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { DEFAULT_UUID } from "~/constants/general";
 import { CreateEditor } from "~/redux/features/editor/editor-create";
-import { Editor, EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
+import { EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
     addTemplateCell,
     addTemplateRow,

@@ -120,24 +120,24 @@ export const updateEditor = createAsyncThunk<
     },
 );
 
-const persistState = (editor: Editor) => {
-    localStorage.setItem(`draft_${editor.id}`, JSON.stringify(editor));
-    try {
-        let drafts = JSON.parse(localStorage.getItem("drafts") ?? "[]");
+// const persistState = (editor: Editor) => {
+//     localStorage.setItem(`draft_${editor.id}`, JSON.stringify(editor));
+//     try {
+//         let drafts = JSON.parse(localStorage.getItem("drafts") ?? "[]");
 
-        if (Array.isArray(drafts) === false) {
-            drafts = [];
-        }
+//         if (Array.isArray(drafts) === false) {
+//             drafts = [];
+//         }
 
-        if (Array.isArray(drafts) && drafts.includes(`draft_${editor.id}`) === false) {
-            drafts.push(`draft_${editor.id}`);
-        }
+//         if (Array.isArray(drafts) && drafts.includes(`draft_${editor.id}`) === false) {
+//             drafts.push(`draft_${editor.id}`);
+//         }
 
-        localStorage.setItem("drafts", JSON.stringify(drafts));
-    } catch (error) {
-        localStorage.setItem("drafts", JSON.stringify([`draft_${editor.id}`]));
-    }
-};
+//         localStorage.setItem("drafts", JSON.stringify(drafts));
+//     } catch (error) {
+//         localStorage.setItem("drafts", JSON.stringify([`draft_${editor.id}`]));
+//     }
+// };
 
 const editorSlice = createSlice({
     name: "editor",
