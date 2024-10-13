@@ -22,8 +22,7 @@ const TemplateActions = () => {
         <fieldset className="lrow">
             <legend>Allgemeine Actions</legend>
             <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
+                className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
                     dispatch(copyTemplates({ id: editor.data?.templateID }));
@@ -31,8 +30,7 @@ const TemplateActions = () => {
                 {t("common.copy")}
             </button>
             <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
+                className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
                     dispatch(removeTemplates({ id: editor.data?.templateID }));
@@ -40,40 +38,27 @@ const TemplateActions = () => {
                 {t("common.delete")}
             </button>
             <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
+                className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
                     dispatch(updateEditor({ isTemplate: true }));
                 }}>
                 {t("common.save")}
             </button>
-            <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
-                onClick={() => dispatch(addTemplateRow())}>
+            <button className="m-1" onClick={() => dispatch(addTemplateRow())}>
                 neue Zelle hinzufügen
             </button>
-            <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
-                onClick={() => dispatch(addTemplateCell())}>
+            <button className="m-1" onClick={() => dispatch(addTemplateCell())}>
                 neue Zelle zur Zeile hinzufügen
             </button>
-            <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
-                onClick={() => dispatch(removeTemplateRow())}>
+            <button className="m-1" onClick={() => dispatch(removeTemplateRow())}>
                 zeile löschen
             </button>
-            <button
-                className="lcell margin"
-                style={{ "--margin": "0 0.5rem 0 0" }}
-                onClick={() => dispatch(removeTemplateCell())}>
+            <button className="m-1" onClick={() => dispatch(removeTemplateCell())}>
                 Zelle löschen
             </button>
             <Link
-                className="lcell"
+                className="m-1"
                 to={Routes.Templates.View.replace(
                     RouteParams.TemplateId,
                     editor.data?.templateID ?? "",

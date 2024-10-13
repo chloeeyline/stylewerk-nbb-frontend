@@ -15,7 +15,7 @@ const InputHelper = ({ cell }: { cell: EntryCell }) => {
     const editor = useAppSelector(selectEditor);
     const props: InputHelperProps = {
         cell,
-        isReadOnly: editor.isPreview === true && editor.isTemplate === true,
+        isReadOnly: editor.isPreview === true || editor.isTemplate === true,
     };
 
     switch (cell.template.inputHelper) {

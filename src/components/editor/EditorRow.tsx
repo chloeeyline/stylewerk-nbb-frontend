@@ -9,7 +9,7 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
         <div
             className="lrow"
             style={{
-                backgroundColor: row.templateID == editor.selectedTemplateRow ? "green" : "red",
+                backgroundColor: row.templateID == editor.selectedTemplateRow ? "green" : "",
                 margin: "0.5rem",
             }}>
             {row.items.map((cell) => (
