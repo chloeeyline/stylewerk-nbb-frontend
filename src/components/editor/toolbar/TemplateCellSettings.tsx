@@ -17,6 +17,7 @@ const TemplateCellSettings = () => {
             editor.data === null
         )
             return null;
+
         const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
         if (!row) return null;
         const cell = row?.items.find((cell) => cell.templateID === editor.selectedTemplateCell);
@@ -35,16 +36,6 @@ const TemplateCellSettings = () => {
     const dispatchCellSettings = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
     ) => {
-        if (e.target.name === "inputHelper") {
-            dispatch(
-                setTemplateCell({
-                    type: e.target.name,
-                    value: Number(e.target.value),
-                }),
-            );
-            return;
-        }
-
         dispatch(
             setTemplateCell({
                 type: e.target.name,
@@ -55,19 +46,14 @@ const TemplateCellSettings = () => {
 
     const handleWheelEvent = (e: WheelEvent) => {
         if (selectRef.current) {
-            e.preventDefault(); // Prevent page scroll
+            e.preventDefault();
             const selectElement = selectRef.current;
             const currentIndex = selectElement.selectedIndex;
 
-            if (e.deltaY < 0 && currentIndex > 0) {
-                // Scroll up, select previous option
-                selectElement.selectedIndex = currentIndex - 1;
-            } else if (e.deltaY > 0 && currentIndex < selectElement.options.length - 1) {
-                // Scroll down, select next option
+            if (e.deltaY < 0 && currentIndex > 0) selectElement.selectedIndex = currentIndex - 1;
+            else if (e.deltaY > 0 && currentIndex < selectElement.options.length - 1)
                 selectElement.selectedIndex = currentIndex + 1;
-            }
 
-            // Trigger the onChange event programmatically
             const event = new Event("change", { bubbles: true });
             selectElement.dispatchEvent(event);
         }
@@ -75,15 +61,9 @@ const TemplateCellSettings = () => {
 
     useEffect(() => {
         const selectElement = selectRef.current;
-
-        if (selectElement) {
-            selectElement.addEventListener("wheel", handleWheelEvent);
-        }
-
+        if (selectElement) selectElement.addEventListener("wheel", handleWheelEvent);
         return () => {
-            if (selectElement) {
-                selectElement.removeEventListener("wheel", handleWheelEvent);
-            }
+            if (selectElement) selectElement.removeEventListener("wheel", handleWheelEvent);
         };
     }, []);
 

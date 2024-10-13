@@ -7,7 +7,7 @@ const templateCellSchema = z.object({
     isRequired: z.boolean(),
     text: z.string().nullable(),
     description: z.string().nullable(),
-    metaData: z.string().nullable(),
+    metaData: z.any().nullable(),
 });
 
 const templateRowSchema = z.object({

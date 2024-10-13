@@ -6,7 +6,7 @@ import { CreateEntryCell, CreateEntryRow } from "./editor-create";
 import type { Editor } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
-type EditorState = {
+export type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";
     data: Editor | null;
     isTemplate: boolean;
@@ -217,9 +217,13 @@ const editorSlice = createSlice({
                                 const tempCellList = row.items.map((cell) => {
                                     if (cell.templateID === state.selectedTemplateCell) {
                                         const tempCell = { ...cell };
+                                        const value =
+                                            action.payload.type === "inputHelper"
+                                                ? Number(action.payload.value)
+                                                : action.payload.value;
                                         tempCell.template = {
                                             ...tempCell.template,
-                                            [action.payload.type]: action.payload.value,
+                                            [action.payload.type]: value,
                                         };
                                         return {
                                             ...tempCell,
