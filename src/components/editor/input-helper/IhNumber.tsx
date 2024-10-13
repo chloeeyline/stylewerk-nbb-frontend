@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { z } from "zod";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { setTemplateCell } from "~/redux/features/editor/editor-slice";
@@ -6,18 +6,30 @@ import { useAppDispatch } from "~/redux/hooks";
 
 const ihNumberSchema = z
     .object({
-        min: z.number().safe().catch(0).default(0),
-        max: z.number().safe().catch(100).default(100),
-        step: z.number().safe().catch(1).default(1),
+        min: z.number().safe().optional().catch(undefined).default(undefined),
+        max: z.number().safe().optional().catch(undefined).default(undefined),
+        step: z.number().safe().optional().catch(undefined).default(undefined),
         integer: z.boolean().catch(false).default(false),
     })
     .strip();
 
-type IhNumberMetadata = z.infer<typeof ihNumberSchema>;
+const transformMetadata = (input: unknown) => {
+    try {
+        if (typeof input !== "string") {
+            throw new Error("foo");
+        }
+
+        return ihNumberSchema.safeParse(JSON.parse(input));
+    } catch (error) {
+        return ihNumberSchema.safeParse({});
+    }
+};
 
 export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
-    const temp = ihNumberSchema.safeParse(JSON.parse(cell.template.metaData ?? "") ?? {});
+    const temp = transformMetadata(cell.template.metaData);
+
     if (temp.success === false) return null;
+
     return (
         <>
             <input
@@ -36,23 +48,20 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
 export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const temp = ihNumberSchema.safeParse(JSON.parse(cell.template.metaData ?? "") ?? {});
-    const [metadata, setMetadata] = useState<IhNumberMetadata>(
-        temp.success
-            ? temp.data
-            : {
-                  min: 0,
-                  max: 100,
-                  step: 1,
-                  integer: false,
-              },
-    );
+
+    const temp = transformMetadata(cell.template.metaData);
 
     useEffect(() => {
-        const temp = ihNumberSchema.safeParse(cell.template.metaData);
         if (temp.success === false) return;
-        setMetadata(temp.data);
-    }, [cell]);
+        dispatch(
+            setTemplateCell({
+                type: "metaData",
+                value: JSON.stringify(temp.data),
+            }),
+        );
+    }, []);
+
+    if (temp.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
@@ -60,15 +69,13 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
             case "min":
             case "max":
             case "step":
-                const temp = {
-                    ...metadata,
-                    [e.target.name]: Number(e.target.value),
-                };
-                setMetadata(temp);
                 dispatch(
                     setTemplateCell({
                         type: "metaData",
-                        value: JSON.stringify(metadata),
+                        value: JSON.stringify({
+                            ...temp.data,
+                            [e.target.name]: Number(e.target.value),
+                        }),
                     }),
                 );
                 break;
@@ -84,14 +91,14 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
             <input
                 name="min"
                 type="number"
-                value={metadata.min ?? ""}
+                value={temp.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <label htmlFor="min">Minimalwert</label>
             <input
                 name="max"
                 type="number"
-                value={metadata.max ?? ""}
+                value={temp.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <label htmlFor="max">Maximalwert</label>
