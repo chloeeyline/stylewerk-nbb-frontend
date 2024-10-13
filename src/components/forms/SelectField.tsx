@@ -14,7 +14,7 @@ export default forwardRef(function SelectField(
         name: string;
         label: string;
         options: [string, string][];
-        error: string | null;
+        error?: string | null;
         useNameAsIs?: boolean;
     },
     ref: React.ForwardedRef<HTMLSelectElement>,
@@ -26,7 +26,9 @@ export default forwardRef(function SelectField(
             <label htmlFor={useNameAsIs ? name : `${name}-${id}`}>{label}</label>
             <select ref={ref} name={useNameAsIs ? name : `${name}-${id}`} {...props}>
                 {options.map(([key, value]) => (
-                    <option key={key}>{value}</option>
+                    <option key={key} value={key}>
+                        {value}
+                    </option>
                 ))}
             </select>
             {error !== null ? <span>{error}</span> : null}

@@ -3,15 +3,15 @@
 }
 
 .header {
-    grid-template-rows: var(--header-width, auto) 1fr;
+    grid-template-rows: var(--header-height, auto) 1fr;
 }
 
 .footer {
-    grid-template-rows: 1fr var(--footer-width, auto);
+    grid-template-rows: 1fr var(--footer-height, auto);
 }
 
 .headerFooter {
-    grid-template-rows: var(--header-width, auto) 1fr var(--footer-width, auto);
+    grid-template-rows: var(--header-height, auto) 1fr var(--footer-height, auto);
 }
 
 .sidebarStart {
