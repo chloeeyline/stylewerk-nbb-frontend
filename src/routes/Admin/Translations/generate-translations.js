@@ -1,6 +1,6 @@
 (async () => {
     const token =
-        "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiJkOTc0YzZlMC0wNjFiLTRlMTEtYmM2Yy1iNDU1YTA3ZDI3ZTUiLCJleHAiOjE3Mjg4NTM5MzMsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCJ9.TOjQCrdaSH63hOOVYjgrVbtbvxNBlHNKSe2xzVYl5g4";
+        "";
 
     if (token === "") {
         alert("no token given!");
@@ -27,6 +27,7 @@
             labelName: ["Sprachname", "language-name"],
             labelUploadJson: ["JSON-Datei hochladen", "Upload JSON-file"],
             saveLanguage: ["Sprache speichern", "Save language"],
+            deleteLanguage: ["Sprache löschen", "Delete language"],
             labelNewCode: ["Neuer code", "New code"],
             labelFromCode: ["Von code", "From code"],
             fromCodeDefault: ["Standard (de)", "Default (de)"],

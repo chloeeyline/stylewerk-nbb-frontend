@@ -1,17 +1,17 @@
 import type React from "react";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import BackendRoutes from "~/constants/backend-routes";
 import RouteParams from "~/constants/route-params";
+import Routes from "~/constants/routes";
 import type { TranslationContent } from "~/schemas/translations-schema";
 import { translationContentSchema, translationSchema } from "~/schemas/translations-schema";
 import Ajax from "~/utils/ajax";
-import { updateLanguage } from "./update";
-import Routes from "~/constants/routes";
-import { useTranslation } from "react-i18next";
+import { deleteLanguage, updateLanguage } from "./api";
 
 type TranslationState = {
     loading: boolean;
@@ -283,8 +283,24 @@ export default function AdminTranslationsManage() {
 
                                 await fetchTranslationContent();
                             }}>
-                            Save
+                            {t("adminTranslations.saveLanguage")}
                         </button>
+                        {["de", "en"].includes(translationState.code) ? null : (
+                            <button
+                                type="button"
+                                onClick={async () => {
+                                    const result = await deleteLanguage(translationState.code);
+
+                                    if (result.ok === false) {
+                                        alert(t(`errorCodes.${result.error.message}`));
+                                        return;
+                                    }
+
+                                    navigate(Routes.Admin.Translations.List);
+                                }}>
+                                Delete
+                            </button>
+                        )}
                     </div>
                 </Grid>
             </ScrollContainer>

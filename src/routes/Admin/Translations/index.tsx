@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import BackendRoutes from "~/constants/backend-routes";
+import { BACKEND_URL } from "~/constants/general";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
 import type { Translation } from "~/schemas/translations-schema";
@@ -84,6 +86,12 @@ const Translations = () => {
                         )}>
                         {name} ({code})
                     </Link>
+                    <a
+                        className="p-is-1"
+                        href={`${BACKEND_URL}${BackendRoutes.Language.Index}?code=${code}`}
+                        download={`${name}.json`}>
+                        <Download className="icon-inline" fill="currentColor" />
+                    </a>
                 </li>
             ))}
             <li>
