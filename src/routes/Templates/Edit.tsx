@@ -118,6 +118,16 @@ const TemplateMenuBar = () => {
     const dispatchCellSettings = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
     ) => {
+        if (e.target.name === "inputHelper") {
+            dispatch(
+                setTemplateCell({
+                    type: e.target.name,
+                    value: Number(e.target.value),
+                }),
+            );
+            return;
+        }
+
         dispatch(
             setTemplateCell({
                 type: e.target.name,
@@ -229,38 +239,36 @@ const TemplateMenuBar = () => {
             {editor.selectedTemplateRow.length > 0 ? (
                 <fieldset className="lrow">
                     <legend>Zeilen Einstellung</legend>
-                    <>
-                        <div>
-                            <input
-                                name="canWrapCells"
-                                type="checkbox"
-                                maxLength={100}
-                                checked={selectedRowSettings()?.canWrapCells}
-                                onChange={dispatchRowSettings}
-                            />
-                            <label htmlFor="canWrapCells">CanWrapCells</label>
-                        </div>
-                        <div>
-                            <input
-                                name="canRepeat"
-                                type="checkbox"
-                                maxLength={100}
-                                checked={selectedRowSettings()?.canRepeat}
-                                onChange={dispatchRowSettings}
-                            />
-                            <label htmlFor="canRepeat">CanRepeat</label>
-                        </div>
-                        <div>
-                            <input
-                                name="hideOnNoInput"
-                                type="checkbox"
-                                maxLength={100}
-                                checked={selectedRowSettings()?.hideOnNoInput}
-                                onChange={dispatchRowSettings}
-                            />
-                            <label htmlFor="hideOnNoInput">HideOnNoInput</label>
-                        </div>
-                    </>
+                    <div>
+                        <input
+                            name="canWrapCells"
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedRowSettings()?.canWrapCells ?? false}
+                            onChange={dispatchRowSettings}
+                        />
+                        <label htmlFor="canWrapCells">CanWrapCells</label>
+                    </div>
+                    <div>
+                        <input
+                            name="canRepeat"
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedRowSettings()?.canRepeat ?? false}
+                            onChange={dispatchRowSettings}
+                        />
+                        <label htmlFor="canRepeat">CanRepeat</label>
+                    </div>
+                    <div>
+                        <input
+                            name="hideOnNoInput"
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedRowSettings()?.hideOnNoInput ?? false}
+                            onChange={dispatchRowSettings}
+                        />
+                        <label htmlFor="hideOnNoInput">HideOnNoInput</label>
+                    </div>
                 </fieldset>
             ) : null}
             {editor.selectedTemplateCell.length > 0 ? (
@@ -271,7 +279,7 @@ const TemplateMenuBar = () => {
                             name="hideOnEmpty"
                             type="checkbox"
                             maxLength={100}
-                            checked={selectedCellSettings()?.hideOnEmpty}
+                            checked={selectedCellSettings()?.hideOnEmpty ?? false}
                             onChange={dispatchCellSettingsCheckbox}
                         />
                         <label htmlFor="hideOnEmpty">hideOnEmpty</label>
@@ -281,7 +289,7 @@ const TemplateMenuBar = () => {
                             name="isRequired"
                             type="checkbox"
                             maxLength={100}
-                            checked={selectedCellSettings()?.isRequired}
+                            checked={selectedCellSettings()?.isRequired ?? false}
                             onChange={dispatchCellSettingsCheckbox}
                         />
                         <label htmlFor="isRequired">isRequired</label>
@@ -289,7 +297,7 @@ const TemplateMenuBar = () => {
                     <div>
                         <select
                             name="inputHelper"
-                            value={selectedCellSettings()?.inputHelper}
+                            value={selectedCellSettings()?.inputHelper ?? 1}
                             onChange={dispatchCellSettings}
                             ref={selectRef}>
                             <option value="1">Fix Text</option>
