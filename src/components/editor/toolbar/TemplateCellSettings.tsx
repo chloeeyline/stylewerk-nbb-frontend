@@ -76,6 +76,7 @@ const TemplateCellSettings = () => {
                 name={"hideOnEmpty"}
                 useNameAsIs={true}
                 type="checkbox"
+                maxLength={100}
                 checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
                 onChange={dispatchCellSettingsCheckbox}
             />
@@ -84,6 +85,7 @@ const TemplateCellSettings = () => {
                 name={"isRequired"}
                 useNameAsIs={true}
                 type="checkbox"
+                maxLength={100}
                 checked={selectedCellSettings()?.template.isRequired ?? false}
                 onChange={dispatchCellSettingsCheckbox}
             />
