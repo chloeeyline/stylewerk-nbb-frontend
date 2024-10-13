@@ -2,8 +2,7 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { useParams } from "react-router-dom";
 import EditorRow from "~/components/editor/EditorRow";
-import TemplateGeneral from "~/components/editor/TemplateGeneral";
-import TemplateMenuBar from "~/components/editor/TemplateMenuBar";
+import TemplateMenuBar from "~/components/editor/toolbar/TemplateMenuBar";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { DEFAULT_UUID } from "~/constants/general";
@@ -45,7 +44,6 @@ export default function TemplatesEdit() {
             <TemplateMenuBar />
             <ScrollContainer direction="both">
                 <form className="lcontainer">
-                    <TemplateGeneral />
                     <fieldset>
                         <legend>Editor</legend>
                         {editor.data.items.map((row) => (

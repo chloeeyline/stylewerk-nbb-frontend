@@ -5,6 +5,7 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import { getEditor, reset, selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { useTranslation } from "react-i18next";
+import EditorRow from "~/components/editor/EditorRow";
 
 export default function TemplateView() {
     const { templateId } = useParams();
@@ -28,15 +29,20 @@ export default function TemplateView() {
         return <div>{t("common.loading")}</div>;
     }
 
-    if (editor.status === "failed") {
+    if (editor.status === "failed" || editor.data === null) {
         return <div>{t("common.error")}</div>;
     }
 
     return (
         <ScrollContainer direction="both">
-            <pre>
-                <code>{JSON.stringify(editor.data, undefined, 2)}</code>
-            </pre>
+            <form className="lcontainer">
+                <fieldset>
+                    <legend>Editor</legend>
+                    {editor.data.items.map((row) => (
+                        <EditorRow key={row.templateID} row={row} />
+                    ))}
+                </fieldset>
+            </form>
         </ScrollContainer>
     );
 }

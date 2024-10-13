@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { selectEditor, setTemplate } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
 
-const TemplateGeneral = () => {
+const TemplateSettings = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -49,4 +49,4 @@ const TemplateGeneral = () => {
     );
 };
 
-export default TemplateGeneral;
+export default TemplateSettings;
