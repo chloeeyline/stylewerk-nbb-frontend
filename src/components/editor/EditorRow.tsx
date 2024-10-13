@@ -18,7 +18,6 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
                     cell={cell}
                     entryRowID={row.id}
                     templateRowID={row.templateID}
-                    isReadOnly={true}
                 />
             ))}
         </div>

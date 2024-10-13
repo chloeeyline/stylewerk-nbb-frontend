@@ -18,7 +18,9 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
 export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <div>
-            <div></div>
+            <pre>
+                <code>{JSON.stringify(cell.template.metaData ?? {}, undefined, 2)}</code>
+            </pre>
         </div>
     );
 };

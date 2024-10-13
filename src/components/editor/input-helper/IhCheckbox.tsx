@@ -18,7 +18,9 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
 export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <div>
-            <div>adsadasdas</div>
+            <pre>
+                <code>{JSON.stringify(cell.template.metaData ?? {}, undefined, 2)}</code>
+            </pre>
         </div>
     );
 };

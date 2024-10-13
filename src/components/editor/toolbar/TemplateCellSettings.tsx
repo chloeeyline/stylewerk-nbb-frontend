@@ -1,14 +1,12 @@
-import { useRef, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
-import { useAppSelector, useAppDispatch } from "~/redux/hooks";
-import InputHelperSettings from "./InputHelperSettings";
+import { useEffect, useRef } from "react";
 import InputField from "~/components/forms/InputField";
+import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import InputHelperSettings from "./InputHelperSettings";
 
 const TemplateCellSettings = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const { t } = useTranslation();
     const selectRef = useRef<HTMLSelectElement>(null);
 
     const selectedCellSettings = () => {

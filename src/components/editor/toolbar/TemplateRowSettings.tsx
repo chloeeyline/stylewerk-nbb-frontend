@@ -1,12 +1,10 @@
-import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplateRow } from "~/redux/features/editor/editor-slice";
-import { useAppSelector, useAppDispatch } from "~/redux/hooks";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 const TemplateRowSettings = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const { t } = useTranslation();
 
     const selectedRowSettings = () => {
         if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;

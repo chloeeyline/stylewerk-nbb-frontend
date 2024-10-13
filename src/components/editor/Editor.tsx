@@ -13,7 +13,6 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
 import EditorRow from "./EditorRow";
-import InputHelperSettings from "./toolbar/InputHelperSettings";
 import TemplateActions from "./toolbar/TemplateActions";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateRowSettings from "./toolbar/TemplateRowSettings";

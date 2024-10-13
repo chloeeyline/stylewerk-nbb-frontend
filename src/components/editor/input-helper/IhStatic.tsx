@@ -7,7 +7,9 @@ export const IhStatic = ({ cell }: InputHelperProps) => {
 export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <div>
-            <div></div>
+            <pre>
+                <code>{JSON.stringify(cell.template.metaData ?? {}, undefined, 2)}</code>
+            </pre>
         </div>
     );
 };
