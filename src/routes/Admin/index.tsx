@@ -1,12 +1,30 @@
+import Routes from "#/routes";
+import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
+
 export default function Admin() {
+    const { t } = useTranslation();
+
     return (
-        <div>
+        <Grid layout="header" className="size-block-100">
             <h1>Admin</h1>
-            <p>
-                Lorem ipsum dolor sit, amet consectetur adipisicing elit. Nostrum veniam ipsa
-                provident debitis doloremque repellat rerum labore illum aliquid earum dolores esse
-                harum doloribus inventore dolorem assumenda aliquam, magni perferendis.
-            </p>
-        </div>
+            <ScrollContainer direction="vertical">
+                <ul>
+                    <li>
+                        <Link to={Routes.Admin.Translations.List}>
+                            {t("nav.adminTranslations")}
+                        </Link>
+                    </li>
+                    <li>
+                        <Link to={Routes.Admin.Themes.List}>{t("nav.adminThemes")}</Link>
+                    </li>
+                    <li>
+                        <Link to={Routes.Admin.Users.List}>{t("nav.adminUsers")}</Link>
+                    </li>
+                </ul>
+            </ScrollContainer>
+        </Grid>
     );
 }

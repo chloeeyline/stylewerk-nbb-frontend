@@ -65,6 +65,9 @@ i18n.use(HttpBackend)
             loadPath: `${BACKEND_URL}${BackendRoutes.Language.Index}?code={{lng}}`,
             crossDomain: true,
         },
+        react: {
+            bindI18n: 'languageChanged loaded',
+        }
     });
 
 i18n.on("languageChanged", (lng) => {

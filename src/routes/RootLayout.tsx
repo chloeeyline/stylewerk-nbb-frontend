@@ -81,7 +81,7 @@ const RootNavBar = () => {
 export default function RootLayout() {
     return (
         <>
-            <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+            <Grid layout="header" className="size-block-100 gap-1-rem">
                 <div>
                     <RootNavBar />
                 </div>
