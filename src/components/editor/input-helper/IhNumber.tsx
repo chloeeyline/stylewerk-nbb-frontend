@@ -89,21 +89,23 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     };
 
     return (
-        <div>
-            <input
+        <>
+            <InputField
+                label={"Minimalwert"}
+                useNameAsIs={true}
                 name="min"
                 type="number"
                 value={temp.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <label htmlFor="min">Minimalwert</label>
-            <input
+            <InputField
+                label={"Maximalwert"}
+                useNameAsIs={true}
                 name="max"
                 type="number"
                 value={temp.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <label htmlFor="max">Maximalwert</label>
-        </div>
+        </>
     );
 };

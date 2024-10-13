@@ -3,6 +3,7 @@ import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputHelperSettings from "./InputHelperSettings";
+import SelectField from "~/components/forms/SelectField";
 
 const TemplateCellSettings = () => {
     const editor = useAppSelector(selectEditor);
@@ -69,43 +70,46 @@ const TemplateCellSettings = () => {
     return (
         <fieldset className="lrow">
             <legend>Zellen Einstellung</legend>
-            <InputField
-                label={"HideOnEmpty"}
-                name={"hideOnEmpty"}
-                useNameAsIs={true}
-                type="checkbox"
-                maxLength={100}
-                checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
-                onChange={dispatchCellSettingsCheckbox}
-            />
-            <InputField
-                label={"IsRequired"}
-                name={"isRequired"}
-                useNameAsIs={true}
-                type="checkbox"
-                maxLength={100}
-                checked={selectedCellSettings()?.template.isRequired ?? false}
-                onChange={dispatchCellSettingsCheckbox}
-            />
             <div>
-                <select
-                    name="inputHelper"
-                    value={selectedCellSettings()?.template.inputHelper ?? 1}
-                    onChange={dispatchCellSettings}
-                    ref={selectRef}>
-                    <option value="0">Test</option>
-                    <option value="1">Fix Text</option>
-                    <option value="2">Kurze Texteingabe</option>
-                    <option value="3">Lange Texteingabe</option>
-                    <option value="4">Zahleneingabe</option>
-                    <option value="5">Checkbox</option>
-                    <option value="6">Datum</option>
-                    <option value="7">Zeit</option>
-                    <option value="8">Datetime</option>
-                    <option value="9">Farbe</option>
-                </select>
-                <label htmlFor="inputHelper">inputHelper</label>
+                <InputField
+                    label={"HideOnEmpty"}
+                    name={"hideOnEmpty"}
+                    useNameAsIs={true}
+                    type="checkbox"
+                    maxLength={100}
+                    checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
+                    onChange={dispatchCellSettingsCheckbox}
+                />
+                <InputField
+                    label={"IsRequired"}
+                    name={"isRequired"}
+                    useNameAsIs={true}
+                    type="checkbox"
+                    maxLength={100}
+                    checked={selectedCellSettings()?.template.isRequired ?? false}
+                    onChange={dispatchCellSettingsCheckbox}
+                />
             </div>
+            <SelectField
+                name="inputHelper"
+                label={"InputHelper"}
+                value={selectedCellSettings()?.template.inputHelper ?? 1}
+                onChange={dispatchCellSettings}
+                ref={selectRef}
+                error={null}
+                options={[
+                    ["0", "Test"],
+                    ["1", "Fix Text"],
+                    ["2", "Kurze Texteingabe"],
+                    ["3", "Lange Texteingabe"],
+                    ["4", "Zahleneingabe"],
+                    ["5", "Checkbox"],
+                    ["6", "Datum"],
+                    ["7", "Zeit"],
+                    ["8", "Datetime"],
+                    ["9", "Farbe"],
+                ]}
+            />
             <InputField
                 label={"Text"}
                 name={"text"}

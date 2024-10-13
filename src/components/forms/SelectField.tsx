@@ -8,12 +8,14 @@ export default forwardRef(function SelectField(
         label,
         options,
         error,
+        useNameAsIs,
         ...props
     }: React.SelectHTMLAttributes<HTMLSelectElement> & {
         name: string;
         label: string;
         options: [string, string][];
         error: string | null;
+        useNameAsIs?: boolean;
     },
     ref: React.ForwardedRef<HTMLSelectElement>,
 ) {
@@ -21,8 +23,8 @@ export default forwardRef(function SelectField(
 
     return (
         <div className={styles.inputWrapper}>
-            <label htmlFor={`${name}-${id}`}>{label}</label>
-            <select ref={ref} name={`${name}-${id}`} {...props}>
+            <label htmlFor={useNameAsIs ? name : `${name}-${id}`}>{label}</label>
+            <select ref={ref} name={useNameAsIs ? name : `${name}-${id}`} {...props}>
                 {options.map(([key, value]) => (
                     <option key={key}>{value}</option>
                 ))}
