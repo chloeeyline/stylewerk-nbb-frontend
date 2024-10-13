@@ -221,6 +221,7 @@ const editorSlice = createSlice({
                                             action.payload.type === "inputHelper"
                                                 ? Number(action.payload.value)
                                                 : action.payload.value;
+
                                         tempCell.template = {
                                             ...tempCell.template,
                                             [action.payload.type]: value,
@@ -231,9 +232,8 @@ const editorSlice = createSlice({
                                     }
                                     return cell;
                                 });
-                                const tempRow = { ...row };
                                 return {
-                                    ...tempRow,
+                                    ...row,
                                     items: tempCellList,
                                 };
                             }

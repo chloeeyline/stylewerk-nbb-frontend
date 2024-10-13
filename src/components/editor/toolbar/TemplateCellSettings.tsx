@@ -96,6 +96,7 @@ const TemplateCellSettings = () => {
                     value={selectedCellSettings()?.template.inputHelper ?? 1}
                     onChange={dispatchCellSettings}
                     ref={selectRef}>
+                    <option value="0">Test</option>
                     <option value="1">Fix Text</option>
                     <option value="2">Kurze Texteingabe</option>
                     <option value="3">Lange Texteingabe</option>

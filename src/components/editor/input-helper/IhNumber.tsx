@@ -16,7 +16,7 @@ const ihNumberSchema = z
 type IhNumberMetadata = z.infer<typeof ihNumberSchema>;
 
 export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
-    const temp = ihNumberSchema.safeParse(cell.template.metaData ?? {});
+    const temp = ihNumberSchema.safeParse(JSON.parse(cell.template.metaData ?? "") ?? {});
     if (temp.success === false) return null;
     return (
         <>
@@ -36,12 +36,17 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
 export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const [metadata, setMetadata] = useState<IhNumberMetadata>({
-        min: 0,
-        max: 100,
-        step: 1,
-        integer: false,
-    });
+    const temp = ihNumberSchema.safeParse(JSON.parse(cell.template.metaData ?? "") ?? {});
+    const [metadata, setMetadata] = useState<IhNumberMetadata>(
+        temp.success
+            ? temp.data
+            : {
+                  min: 0,
+                  max: 100,
+                  step: 1,
+                  integer: false,
+              },
+    );
 
     useEffect(() => {
         const temp = ihNumberSchema.safeParse(cell.template.metaData);
@@ -62,7 +67,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 setMetadata(temp);
                 dispatch(
                     setTemplateCell({
-                        type: "metadata",
+                        type: "metaData",
                         value: JSON.stringify(metadata),
                     }),
                 );
