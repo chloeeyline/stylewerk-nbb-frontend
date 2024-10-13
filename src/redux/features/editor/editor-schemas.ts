@@ -28,13 +28,13 @@ const entryCellSchema = z.object({
     id: z.string().uuid(),
     templateID: z.string().uuid(),
     data: z.string().nullable(),
-    template: templateCellSchema.nullable(),
+    template: templateCellSchema,
 });
 
 const entryRowSchema = z.object({
     id: z.string().uuid(),
     templateID: z.string().uuid(),
-    template: templateRowSchema.nullable(),
+    template: templateRowSchema,
     items: z.array(entryCellSchema),
 });
 
@@ -45,7 +45,7 @@ const editorSchema = z.object({
     name: z.string().nullable(),
     tags: z.string().nullable(),
     isEncrypted: z.boolean(),
-    template: templateSchema.nullable(),
+    template: templateSchema,
     items: z.array(entryRowSchema),
 });
 
