@@ -26,6 +26,7 @@ const EditorCell = ({
     const dispatch = useAppDispatch();
 
     const select = () => {
+        if (editor.isPreview === true) return;
         dispatch(
             setSelected({
                 entryRow: entryRowID,
@@ -37,7 +38,10 @@ const EditorCell = ({
     };
 
     const getInputHelper = (inputHelper: number) => {
-        const props: InputHelperProps = { cell, isReadOnly };
+        const props: InputHelperProps = {
+            cell,
+            isReadOnly: editor.isPreview === true && editor.isTemplate === true,
+        };
 
         switch (inputHelper) {
             case 1:

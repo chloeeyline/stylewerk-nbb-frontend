@@ -10,6 +10,7 @@ type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";
     data: Editor | null;
     isTemplate: boolean;
+    isPreview: boolean;
     selectedEntryRow: string;
     selectedEntryCell: string;
     selectedTemplateRow: string;
@@ -20,6 +21,7 @@ const initialState: EditorState = {
     status: "idle",
     data: null,
     isTemplate: false,
+    isPreview: false,
     selectedEntryRow: "",
     selectedEntryCell: "",
     selectedTemplateRow: "",
@@ -291,8 +293,9 @@ const editorSlice = createSlice({
                 });
             }
         },
-        setIsTemplate(state, action: PayloadAction<boolean>) {
-            state.isTemplate = action.payload;
+        setMode(state, action: PayloadAction<{ isTemplate: boolean; isPreview: boolean }>) {
+            state.isTemplate = action.payload.isTemplate;
+            state.isPreview = action.payload.isPreview;
         },
         setSelected: (
             state,
@@ -348,7 +351,7 @@ export const {
     setSelected,
     reset,
     setTemplateRow,
-    setIsTemplate,
+    setMode,
     addTemplateCell,
     addTemplateRow,
     removeTemplateRow,
