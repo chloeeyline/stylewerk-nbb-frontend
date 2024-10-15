@@ -1,8 +1,8 @@
 @use "./styles/reset";
 @use "./styles/fonts";
-@use "./styles/variables";
 @use "./styles/themes/dark";
 @use "./styles/themes/light";
 @use "./styles/sizing";
 @use "./styles/spacing";
+@use "./styles/base-styles.scss";
 @use "./styles/DivLayout";

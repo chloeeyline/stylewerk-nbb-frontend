@@ -13,7 +13,7 @@
         }
     }
 
-    :root[data-theme="#{$theme}"] {
+    [data-theme="#{$theme}"] {
         @content;
     }
 }

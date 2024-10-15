@@ -8,8 +8,8 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import BackendRoutes from "~/constants/backend-routes";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
-import type { TranslationContent } from "~/schemas/translations-schema";
-import { translationContentSchema, translationSchema } from "~/schemas/translations-schema";
+import type { TranslationContent } from "~/schemas/translations";
+import { translationContentSchema, translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
 import { deleteLanguage, updateLanguage } from "./api";
 
