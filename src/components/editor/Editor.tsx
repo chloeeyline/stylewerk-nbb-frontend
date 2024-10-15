@@ -5,6 +5,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
 import EditorRow from "./EditorRow";
+import EntrySettings from "./toolbar/EntrySettings";
 import TemplateActions from "./toolbar/TemplateActions";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateRowSettings from "./toolbar/TemplateRowSettings";
@@ -62,6 +63,9 @@ const Editor = ({
                 ) : null}
                 {editor.isTemplate === true && editor.isPreview === false ? (
                     <TemplateSettings />
+                ) : null}
+                {editor.isTemplate === false && editor.isPreview === false ? (
+                    <EntrySettings />
                 ) : null}
             </div>
             <ScrollContainer direction="both">

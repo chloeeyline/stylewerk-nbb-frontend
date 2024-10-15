@@ -42,7 +42,16 @@ export const getEditor = createAsyncThunk<
     "editor/get-editor",
     async ({ id, isTemplate, isPreview, isNew }, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-
+        console.log(
+            "id: ",
+            id,
+            "isTemplate: ",
+            isTemplate,
+            "isPreview: ",
+            isPreview,
+            "isNew: ",
+            isNew,
+        );
         if (isTemplate && isNew) {
             return {
                 ...editor,
@@ -166,6 +175,33 @@ const editorSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
+        setEntry: (
+            state,
+            action: PayloadAction<{
+                type: string;
+                value: string | undefined;
+            }>,
+        ) => {
+            switch (action.payload.type) {
+                case "name":
+                case "tags":
+                    const valueText = action.payload.value?.trim() ?? "";
+                    if (state.data && valueText.length > 0)
+                        state.data[action.payload.type] = valueText;
+
+                    break;
+                case "folderID":
+                    var valueID: string | null = action.payload.value?.trim() ?? "";
+                    if (valueID.length === 0) valueID = null;
+                    if (state.data) state.data[action.payload.type] = valueID;
+                    break;
+                case "isEncrypted":
+                case "isPublic":
+                    if (state.data)
+                        state.data[action.payload.type] = action.payload.value === "true";
+                    break;
+            }
+        },
         setTemplate: (
             state,
             action: PayloadAction<{
@@ -381,6 +417,7 @@ const editorSlice = createSlice({
 export const {
     setSelected,
     reset,
+    setEntry,
     setTemplate,
     setTemplateRow,
     setTemplateCell,

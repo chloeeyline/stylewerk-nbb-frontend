@@ -18,13 +18,14 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import Move from "~/components/Icon/Move";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
@@ -48,7 +49,10 @@ import cls from "~/utils/class-name-helper";
 const EntryComponent = ({ item }: { item: EntryItem }) => {
     return (
         <NavLink
-            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
+            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id).replace(
+                RouteParams.IsNew,
+                "false",
+            )}
             className="lcontainer m-be-1">
             <div className="lrow">
                 {item.name && <div className="lcell">{item.name}</div>}
@@ -170,6 +174,8 @@ export default function EntriesLayout() {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
+    const editor = useAppSelector(selectEditor);
+    const navigate = useNavigate();
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
@@ -293,6 +299,22 @@ export default function EntriesLayout() {
                         )}
                         onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
                         Ordner Löschen
+                    </button>
+                    <button
+                        type="button"
+                        className={cls(
+                            "m-1",
+                            typeof editor.data?.id === "string" ? undefined : "hidden",
+                        )}
+                        onClick={() =>
+                            navigate(
+                                Routes.Entries.Edit.replace(
+                                    RouteParams.EntryId,
+                                    editor.data?.id ?? "",
+                                ).replace(RouteParams.IsNew, "false"),
+                            )
+                        }>
+                        {t("common.edit")}
                     </button>
                 </fieldset>
                 <fieldset className={entry.hideFilters || entry.dragMode ? "hidden" : undefined}>

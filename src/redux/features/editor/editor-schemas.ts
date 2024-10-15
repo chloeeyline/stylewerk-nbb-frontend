@@ -45,6 +45,7 @@ const editorSchema = z.object({
     name: z.string().nullable(),
     tags: z.string().nullable(),
     isEncrypted: z.boolean(),
+    isPublic: z.boolean(),
     template: templateSchema,
     items: z.array(entryRowSchema),
 });
