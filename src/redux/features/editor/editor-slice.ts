@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
+import { DEFAULT_UUID } from "~/constants/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import { CreateEntryCell, CreateEntryRow } from "./editor-create";
+import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
 import type { Editor } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
@@ -11,6 +12,7 @@ export type EditorState = {
     data: Editor | null;
     isTemplate: boolean;
     isPreview: boolean;
+    isNew: boolean;
     selectedEntryRow: string;
     selectedEntryCell: string;
     selectedTemplateRow: string;
@@ -22,6 +24,7 @@ const initialState: EditorState = {
     data: null,
     isTemplate: false,
     isPreview: false,
+    isNew: false,
     selectedEntryRow: "",
     selectedEntryCell: "",
     selectedTemplateRow: "",
@@ -30,20 +33,33 @@ const initialState: EditorState = {
 
 export const getEditor = createAsyncThunk<
     EditorState,
-    { id: string; isTemplate: boolean },
+    { id: string; isTemplate: boolean; isPreview: boolean; isNew: boolean },
     {
         dispatch: AppDispatch;
         state: RootState;
     }
 >(
     "editor/get-editor",
-    async ({ id, isTemplate }, thunkApi) => {
+    async ({ id, isTemplate, isPreview, isNew }, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-        const path = isTemplate ? Backend.Editor.GetTemplate : Backend.Editor.GetEntry;
+
+        if (isTemplate && isNew) {
+            return {
+                ...editor,
+                status: "succeeded",
+                data: CreateEditor(),
+                id: DEFAULT_UUID,
+                isTemplate: isTemplate,
+                isPreview: isPreview,
+                isNew: isNew,
+            };
+        }
+
+        const path = isTemplate || isNew ? Backend.Editor.GetTemplate : Backend.Editor.GetEntry;
 
         const response = await Ajax.get(path, {
             search: {
-                id,
+                id: id,
             },
             auth: true,
         });
@@ -62,6 +78,10 @@ export const getEditor = createAsyncThunk<
             ...editor,
             status: "succeeded",
             data: result.data,
+            id: id,
+            isTemplate: isTemplate,
+            isPreview: isPreview,
+            isNew: isNew,
         };
     },
     {
@@ -77,16 +97,16 @@ export const getEditor = createAsyncThunk<
 
 export const updateEditor = createAsyncThunk<
     EditorState,
-    { isTemplate: boolean },
+    void,
     {
         dispatch: AppDispatch;
         state: RootState;
     }
 >(
     "editor/update-editor",
-    async ({ isTemplate }, thunkApi) => {
+    async (_arg, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-        const path = isTemplate ? Backend.Editor.UpdateTemplate : Backend.Editor.UpdateEntry;
+        const path = editor.isTemplate ? Backend.Editor.UpdateTemplate : Backend.Editor.UpdateEntry;
 
         const response = await Ajax.post(path, {
             body: {
@@ -146,10 +166,6 @@ const editorSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
-        setEditor: (state, action: PayloadAction<Editor>) => {
-            state.data = action.payload;
-            state.status = "succeeded";
-        },
         setTemplate: (
             state,
             action: PayloadAction<{
@@ -306,10 +322,6 @@ const editorSlice = createSlice({
                 state.selectedEntryCell = "";
             }
         },
-        setMode(state, action: PayloadAction<{ isTemplate: boolean; isPreview: boolean }>) {
-            state.isTemplate = action.payload.isTemplate;
-            state.isPreview = action.payload.isPreview;
-        },
         setSelected: (
             state,
             action: PayloadAction<{
@@ -319,6 +331,7 @@ const editorSlice = createSlice({
                 templateCell: string;
             }>,
         ) => {
+            if (state.isPreview || !state.isTemplate) return;
             state.selectedEntryRow = action.payload.entryRow;
             state.selectedEntryCell = action.payload.entryCell;
             state.selectedTemplateRow = action.payload.templateRow;
@@ -344,6 +357,9 @@ const editorSlice = createSlice({
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.data = action.payload.data;
+                state.isTemplate = action.payload.isTemplate;
+                state.isPreview = action.payload.isPreview;
+                state.isNew = action.payload.isNew;
             })
             .addCase(getEditor.rejected, (state) => {
                 state.status = "failed";
@@ -363,17 +379,15 @@ const editorSlice = createSlice({
 });
 
 export const {
-    setEditor,
-    setTemplate,
     setSelected,
     reset,
+    setTemplate,
     setTemplateRow,
-    setMode,
-    addTemplateCell,
+    setTemplateCell,
     addTemplateRow,
+    addTemplateCell,
     removeTemplateRow,
     removeTemplateCell,
-    setTemplateCell,
 } = editorSlice.actions;
 export const selectEditor = (state: RootState) => state.editor;
 export default editorSlice.reducer;

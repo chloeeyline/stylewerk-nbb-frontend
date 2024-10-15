@@ -1,14 +1,12 @@
-import { useEffect, useRef } from "react";
 import InputField from "~/components/forms/InputField";
+import SelectField from "~/components/forms/SelectField";
 import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputHelperSettings from "./InputHelperSettings";
-import SelectField from "~/components/forms/SelectField";
 
 const TemplateCellSettings = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const selectRef = useRef<HTMLSelectElement>(null);
 
     const selectedCellSettings = () => {
         if (
@@ -44,29 +42,6 @@ const TemplateCellSettings = () => {
         );
     };
 
-    const handleWheelEvent = (e: WheelEvent) => {
-        if (selectRef.current) {
-            e.preventDefault();
-            const selectElement = selectRef.current;
-            const currentIndex = selectElement.selectedIndex;
-
-            if (e.deltaY < 0 && currentIndex > 0) selectElement.selectedIndex = currentIndex - 1;
-            else if (e.deltaY > 0 && currentIndex < selectElement.options.length - 1)
-                selectElement.selectedIndex = currentIndex + 1;
-
-            const event = new Event("change", { bubbles: true });
-            selectElement.dispatchEvent(event);
-        }
-    };
-
-    useEffect(() => {
-        const selectElement = selectRef.current;
-        if (selectElement) selectElement.addEventListener("wheel", handleWheelEvent);
-        return () => {
-            if (selectElement) selectElement.removeEventListener("wheel", handleWheelEvent);
-        };
-    }, []);
-
     return (
         <fieldset className="lrow">
             <legend>Zellen Einstellung</legend>
@@ -93,10 +68,9 @@ const TemplateCellSettings = () => {
             <SelectField
                 name="inputHelper"
                 label={"InputHelper"}
+                useNameAsIs={true}
                 value={selectedCellSettings()?.template.inputHelper ?? 1}
                 onChange={dispatchCellSettings}
-                ref={selectRef}
-                error={null}
                 options={[
                     ["0", "Test"],
                     ["1", "Fix Text"],

@@ -16,7 +16,6 @@ const EditorCell = ({
     const dispatch = useAppDispatch();
 
     const select = () => {
-        if (editor.isPreview === true) return;
         dispatch(
             setSelected({
                 entryRow: entryRowID,

@@ -3,7 +3,14 @@ import Editor from "~/components/editor/Editor";
 import { DEFAULT_UUID } from "~/constants/general";
 
 export default function TemplatesEdit() {
-    const { templateId } = useParams();
+    const { templateId, isNew } = useParams();
 
-    return <Editor id={templateId ?? DEFAULT_UUID} isTemplate={true} isPreview={false} />;
+    return (
+        <Editor
+            id={templateId ?? DEFAULT_UUID}
+            isTemplate={true}
+            isPreview={false}
+            isNew={isNew === "true"}
+        />
+    );
 }

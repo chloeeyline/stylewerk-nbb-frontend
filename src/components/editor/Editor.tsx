@@ -1,14 +1,6 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { DEFAULT_UUID } from "~/constants/general";
-import { CreateEditor } from "~/redux/features/editor/editor-create";
-import {
-    getEditor,
-    reset,
-    selectEditor,
-    setEditor,
-    setMode,
-} from "~/redux/features/editor/editor-slice";
+import { getEditor, reset, selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
@@ -22,22 +14,19 @@ const Editor = ({
     id,
     isTemplate,
     isPreview,
+    isNew,
 }: {
     id: string;
     isTemplate: boolean;
     isPreview: boolean;
+    isNew: boolean;
 }) => {
     const editor = useAppSelector(selectEditor);
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
     useEffect(() => {
-        dispatch(setMode({ isTemplate: isTemplate, isPreview: isPreview }));
-        if (isTemplate && id == DEFAULT_UUID) {
-            dispatch(setEditor(CreateEditor()));
-            return;
-        }
-        dispatch(getEditor({ id: id, isTemplate: isTemplate }));
+        dispatch(getEditor({ id: id, isTemplate: isTemplate, isPreview: isPreview, isNew: isNew }));
         return () => {
             dispatch(reset());
         };

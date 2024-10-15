@@ -37,7 +37,10 @@ const TemplatesList = () => {
                         template.items.length > 0 &&
                         template.items?.map((item) => (
                             <NavLink
-                                to={Routes.Templates.View.replace(RouteParams.TemplateId, item.id)}
+                                to={Routes.Templates.View.replace(
+                                    RouteParams.TemplateId,
+                                    item.id,
+                                ).replace(RouteParams.IsNew, "false")}
                                 key={item.id}
                                 className="lcontainer m-be-1">
                                 <div className="lrow">
@@ -129,7 +132,10 @@ export default function TemplatesLayout() {
                         className="m-1"
                         onClick={() =>
                             navigate(
-                                Routes.Templates.Edit.replace(RouteParams.TemplateId, DEFAULT_UUID),
+                                Routes.Templates.Edit.replace(
+                                    RouteParams.TemplateId,
+                                    DEFAULT_UUID,
+                                ).replace(RouteParams.IsNew, "true"),
                             )
                         }>
                         Create new Template
@@ -157,7 +163,7 @@ export default function TemplatesLayout() {
                                 Routes.Templates.Edit.replace(
                                     RouteParams.TemplateId,
                                     editor.data?.templateID ?? "",
-                                ),
+                                ).replace(RouteParams.IsNew, "false"),
                             )
                         }>
                         {t("common.edit")}
@@ -169,7 +175,12 @@ export default function TemplatesLayout() {
                             typeof editor.data?.templateID === "string" ? undefined : "hidden",
                         )}
                         onClick={() =>
-                            navigate(Routes.Entries.Edit.replace(RouteParams.EntryId, DEFAULT_UUID))
+                            navigate(
+                                Routes.Entries.Edit.replace(
+                                    RouteParams.EntryId,
+                                    editor.data?.templateID ?? "",
+                                ).replace(RouteParams.IsNew, "true"),
+                            )
                         }>
                         Eintrag aus Vorlage erstellen
                     </button>
