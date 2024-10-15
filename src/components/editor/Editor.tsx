@@ -45,44 +45,62 @@ const Editor = ({
         return <div>{t("common.error")}</div>;
     }
 
+    const getList = () => {
+        if (editor.data === null) return [];
+        if (editor.isTemplate === true || editor.isPreview === false) return editor.data.items;
+        return editor.data.items
+            .map((row) => {
+                const filteredCells = row.items.filter((cell) => {
+                    return !(cell.template.hideOnEmpty && !cell.data);
+                });
+
+                if (row.template.hideOnNoInput && filteredCells.every((cell) => !cell.data))
+                    return null;
+
+                return { ...row, items: filteredCells };
+            })
+            .filter((row) => row !== null);
+    };
+
     return (
-        <Grid layout="header" className="size-block-100">
-            <div>
-                {editor.isTemplate === true && editor.isPreview === false ? (
-                    <TemplateActions />
-                ) : null}
-                {editor.isTemplate === true &&
-                editor.isPreview === false &&
-                editor.selectedTemplateRow.length > 0 ? (
-                    <TemplateRowSettings />
-                ) : null}
-                {editor.isTemplate === true &&
-                editor.isPreview === false &&
-                editor.selectedTemplateCell.length > 0 ? (
-                    <TemplateCellSettings />
-                ) : null}
-                {editor.isTemplate === true && editor.isPreview === false ? (
-                    <TemplateSettings />
-                ) : null}
-                {editor.isTemplate === false && editor.isPreview === false ? (
-                    <EntrySettings />
-                ) : null}
-            </div>
-            <ScrollContainer direction="both">
-                <form className="lcontainer">
+        <form className="lcontainer">
+            <Grid layout="header" className="size-block-100">
+                <div>
+                    {editor.isTemplate === true && editor.isPreview === false ? (
+                        <TemplateActions />
+                    ) : null}
+                    {editor.isTemplate === true &&
+                    editor.isPreview === false &&
+                    editor.selectedTemplateRow.length > 0 ? (
+                        <TemplateRowSettings />
+                    ) : null}
+                    {editor.isTemplate === true &&
+                    editor.isPreview === false &&
+                    editor.selectedTemplateCell.length > 0 ? (
+                        <TemplateCellSettings />
+                    ) : null}
+                    {editor.isTemplate === true && editor.isPreview === false ? (
+                        <TemplateSettings />
+                    ) : null}
+                    {editor.isTemplate === false && editor.isPreview === false ? (
+                        <EntrySettings />
+                    ) : null}
+                </div>
+                <ScrollContainer direction="both">
                     <fieldset>
                         <legend>Editor</legend>
-                        {editor.data.items.map((row) =>
-                            editor.isTemplate ? (
-                                <EditorRow key={row.templateID} row={row} />
-                            ) : (
-                                <EditorRow key={row.id} row={row} />
-                            ),
-                        )}
+                        {getList().length > 0 &&
+                            getList().map((row) =>
+                                editor.isTemplate ? (
+                                    <EditorRow key={row.templateID} row={row} />
+                                ) : (
+                                    <EditorRow key={row.id} row={row} />
+                                ),
+                            )}
                     </fieldset>
-                </form>
-            </ScrollContainer>
-        </Grid>
+                </ScrollContainer>
+            </Grid>
+        </form>
     );
 };
 

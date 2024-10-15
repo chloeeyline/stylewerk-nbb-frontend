@@ -220,8 +220,8 @@ const editorSlice = createSlice({
                 case "name":
                 case "description":
                 case "tags":
-                    const value = action.payload.value?.trim() ?? "";
-                    if (state.data && value.length > 0) {
+                    const value = action.payload.value?.trim() ?? null;
+                    if (state.data) {
                         state.data.template[action.payload.type] = value;
                     }
                     break;
@@ -276,10 +276,38 @@ const editorSlice = createSlice({
                                 const tempCellList = row.items.map((cell) => {
                                     if (cell.templateID === state.selectedTemplateCell) {
                                         const tempCell = { ...cell };
-                                        const value =
-                                            action.payload.type === "inputHelper"
-                                                ? Number(action.payload.value)
-                                                : action.payload.value;
+                                        var value: string | number | boolean | null = null;
+                                        switch (action.payload.type) {
+                                            case "hideOnEmpty":
+                                            case "isRequired":
+                                                if (typeof action.payload.value === "boolean")
+                                                    value = Boolean(action.payload.value);
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                            case "inputHelper":
+                                                if (typeof action.payload.value === "string")
+                                                    value = Number(action.payload.value);
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                            case "text":
+                                            case "description":
+                                            case "metaData":
+                                                if (typeof action.payload.value === "string")
+                                                    value = String(
+                                                        action.payload.value?.trim() ?? null,
+                                                    );
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                        }
 
                                         tempCell.template = {
                                             ...tempCell.template,

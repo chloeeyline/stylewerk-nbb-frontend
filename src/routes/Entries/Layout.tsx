@@ -240,8 +240,8 @@ export default function EntriesLayout() {
     };
 
     return (
-        <form>
-            <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+        <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+            <form>
                 <fieldset>
                     <legend>Actions</legend>
                     <button
@@ -360,39 +360,36 @@ export default function EntriesLayout() {
                         onChange={dispatchFilterCheckbox}
                     />
                 </fieldset>
-                <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
-                <Grid
-                    layout="sidebarStart"
-                    className="size-block-100 gap"
-                    style={{ "--gap": "1rem" }}>
-                    <fieldset>
-                        <legend>Liste</legend>
-                        <ScrollContainer
-                            direction="vertical"
-                            className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
-                            <DndContext
-                                modifiers={[restrictToVerticalAxis]}
-                                sensors={sensors}
-                                collisionDetection={closestCenter}
-                                onDragEnd={(e) => dragFolder(e)}>
-                                <SortableContext
-                                    items={entry.folders}
-                                    strategy={verticalListSortingStrategy}>
-                                    {entry.folders.map((item) => (
-                                        <EntryFolderComponent key={item.id} item={item} />
-                                    ))}
-                                </SortableContext>
-                            </DndContext>
-                            {entry.items.map((item) => (
-                                <EntryComponent key={item.id} item={item} />
-                            ))}
-                        </ScrollContainer>
-                        <div className={entry!.hideList ? "hidden" : undefined}></div>
-                    </fieldset>
-                    <Outlet />
-                </Grid>
+            </form>
+            <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
+            <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+                <fieldset>
+                    <legend>Liste</legend>
+                    <ScrollContainer
+                        direction="vertical"
+                        className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
+                        <DndContext
+                            modifiers={[restrictToVerticalAxis]}
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(e) => dragFolder(e)}>
+                            <SortableContext
+                                items={entry.folders}
+                                strategy={verticalListSortingStrategy}>
+                                {entry.folders.map((item) => (
+                                    <EntryFolderComponent key={item.id} item={item} />
+                                ))}
+                            </SortableContext>
+                        </DndContext>
+                        {entry.items.map((item) => (
+                            <EntryComponent key={item.id} item={item} />
+                        ))}
+                    </ScrollContainer>
+                    <div className={entry!.hideList ? "hidden" : undefined}></div>
+                </fieldset>
+                <Outlet />
             </Grid>
-        </form>
+        </Grid>
     );
 }
 
