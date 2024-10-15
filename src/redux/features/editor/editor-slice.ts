@@ -42,16 +42,7 @@ export const getEditor = createAsyncThunk<
     "editor/get-editor",
     async ({ id, isTemplate, isPreview, isNew }, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-        console.log(
-            "id: ",
-            id,
-            "isTemplate: ",
-            isTemplate,
-            "isPreview: ",
-            isPreview,
-            "isNew: ",
-            isNew,
-        );
+
         if (isTemplate && isNew) {
             return {
                 ...editor,
@@ -96,10 +87,7 @@ export const getEditor = createAsyncThunk<
     {
         condition(_arg, { getState }) {
             const editor = selectEditor(getState());
-
-            if (editor.status === "loading") {
-                return false;
-            }
+            if (editor.status === "loading") return false;
         },
     },
 );
@@ -143,10 +131,7 @@ export const updateEditor = createAsyncThunk<
     {
         condition(_arg, { getState }) {
             const editor = selectEditor(getState());
-
-            if (editor.status === "loading") {
-                return false;
-            }
+            if (editor.status === "loading") return false;
         },
     },
 );
@@ -200,6 +185,28 @@ const editorSlice = createSlice({
                     if (state.data)
                         state.data[action.payload.type] = action.payload.value === "true";
                     break;
+            }
+        },
+        setEntryCell: (state, action: PayloadAction<string | null>) => {
+            if (state.data && state.data.items.length > 0) {
+                state.data.items = state.data.items.map((row) => {
+                    if (row.id === state.selectedEntryRow) {
+                        const tempCellList = row.items.map((cell) => {
+                            if (cell.id === state.selectedEntryCell) {
+                                return {
+                                    ...cell,
+                                    data: action.payload,
+                                };
+                            }
+                            return cell;
+                        });
+                        return {
+                            ...row,
+                            items: tempCellList,
+                        };
+                    }
+                    return row;
+                });
             }
         },
         setTemplate: (
@@ -367,7 +374,6 @@ const editorSlice = createSlice({
                 templateCell: string;
             }>,
         ) => {
-            if (state.isPreview || !state.isTemplate) return;
             state.selectedEntryRow = action.payload.entryRow;
             state.selectedEntryCell = action.payload.entryCell;
             state.selectedTemplateRow = action.payload.templateRow;
@@ -418,6 +424,7 @@ export const {
     setSelected,
     reset,
     setEntry,
+    setEntryCell,
     setTemplate,
     setTemplateRow,
     setTemplateCell,

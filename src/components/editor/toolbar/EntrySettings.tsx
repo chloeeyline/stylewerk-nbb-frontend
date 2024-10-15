@@ -22,9 +22,9 @@ const EntrySettings = () => {
             var result = entryFoldersSchema.safeParse(response.result);
             if (result.success === false) return;
             var list = result.data.map((f) => [f.id, f.name ?? ""]);
-            // setFolders(list);
+            setFolders(list);
         });
-    });
+    }, []);
 
     const dispatchGeneral = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         dispatch(

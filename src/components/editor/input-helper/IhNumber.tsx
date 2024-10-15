@@ -2,10 +2,10 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { setTemplateCell } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch } from "~/redux/hooks";
+import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-const ihNumberSchema = z
+const ihNumberMetaDataSchema = z
     .object({
         min: z.number().safe().optional().catch(undefined).default(undefined),
         max: z.number().safe().optional().catch(undefined).default(undefined),
@@ -14,22 +14,37 @@ const ihNumberSchema = z
     })
     .strip();
 
-const transformMetadata = (input: unknown) => {
-    try {
-        if (typeof input !== "string") {
-            throw new Error("foo");
-        }
+const ihNumberDataSchema = z
+    .object({
+        value: z.number().safe().optional().catch(undefined).default(undefined),
+    })
+    .strip();
 
-        return ihNumberSchema.safeParse(JSON.parse(input));
+const transformMetaData = (input: unknown) => {
+    try {
+        if (typeof input !== "string") throw new Error("foo");
+        return ihNumberMetaDataSchema.safeParse(JSON.parse(input));
     } catch (error) {
-        return ihNumberSchema.safeParse({});
+        return ihNumberMetaDataSchema.safeParse({});
+    }
+};
+
+const transformData = (input: unknown) => {
+    try {
+        if (typeof input !== "string") throw new Error("foo");
+        return ihNumberDataSchema.safeParse(JSON.parse(input));
+    } catch (error) {
+        return ihNumberDataSchema.safeParse({});
     }
 };
 
 export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
-    const temp = transformMetadata(cell.template.metaData);
-
-    if (temp.success === false) return null;
+    const editor = useAppSelector(selectEditor);
+    const dispatch = useAppDispatch();
+    const metadata = transformMetaData(cell.template.metaData);
+    const data = transformData(cell.data);
+    if (metadata.success === false) return null;
+    if (data.success === false) return null;
 
     return (
         <>
@@ -40,9 +55,23 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
                 type="number"
                 disabled={isReadOnly}
                 required={cell.template.isRequired}
-                min={temp.data?.min}
-                max={temp.data?.max}
-                onChange={() => {}}
+                min={metadata.data?.min}
+                max={metadata.data?.max}
+                value={data.data.value ?? ""}
+                onChange={(e) => {
+                    if (editor.isPreview) return;
+                    if (e.target.value.length === 0) {
+                        dispatch(setEntryCell(null));
+                        return;
+                    }
+                    var temp = {
+                        ...data.data,
+                        value: metadata.data.integer
+                            ? Number.parseInt(e.target.value)
+                            : Number.parseFloat(e.target.value),
+                    };
+                    dispatch(setEntryCell(JSON.stringify(temp)));
+                }}
             />
         </>
     );
@@ -50,8 +79,7 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
 export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-
-    const temp = transformMetadata(cell.template.metaData);
+    const temp = transformMetaData(cell.template.metaData);
 
     useEffect(() => {
         if (temp.success === false) return;
