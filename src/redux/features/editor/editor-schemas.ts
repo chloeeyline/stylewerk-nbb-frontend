@@ -22,6 +22,7 @@ const templateSchema = z.object({
     name: z.string().nullable(),
     description: z.string().nullable(),
     tags: z.string().nullable(),
+    isPublic: z.boolean(),
 });
 
 const entryCellSchema = z.object({

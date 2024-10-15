@@ -24,6 +24,7 @@ const CreateTemplate = (templateID: string): Template => {
         name: null,
         description: null,
         tags: null,
+        isPublic: false,
     };
 };
 

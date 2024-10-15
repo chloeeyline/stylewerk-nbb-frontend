@@ -57,6 +57,7 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
                 required={cell.template.isRequired}
                 min={metadata.data?.min}
                 max={metadata.data?.max}
+                step={metadata.data?.step}
                 value={data.data.value ?? ""}
                 onChange={(e) => {
                     if (editor.isPreview) return;
@@ -110,6 +111,15 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 );
                 break;
             case "integer":
+                dispatch(
+                    setTemplateCell({
+                        type: "metaData",
+                        value: JSON.stringify({
+                            ...temp.data,
+                            [e.target.name]: e.target.checked,
+                        }),
+                    }),
+                );
                 break;
             default:
                 return;
@@ -132,6 +142,22 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 name="max"
                 type="number"
                 value={temp.data.max ?? ""}
+                onChange={dispatchCellSettings}
+            />
+            <InputField
+                label={"Schrittgröße"}
+                useNameAsIs={true}
+                name="step"
+                type="number"
+                value={temp.data.step ?? ""}
+                onChange={dispatchCellSettings}
+            />
+            <InputField
+                label={"Ganzzahlswert"}
+                useNameAsIs={true}
+                name="integer"
+                type="checkbox"
+                checked={temp.data.integer}
                 onChange={dispatchCellSettings}
             />
         </>
