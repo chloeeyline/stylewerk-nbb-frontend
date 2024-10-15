@@ -21,7 +21,9 @@ const EntrySettings = () => {
             if (response.ok === false) return;
             var result = entryFoldersSchema.safeParse(response.result);
             if (result.success === false) return;
-            var list = result.data.map((f) => [f.id, f.name ?? ""]);
+            const list: [string, string][] = result.data.map(
+                (f) => [f.id, f.name ?? ""] as [string, string],
+            );
             setFolders(list);
         });
     }, []);
