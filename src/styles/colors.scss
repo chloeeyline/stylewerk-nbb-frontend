@@ -1,0 +1,19 @@
+@each $type in "primary", "accent", "neutral", "info", "success", "warning", "error" {
+    .bg-#{$type} {
+        background-color: var(--clr-#{$type});
+
+        &-active {
+            background-color: var(--clr-#{$type}-active);
+        }
+    }
+
+    .clr-#{$type} {
+        color: var(--clr-#{type}-content);
+    }
+}
+
+@each $type in "base-100", "base-200", "base-300" {
+    .bg-#{$type} {
+        background-color: var(--clr-#{$type});
+    }
+}

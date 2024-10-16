@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 import cls from "~/utils/class-name-helper";
 import { getSupportedLanguages } from "~/utils/i18n";
-import styles from "./nav-bar.module.scss";
 
 type NavBarLinkProps = {
     type: "link";
@@ -22,7 +21,6 @@ type NavbarRoute = NavBarLinkProps | NavBarButtonProps;
 
 type NavbarProps = React.PropsWithChildren<{
     routes: (NavbarRoute | undefined)[];
-    direction?: "horizontal" | "vertical";
     className?: string;
     styles?: React.CSSProperties;
     menuProps?: React.MenuHTMLAttributes<HTMLMenuElement>;
@@ -30,8 +28,8 @@ type NavbarProps = React.PropsWithChildren<{
 
 const NavBarLink = ({ name, url }: NavBarLinkProps) => {
     return (
-        <li>
-            <NavLink className="btn btn-loader" to={url}>
+        <li className="d-contents">
+            <NavLink style={{ flexGrow: 1, flexShrink: 0 }} className="btn btn-loader" to={url}>
                 {name}
             </NavLink>
         </li>
@@ -42,9 +40,10 @@ const NavBarButton = ({ name, onClick }: NavBarButtonProps) => {
     const [isPending, startTransition] = useTransition();
 
     return (
-        <li>
+        <li className="d-contents">
             <button
                 type="button"
+                style={{ flexGrow: 1, flexShrink: 0 }}
                 className={cls("btn", "btn-loader", isPending ? "pending" : undefined)}
                 onClick={() => {
                     startTransition(() => {
@@ -80,10 +79,15 @@ const LanguageSwitcher = () => {
     };
 
     return (
-        <li className={styles.langswitcher}>
+        <li className="p-relative d-contents">
             <button
                 type="button"
-                className={cls("btn", "btn-loader", isPending ? "pending" : undefined)}
+                style={{ flexGrow: 1, flexShrink: 0 }}
+                className={cls(
+                    "btn",
+                    "btn-loader",
+                    isPending ? "pending" : undefined
+                )}
                 onClick={() => {
                     startTransition(() => {
                         getSupportedLanguages().then((languages) => {
@@ -97,21 +101,26 @@ const LanguageSwitcher = () => {
                 }}>
                 i81n
             </button>
-            <dialog ref={dialogRef}>
-                <div>
-                    <span>Language</span>
+            <dialog
+                className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                style={{ "--inset": "1rem 1rem auto auto" }}
+                ref={dialogRef}>
+                <div
+                    className="d-grid grid-template-columns"
+                    style={{ "--grid-template-columns": "1fr auto" }}>
+                    <span className="p-i-1 p-b-0 no-line-height">Language</span>
                     <button type="button" className="btn" onClick={() => setDialogOpen(false)}>
                         Close
                     </button>
                 </div>
-                <ul>
+                <ul className="d-contents">
                     {Object.entries(switcherState.languages).map(([code, name]) => (
-                        <li key={code}>
+                        <li key={code} className="d-contents">
                             <button
                                 type="button"
                                 className={cls(
                                     "btn",
-                                    i18n.language === code ? "btn-primary" : undefined,
+                                    i18n.language === code ? "btn-primary active" : undefined,
                                 )}
                                 onClick={() => i18n.changeLanguage(code)}>
                                 {name}
@@ -122,28 +131,16 @@ const LanguageSwitcher = () => {
             </dialog>
         </li>
     );
-
-    return (
-        <select
-            value={i18n.language}
-            onChange={(e) => {
-                i18n.changeLanguage(e.target.value);
-            }}>
-            {Object.entries(switcherState.languages).map(([code, name]) => (
-                <option key={code} value={code}>
-                    {name}
-                </option>
-            ))}
-        </select>
-    );
 };
 
-const Navbar = ({ routes, direction, className, ...props }: NavbarProps) => {
+const Navbar = ({ routes, ...props }: NavbarProps) => {
     const filtered = routes.filter((route) => typeof route !== "undefined");
 
     return (
-        <nav {...props} className={cls(styles.nav, styles[direction ?? "horizontal"], className)}>
-            <menu>
+        <nav {...props}>
+            <menu
+                className="d-flex flex-wrap gap-1 reset-list flex-direction-row"
+                style={{ justifyContent: "space-evenly" }}>
                 {filtered.map((route) =>
                     route.type === "link" ? (
                         <NavBarLink key={route.name} {...route} />

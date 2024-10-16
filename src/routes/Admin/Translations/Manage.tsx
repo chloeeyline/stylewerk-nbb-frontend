@@ -191,7 +191,7 @@ export default function AdminTranslationsManage() {
                 <h1>{t("nav.adminTranslationsManage")}</h1>
             </div>
             <ScrollContainer direction="vertical">
-                <Grid layout="headerFooter" className="size-block-100 gap-1-rem">
+                <Grid layout="headerFooter" className="size-block-100 gap-1">
                     <div>
                         <InputField
                             label={t("adminTranslations.labelCode")}
