@@ -1,6 +1,5 @@
 (async () => {
-    const token =
-        "";
+    const token = "";
 
     if (token === "") {
         alert("no token given!");
@@ -23,8 +22,8 @@
             resetPassword: ["Passwort zurücksetzen", "Reset password"],
         },
         adminTranslations: {
-            labelCode: ["Sprachcode", "language-code"],
-            labelName: ["Sprachname", "language-name"],
+            labelCode: ["Sprachcode", "Language-code"],
+            labelName: ["Sprachname", "Language-name"],
             labelUploadJson: ["JSON-Datei hochladen", "Upload JSON-file"],
             saveLanguage: ["Sprache speichern", "Save language"],
             deleteLanguage: ["Sprache löschen", "Delete language"],
@@ -32,6 +31,16 @@
             labelFromCode: ["Von code", "From code"],
             fromCodeDefault: ["Standard (de)", "Default (de)"],
             addNewLanguage: ["Neue Sprache hinzufügen", "Add new language"],
+        },
+        adminThemes: {
+            labelId: ["Theme-id", "Theme-id"],
+            labelName: ["Themename", "Theme-name"],
+            labelBase: ["Themebasis", "Theme-base"],
+            saveTheme: ["Theme speichern", "Save theme"],
+            deleteTheme: ["Theme löschen", "Delete theme"],
+            labelNewId: ["Neue Theme-id", "New theme-id"],
+            labelFromId: ["Ausgangs-Theme", "Base-theme"],
+            addNewTheme: ["Neue Theme hinzufügen", "Add new theme"],
         },
         list: {
             filter: ["Filter", "Filter"],
@@ -89,6 +98,7 @@
                 "Andere Sitzungen wurden entfernt!",
                 "Other sessions have been removed!",
             ],
+            invalidId: ["Ungültige ID", "Inavalid ID"],
             user_one: ["Benutzer", "User"],
             email_one: ["E-Mail", "Email"],
             entry_one: ["Eintrag", "Entry"],
