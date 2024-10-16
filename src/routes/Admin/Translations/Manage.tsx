@@ -146,7 +146,7 @@ export default function AdminTranslationsManage() {
         if (translationState.code === RouteParams.TranslationId) {
             setTranslationState({
                 ...translationState,
-                error: "Invalid translation-id",
+                error: t("common.invalidId"),
                 loading: false,
             });
             return;
@@ -266,7 +266,7 @@ export default function AdminTranslationsManage() {
                                 if (name.trim() === "") {
                                     setTranslationState({
                                         ...translationState,
-                                        error: "Please enter a name!",
+                                        error: t("formErrors.pleaseEnter", { what: t("common.name")}),
                                     });
                                     return;
                                 }
@@ -276,7 +276,7 @@ export default function AdminTranslationsManage() {
                                 if (result.ok === false) {
                                     setTranslationState({
                                         ...translationState,
-                                        error: result.error.message,
+                                        error: t(`errorCodes.${result.error.message}`),
                                     });
                                     return;
                                 }
@@ -298,7 +298,7 @@ export default function AdminTranslationsManage() {
 
                                     navigate(Routes.Admin.Translations.List);
                                 }}>
-                                Delete
+                                {t("adminTranslations.deleteLanguage")}
                             </button>
                         )}
                     </div>

@@ -4,14 +4,19 @@ const themeApiSchema = z.object({
     id: z.string(),
     name: z.string(),
     base: z.union([z.literal("light"), z.literal("dark"), z.literal("system")]),
-    data: z.string(),
 });
 
 type ThemeApi = z.infer<typeof themeApiSchema>;
 
-const themeEditableSchema = z.record(z.string(), z.string()).catch({}).default({});
+const themeSchema = z.record(z.string(), z.string()).catch({}).default({});
 
-type ThemeEditable = z.infer<typeof themeEditableSchema>;
+type Theme = z.infer<typeof themeSchema>;
 
-export type { ThemeApi, ThemeEditable };
-export { themeApiSchema, themeEditableSchema };
+const completeThemeSchema = themeApiSchema.extend({
+    data: themeSchema,
+});
+
+type CompleteTheme = z.infer<typeof completeThemeSchema>;
+
+export type { ThemeApi, Theme, CompleteTheme };
+export { themeApiSchema, themeSchema, completeThemeSchema };
