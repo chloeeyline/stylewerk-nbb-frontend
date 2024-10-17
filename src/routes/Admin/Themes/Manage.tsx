@@ -28,6 +28,9 @@ type ThemeState = {
     theme: Theme;
 };
 
+const getNameParameter = (): string =>
+    new URLSearchParams(document.location.search).get("name") ?? "";
+
 const getFromParameter = (): "light" | "dark" =>
     (new URLSearchParams(document.location.search).get("from") ?? "light") === "dark"
         ? "dark"
@@ -122,6 +125,7 @@ export default function AdminThemesManage() {
                 ...themeState,
                 error: null,
                 loading: false,
+                name: getNameParameter(),
                 base: getFromParameter(),
                 theme: getFromParameter() === "dark" ? baseThemes.dark : baseThemes.light,
             });

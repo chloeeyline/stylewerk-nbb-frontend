@@ -4,6 +4,7 @@ const themeApiSchema = z.object({
     id: z.string(),
     name: z.string(),
     base: z.union([z.literal("light"), z.literal("dark"), z.literal("system")]),
+    data: z.string().nullable(),
 });
 
 type ThemeApi = z.infer<typeof themeApiSchema>;

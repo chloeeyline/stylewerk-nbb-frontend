@@ -1,4 +1,4 @@
-import BackendRoutes, { ColorTheme } from "~/constants/backend-routes";
+import BackendRoutes from "~/constants/backend-routes";
 import { createNbbError } from "~/schemas/nbb-error";
 import {
     CompleteTheme,
@@ -75,21 +75,25 @@ export const builtInThemes: Record<"dark" | "light" | "system" | "colorful", The
         id: "dark",
         name: "Dark",
         base: "dark",
+        data: null,
     },
     light: {
         id: "light",
         name: "Light",
         base: "light",
+        data: null,
     },
     system: {
         id: "system",
         name: "System",
         base: "system",
+        data: null,
     },
     colorful: {
         id: "colorful",
         name: "Colorful",
         base: "light",
+        data: null,
     },
 };
 
@@ -126,7 +130,9 @@ const getBuiltInThemeApi = (id?: string): ThemeApi => {
 };
 
 export const loadFromPersistance = (): ThemeApi => {
-    const result = safeParse(localStorage.getItem("theme") ?? "{}");
+    const fromStorage = localStorage.getItem("theme");
+
+    const result = safeParse(fromStorage ?? "{}");
 
     if (result.ok === false) {
         return {
@@ -173,7 +179,7 @@ export const loadTheme = async (id: string): Promise<CompleteTheme | null> => {
         return null;
     }
 
-    const apiResponse = await Ajax.get(BackendRoutes.ColorTheme.Index, {
+    const apiResponse = await Ajax.get(BackendRoutes.ColorTheme.Details, {
         search: { id },
     });
 
@@ -181,13 +187,72 @@ export const loadTheme = async (id: string): Promise<CompleteTheme | null> => {
         return null;
     }
 
-    const result = await completeThemeSchema.safeParseAsync(apiResponse.result);
+    const outerResult = await themeApiSchema.safeParseAsync(apiResponse.result);
 
-    if (result.success === false) {
+    if (outerResult.success === false || typeof outerResult.data.data !== "string") {
         return null;
     }
 
-    return result.data;
+    const parsed = safeParse(outerResult.data.data);
+
+    if (parsed.ok === false) {
+        return null;
+    }
+
+    const innerResult = await completeThemeSchema.safeParseAsync({
+        ...outerResult.data,
+        data: parsed.data,
+    });
+
+    if (innerResult.success === false) {
+        return null;
+    }
+
+    return innerResult.data;
+};
+
+export const switchBase = (base: "dark" | "light" | "system") => {
+    document.documentElement.dataset.theme = base;
+};
+
+export const switchTheme = async (id: string) => {
+    if (Object.keys(builtInThemes).includes(id)) {
+        document.documentElement.setAttribute("style", "");
+
+        const theme = getBuiltInThemeApi(id);
+
+        switchBase(theme.base);
+
+        persist({
+            id: theme.id,
+            name: theme.name,
+            base: theme.base,
+            data: theme.data,
+        });
+
+        return { ok: true };
+    }
+
+    const theme = await loadTheme(id);
+
+    if (theme === null) {
+        return { ok: false, error: createNbbError(1102, "NoDataFound", false) };
+    }
+
+    document.documentElement.dataset.theme = theme.base === "dark" ? "dark" : "light";
+
+    switchBase(theme.base);
+
+    applyTheme(theme.data);
+
+    persist({
+        id: theme.id,
+        name: theme.name,
+        base: theme.base,
+        data: null,
+    });
+
+    return { ok: true };
 };
 
 export const applyTheme = (data: Theme, scheme?: string) => {
@@ -201,9 +266,9 @@ export const applyTheme = (data: Theme, scheme?: string) => {
 };
 
 export const deleteTheme = (id: string) =>
-    Ajax.post(ColorTheme.Remove, {
+    Ajax.post(BackendRoutes.ColorTheme.Remove, {
         auth: true,
-        body: { id },
+        search: { id },
     });
 
 export const updateTheme = async (id: string, name: string, base: string, data: Theme) => {
@@ -217,7 +282,7 @@ export const updateTheme = async (id: string, name: string, base: string, data: 
         return { ok: false, error: createNbbError(1101, "DataIsInvalid", false) };
     }
 
-    const result = await Ajax.post(ColorTheme.Update, {
+    const result = await Ajax.post(BackendRoutes.ColorTheme.Update, {
         auth: true,
         body: {
             id,

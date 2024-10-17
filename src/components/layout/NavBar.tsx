@@ -1,7 +1,14 @@
 import type React from "react";
-import { memo, useRef, useState, useTransition } from "react";
+import { memo, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import {
+    builtInThemes,
+    getRemoteThemes,
+    getStoredThemes,
+    switchTheme,
+} from "~/routes/Admin/Themes/api";
+import { ThemeApi } from "~/schemas/themes";
 import cls from "~/utils/class-name-helper";
 import { getSupportedLanguages } from "~/utils/i18n";
 
@@ -56,8 +63,138 @@ const NavBarButton = ({ name, onClick }: NavBarButtonProps) => {
     );
 };
 
+const ThemeSwitcher = () => {
+    const { t } = useTranslation();
+    const [switcherState, setSwitcherState] = useState<{
+        selected: string;
+        pending?: string;
+        themes: ThemeApi[];
+    }>({
+        selected: "system",
+        themes: [],
+    });
+
+    const dialogRef = useRef<HTMLDialogElement>(null);
+
+    const setDialogOpen = (open: boolean) => {
+        if (!(dialogRef.current instanceof HTMLDialogElement)) return;
+
+        if (open) {
+            dialogRef.current.show();
+            return;
+        }
+
+        dialogRef.current.close();
+    };
+
+    const allThemes = [...Object.values(builtInThemes), ...switcherState.themes];
+
+    useEffect(() => {
+        const selected = getStoredThemes()[0];
+
+        setSwitcherState({
+            ...switcherState,
+            selected: selected.id,
+            pending: selected.id,
+        });
+
+        switchTheme(selected.id).then((result) => {
+            const innerId = result.ok === true ? selected.id : selected.base;
+
+            if (result.ok === false) {
+                switchTheme(innerId).then(() => {
+                    setSwitcherState({
+                        ...switcherState,
+                        selected: innerId,
+                        pending: undefined,
+                    });
+                    getRemoteThemes().then((themes) => {
+                        setSwitcherState({
+                            ...switcherState,
+                            selected: innerId,
+                            pending: undefined,
+                            themes: themes,
+                        });
+                    });
+                });
+                return;
+            }
+
+            getRemoteThemes().then((themes) => {
+                setSwitcherState({
+                    ...switcherState,
+                    selected: selected.id,
+                    pending: undefined,
+                    themes: themes,
+                });
+            });
+        });
+    }, []);
+
+    return (
+        <li className="p-relative">
+            <button
+                type="button"
+                style={{ flexGrow: 1, flexShrink: 0 }}
+                className={cls("btn", "btn-loader")}
+                onClick={() => setDialogOpen(true)}>
+                Theme
+            </button>
+            <dialog
+                className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
+                ref={dialogRef}>
+                <div
+                    className="d-grid grid-template-columns"
+                    style={{ "--grid-template-columns": "1fr auto" }}>
+                    <span className="p-i-1 p-b-0 no-line-height">
+                        {t("common.language", { count: 2 })}
+                    </span>
+                    <button type="button" className="btn" onClick={() => setDialogOpen(false)}>
+                        X
+                    </button>
+                </div>
+                <ul className="d-contents">
+                    {allThemes.map(({ id, name }) => (
+                        <li key={id} className="d-contents">
+                            <button
+                                type="button"
+                                className={cls(
+                                    "btn btn-loader",
+                                    switcherState.pending === id ? "pending" : undefined,
+                                    switcherState.selected === id
+                                        ? "btn-primary active"
+                                        : undefined,
+                                )}
+                                onClick={() => {
+                                    setSwitcherState({
+                                        ...switcherState,
+                                        selected: id,
+                                        pending: id,
+                                    });
+
+                                    switchTheme(id).then(({ ok }) => {
+                                        if (ok) {
+                                            setSwitcherState({
+                                                ...switcherState,
+                                                selected: id,
+                                                pending: undefined,
+                                            });
+                                        }
+                                    });
+                                }}>
+                                {name}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </dialog>
+        </li>
+    );
+};
+
 const LanguageSwitcher = () => {
-    const { i18n } = useTranslation();
+    const { i18n, t } = useTranslation();
     const [isPending, startTransition] = useTransition();
     const [switcherState, setSwitcherState] = useState<{
         languages: Record<string, string>;
@@ -79,15 +216,11 @@ const LanguageSwitcher = () => {
     };
 
     return (
-        <li className="p-relative d-contents">
+        <li className="p-relative">
             <button
                 type="button"
                 style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls(
-                    "btn",
-                    "btn-loader",
-                    isPending ? "pending" : undefined
-                )}
+                className={cls("btn", "btn-loader", isPending ? "pending" : undefined)}
                 onClick={() => {
                     startTransition(() => {
                         getSupportedLanguages().then((languages) => {
@@ -103,14 +236,16 @@ const LanguageSwitcher = () => {
             </button>
             <dialog
                 className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
-                style={{ "--inset": "1rem 1rem auto auto" }}
+                style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
                 ref={dialogRef}>
                 <div
                     className="d-grid grid-template-columns"
                     style={{ "--grid-template-columns": "1fr auto" }}>
-                    <span className="p-i-1 p-b-0 no-line-height">Language</span>
+                    <span className="p-i-1 p-b-0 no-line-height">
+                        {t("common.language", { count: 2 })}
+                    </span>
                     <button type="button" className="btn" onClick={() => setDialogOpen(false)}>
-                        Close
+                        X
                     </button>
                 </div>
                 <ul className="d-contents">
@@ -148,6 +283,7 @@ const Navbar = ({ routes, ...props }: NavbarProps) => {
                         <NavBarButton key={route.name} {...route} />
                     ),
                 )}
+                <ThemeSwitcher />
                 <LanguageSwitcher />
             </menu>
         </nav>

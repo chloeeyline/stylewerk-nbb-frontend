@@ -87,17 +87,21 @@ const Themes = () => {
                         }
 
                         navigate(
-                            Routes.Admin.Themes.Manage.replace(RouteParams.ThemeId, newId) +
-                                (fromId.length !== 0 ? `?from=${fromId}` : ""),
+                            Routes.Admin.Themes.Manage.replace(
+                                RouteParams.ThemeId,
+                                crypto.randomUUID(),
+                            ) +
+                                `?name=${newId}` +
+                                (fromId.length !== 0 ? `&from=${fromId}` : ""),
                         );
                     }}>
                     <InputField
-                        label={t("adminThemes.labelNewId")}
-                        name="newCode"
+                        label={t("adminThemes.labelNewName")}
+                        name="newName"
                         ref={newThemeRef}
                     />
                     <SelectField
-                        label={t("adminThemes.labelFrom")}
+                        label={t("adminThemes.labelFromId")}
                         name="from"
                         ref={fromThemeRef}
                         options={[
