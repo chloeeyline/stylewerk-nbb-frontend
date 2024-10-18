@@ -1,6 +1,22 @@
+import {
+    closestCenter,
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+    arrayMove,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { getEditor, reset, selectEditor } from "~/redux/features/editor/editor-slice";
+import { getEditor, reset, selectEditor, setRows } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
@@ -26,12 +42,35 @@ const Editor = ({
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
 
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
     useEffect(() => {
         dispatch(getEditor({ id: id, isTemplate: isTemplate, isPreview: isPreview, isNew: isNew }));
         return () => {
             dispatch(reset());
         };
     }, [id]);
+
+    const dragFolder = (e: DragEndEvent) => {
+        const { active, over } = e;
+
+        if (over && active.id !== over.id && editor.data && editor.data.items.length > 0) {
+            console.log(over.id, active.id);
+            const oldIndex = editor.data.items.indexOf(
+                editor.data.items.filter((value) => value.id === active.id)[0],
+            );
+            const newIndex = editor.data.items.indexOf(
+                editor.data.items.filter((value) => value.id === over.id)[0],
+            );
+
+            dispatch(setRows(arrayMove(editor.data.items, oldIndex, newIndex)));
+        }
+    };
 
     if (editor.status === "idle") {
         return null;
@@ -89,14 +128,24 @@ const Editor = ({
                 <ScrollContainer direction="both">
                     <fieldset>
                         <legend>Editor</legend>
-                        {getList().length > 0 &&
-                            getList().map((row) =>
-                                editor.isTemplate ? (
-                                    <EditorRow key={row.templateID} row={row} />
-                                ) : (
-                                    <EditorRow key={row.id} row={row} />
-                                ),
-                            )}
+                        <DndContext
+                            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(e) => dragFolder(e)}>
+                            <SortableContext
+                                items={getList()}
+                                strategy={verticalListSortingStrategy}>
+                                {getList().length > 0 &&
+                                    getList().map((row) =>
+                                        editor.isTemplate ? (
+                                            <EditorRow key={row.templateID} row={row} />
+                                        ) : (
+                                            <EditorRow key={row.id} row={row} />
+                                        ),
+                                    )}
+                            </SortableContext>
+                        </DndContext>
                     </fieldset>
                 </ScrollContainer>
             </Grid>

@@ -7,16 +7,19 @@ import {
     useSensor,
     useSensors,
 } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { restrictToHorizontalAxis, restrictToParentElement } from "@dnd-kit/modifiers";
 import {
     arrayMove,
     SortableContext,
     sortableKeyboardCoordinates,
+    useSortable,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 import { EntryRow } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setRows } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import Move from "../Icon/Move";
 import EditorCell from "./EditorCell";
 
 const EditorRow = ({ row }: { row: EntryRow }) => {
@@ -29,6 +32,22 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
             coordinateGetter: sortableKeyboardCoordinates,
         }),
     );
+
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+        id: row.id,
+    });
+
+    const style = {
+        transform: CSS.Transform.toString(transform),
+        transition,
+        backgroundColor:
+            editor.isPreview === false &&
+            editor.isTemplate === true &&
+            row.templateID == editor.selectedTemplateRow
+                ? "green"
+                : "",
+        margin: "0.5rem",
+    };
 
     const dragFolder = (e: DragEndEvent) => {
         const { active, over } = e;
@@ -60,19 +79,12 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
     };
 
     return (
-        <div
-            className="lrow"
-            style={{
-                backgroundColor:
-                    editor.isPreview === false &&
-                    editor.isTemplate === true &&
-                    row.templateID == editor.selectedTemplateRow
-                        ? "green"
-                        : "",
-                margin: "0.5rem",
-            }}>
+        <div className="lrow" {...attributes} ref={setNodeRef} style={style}>
+            <div className={editor.isPreview ? "hidden" : undefined}>
+                <Move {...listeners} />
+            </div>
             <DndContext
-                modifiers={[restrictToHorizontalAxis]}
+                modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
                 sensors={sensors}
                 collisionDetection={closestCenter}
                 onDragEnd={(e) => dragFolder(e)}>
