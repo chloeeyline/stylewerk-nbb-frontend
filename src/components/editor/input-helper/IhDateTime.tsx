@@ -4,6 +4,7 @@ import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { saveParseEmptyObject } from "~/utils/safe-json";
 
 const ihMetaDataSchema = z
     .object({
@@ -19,24 +20,6 @@ const ihDataSchema = z
         value: z.string().optional().catch(undefined).default(undefined),
     })
     .strip();
-
-const transformMetaData = (input: unknown) => {
-    try {
-        if (typeof input !== "string") throw new Error("foo");
-        return ihMetaDataSchema.safeParse(JSON.parse(input));
-    } catch (error) {
-        return ihMetaDataSchema.safeParse({});
-    }
-};
-
-const transformData = (input: unknown) => {
-    try {
-        if (typeof input !== "string") throw new Error("foo");
-        return ihDataSchema.safeParse(JSON.parse(input));
-    } catch (error) {
-        return ihDataSchema.safeParse({});
-    }
-};
 
 const getType = (type: number) => {
     switch (type) {
@@ -54,8 +37,8 @@ const getType = (type: number) => {
 export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const metadata = transformMetaData(cell.template.metaData);
-    const data = transformData(cell.data);
+    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -88,19 +71,19 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
 
 export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const temp = transformMetaData(cell.template.metaData);
+    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
-        if (temp.success === false) return;
+        if (metadata.success === false) return;
         dispatch(
             setTemplateCell({
                 type: "metaData",
-                value: JSON.stringify(temp.data),
+                value: JSON.stringify(metadata.data),
             }),
         );
     }, []);
 
-    if (temp.success === false) return null;
+    if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
@@ -112,7 +95,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                     setTemplateCell({
                         type: "metaData",
                         value: JSON.stringify({
-                            ...temp.data,
+                            ...metadata.data,
                             [e.target.name]: e.target.value,
                         }),
                     }),
@@ -123,7 +106,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                     setTemplateCell({
                         type: "metaData",
                         value: JSON.stringify({
-                            ...temp.data,
+                            ...metadata.data,
                             [e.target.name]: Number(e.target.value),
                         }),
                     }),
@@ -140,24 +123,24 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 label={"Minimalwert"}
                 useNameAsIs={true}
                 name="min"
-                type={getType(temp.data.type)}
-                value={temp.data.min ?? ""}
+                type={getType(metadata.data.type)}
+                value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
                 label={"Maximalwert"}
                 useNameAsIs={true}
                 name="max"
-                type={getType(temp.data.type)}
-                value={temp.data.max ?? ""}
+                type={getType(metadata.data.type)}
+                value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
                 label={"Standartwert"}
                 useNameAsIs={true}
                 name="value"
-                type={getType(temp.data.type)}
-                value={temp.data.value ?? ""}
+                type={getType(metadata.data.type)}
+                value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -166,7 +149,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 name="type"
                 type="radio"
                 value="0"
-                checked={temp.data.type == 0}
+                checked={metadata.data.type == 0}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -175,7 +158,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 name="type"
                 type="radio"
                 value="1"
-                checked={temp.data.type == 1}
+                checked={metadata.data.type == 1}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -184,7 +167,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 name="type"
                 type="radio"
                 value="2"
-                checked={temp.data.type == 2}
+                checked={metadata.data.type == 2}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -193,7 +176,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 name="type"
                 type="radio"
                 value="3"
-                checked={temp.data.type == 3}
+                checked={metadata.data.type == 3}
                 onChange={dispatchCellSettings}
             />
         </>

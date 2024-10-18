@@ -6,8 +6,7 @@ import { IhColor } from "./IhColor";
 import { IhDateTime } from "./IhDateTime";
 import { IhNumber } from "./IhNumber";
 import { IhStatic } from "./IhStatic";
-import { IhTextLong } from "./IhTextLong";
-import { IhTextShort } from "./IhTextShort";
+import { IhText } from "./IhText";
 
 const InputHelper = ({ cell }: { cell: EntryCell }) => {
     const editor = useAppSelector(selectEditor);
@@ -19,10 +18,8 @@ const InputHelper = ({ cell }: { cell: EntryCell }) => {
     switch (cell.template.inputHelper) {
         case 1:
             return <IhStatic {...props} />;
-        case 2:
-            return <IhTextShort {...props} />;
         case 3:
-            return <IhTextLong {...props} />;
+            return <IhText {...props} />;
         case 4:
             return <IhNumber {...props} />;
         case 5:

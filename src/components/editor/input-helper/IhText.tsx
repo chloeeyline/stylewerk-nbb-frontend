@@ -1,6 +1,6 @@
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 
-export const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
+export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
         <>
             <textarea
@@ -14,7 +14,7 @@ export const IhTextLong = ({ cell, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhTextLongSettings = ({ cell }: { cell: EntryCell }) => {
+export const IhTextSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <div>
             <pre>

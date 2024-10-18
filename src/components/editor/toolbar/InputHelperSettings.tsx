@@ -3,8 +3,7 @@ import { IhCheckboxSettings } from "../input-helper/IhCheckbox";
 import { IhDateTimeSettings } from "../input-helper/IhDateTime";
 import { IhNumberSettings } from "../input-helper/IhNumber";
 import { IhStaticSettings } from "../input-helper/IhStatic";
-import { IhTextLongSettings } from "../input-helper/IhTextLong";
-import { IhTextShortSettings } from "../input-helper/IhTextShort";
+import { IhTextSettings } from "../input-helper/IhText";
 import { IhColorSettings } from "../input-helper/IhColor";
 
 const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
@@ -12,10 +11,8 @@ const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
     switch (cell.template.inputHelper) {
         case 1:
             return <IhStaticSettings cell={cell} />;
-        case 2:
-            return <IhTextShortSettings cell={cell} />;
         case 3:
-            return <IhTextLongSettings cell={cell} />;
+            return <IhTextSettings cell={cell} />;
         case 4:
             return <IhNumberSettings cell={cell} />;
         case 5:
