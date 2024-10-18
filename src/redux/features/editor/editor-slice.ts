@@ -4,7 +4,7 @@ import { DEFAULT_UUID } from "~/constants/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
-import type { Editor } from "./editor-schemas";
+import type { Editor, EntryRow } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
 export type EditorState = {
@@ -393,6 +393,9 @@ const editorSlice = createSlice({
                 state.selectedEntryCell = "";
             }
         },
+        setRows: (state, action: PayloadAction<EntryRow[]>) => {
+            if (state.data) state.data.items = action.payload;
+        },
         setSelected: (
             state,
             action: PayloadAction<{
@@ -449,8 +452,6 @@ const editorSlice = createSlice({
 });
 
 export const {
-    setSelected,
-    reset,
     setEntry,
     setEntryCell,
     setTemplate,
@@ -460,6 +461,9 @@ export const {
     addTemplateCell,
     removeTemplateRow,
     removeTemplateCell,
+    setRows,
+    setSelected,
+    reset,
 } = editorSlice.actions;
 export const selectEditor = (state: RootState) => state.editor;
 export default editorSlice.reducer;
