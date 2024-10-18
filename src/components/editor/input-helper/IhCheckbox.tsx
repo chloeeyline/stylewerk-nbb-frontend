@@ -33,7 +33,7 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
             name="checkbox"
             label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type="color"
+            type="checkbox"
             checked={data.data.value ?? metadata.data.value ?? false}
             onChange={(e) => {
                 if (editor.isPreview) return;
@@ -70,26 +70,13 @@ export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
         switch (e.target.name) {
-            case "min":
-            case "max":
             case "value":
                 dispatch(
                     setTemplateCell({
                         type: "metaData",
                         value: JSON.stringify({
                             ...metadata.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    }),
-                );
-                break;
-            case "type":
-                dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: Number(e.target.value),
+                            [e.target.name]: e.target.checked,
                         }),
                     }),
                 );

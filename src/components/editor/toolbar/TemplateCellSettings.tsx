@@ -1,12 +1,22 @@
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import {
+    selectEditor,
+    setTemplateCell,
+    setTemplateRow,
+} from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputHelperSettings from "./InputHelperSettings";
 
 const TemplateCellSettings = () => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+
+    const selectedRowSettings = () => {
+        if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;
+        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
+        return row?.template;
+    };
 
     const selectedCellSettings = () => {
         if (
@@ -22,9 +32,9 @@ const TemplateCellSettings = () => {
         return cell ?? null;
     };
 
-    const dispatchCellSettingsCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dispatchRowSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
-            setTemplateCell({
+            setTemplateRow({
                 type: e.target.name,
                 value: e.target.checked,
             }),
@@ -33,73 +43,106 @@ const TemplateCellSettings = () => {
 
     const dispatchCellSettings = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+        value: boolean | number | string,
     ) => {
         dispatch(
             setTemplateCell({
                 type: e.target.name,
-                value: e.target.value,
+                value: value,
             }),
         );
     };
 
     return (
         <fieldset className="lrow">
-            <legend>Zellen Einstellung</legend>
-            <div>
+            <legend>Einstellungen</legend>
+            <fieldset className="lcell">
+                <legend>Zeile</legend>
                 <InputField
-                    label={"HideOnEmpty"}
-                    name={"hideOnEmpty"}
+                    label={"CanWrapCells"}
+                    name={"canWrapCells"}
                     useNameAsIs={true}
                     type="checkbox"
-                    maxLength={100}
-                    checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
-                    onChange={dispatchCellSettingsCheckbox}
+                    checked={selectedRowSettings()?.canWrapCells ?? false}
+                    onChange={dispatchRowSettings}
                 />
                 <InputField
-                    label={"IsRequired"}
-                    name={"isRequired"}
+                    label={"CanRepeat"}
+                    name={"canRepeat"}
                     useNameAsIs={true}
                     type="checkbox"
-                    maxLength={100}
-                    checked={selectedCellSettings()?.template.isRequired ?? false}
-                    onChange={dispatchCellSettingsCheckbox}
+                    checked={selectedRowSettings()?.canRepeat ?? false}
+                    onChange={dispatchRowSettings}
                 />
-            </div>
-            <SelectField
-                name="inputHelper"
-                label={"InputHelper"}
-                useNameAsIs={true}
-                value={selectedCellSettings()?.template.inputHelper ?? 1}
-                onChange={dispatchCellSettings}
-                options={[
-                    ["0", "Test"],
-                    ["1", "Fix Text"],
-                    ["3", "Texteingabe"],
-                    ["4", "Zahleneingabe"],
-                    ["5", "Checkbox"],
-                    ["6", "Datetime"],
-                    ["7", "Farbe"],
-                ]}
-            />
-            <InputField
-                label={"Text"}
-                name={"text"}
-                useNameAsIs={true}
-                type="text"
-                maxLength={100}
-                value={selectedCellSettings()?.template.text ?? ""}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Description"}
-                name={"description"}
-                useNameAsIs={true}
-                type="text"
-                maxLength={100}
-                value={selectedCellSettings()?.template.description ?? ""}
-                onChange={dispatchCellSettings}
-            />
-            <InputHelperSettings cell={selectedCellSettings()} />
+                <InputField
+                    label={"HideOnNoInput"}
+                    name={"hideOnNoInput"}
+                    useNameAsIs={true}
+                    type="checkbox"
+                    checked={selectedRowSettings()?.hideOnNoInput ?? false}
+                    onChange={dispatchRowSettings}
+                />
+            </fieldset>
+            <fieldset className="lcell">
+                <legend>Zelle</legend>
+                <div className="lrow">
+                    <div>
+                        <InputField
+                            label={"HideOnEmpty"}
+                            name={"hideOnEmpty"}
+                            useNameAsIs={true}
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
+                            onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                        />
+                        <InputField
+                            label={"IsRequired"}
+                            name={"isRequired"}
+                            useNameAsIs={true}
+                            type="checkbox"
+                            maxLength={100}
+                            checked={selectedCellSettings()?.template.isRequired ?? false}
+                            onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                        />
+                    </div>
+                    <SelectField
+                        name="inputHelper"
+                        label={"InputHelper"}
+                        useNameAsIs={true}
+                        value={selectedCellSettings()?.template.inputHelper ?? 1}
+                        onChange={(e) => dispatchCellSettings(e, e.target.value)}
+                        options={[
+                            ["0", "Test"],
+                            ["1", "Fix Text"],
+                            ["3", "Texteingabe"],
+                            ["4", "Zahleneingabe"],
+                            ["5", "Checkbox"],
+                            ["6", "Datetime"],
+                            ["7", "Farbe"],
+                        ]}
+                    />
+                    <InputField
+                        label={"Text"}
+                        name={"text"}
+                        useNameAsIs={true}
+                        type="text"
+                        maxLength={100}
+                        value={selectedCellSettings()?.template.text ?? ""}
+                        onChange={(e) => dispatchCellSettings(e, e.target.value)}
+                    />
+                    <InputField
+                        label={"Description"}
+                        name={"description"}
+                        useNameAsIs={true}
+                        type="text"
+                        maxLength={100}
+                        value={selectedCellSettings()?.template.description ?? ""}
+                        onChange={(e) => dispatchCellSettings(e, e.target.value)}
+                    />
+                    <InputHelperSettings cell={selectedCellSettings()} />
+                </div>
+            </fieldset>
         </fieldset>
     );
 };

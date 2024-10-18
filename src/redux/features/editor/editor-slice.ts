@@ -4,7 +4,7 @@ import { DEFAULT_UUID } from "~/constants/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
-import type { Editor } from "./editor-schemas";
+import type { Editor, EntryRow } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
 export type EditorState = {
@@ -340,10 +340,10 @@ const editorSlice = createSlice({
                 ];
             }
         },
-        addTemplateCell: (state) => {
+        addTemplateCell: (state, action: PayloadAction<string>) => {
             if (state.data && state.data.items.length > 0) {
                 state.data.items = state.data.items.map((row) => {
-                    if (row.templateID === state.selectedTemplateRow) {
+                    if (row.templateID === action.payload) {
                         const temp = { ...row };
 
                         const templateID = crypto.randomUUID();
@@ -357,10 +357,10 @@ const editorSlice = createSlice({
                 });
             }
         },
-        removeTemplateRow: (state) => {
+        removeTemplateRow: (state, action: PayloadAction<string>) => {
             if (state.data && state.data.items.length > 1) {
                 state.data.items = state.data.items.filter((row) => {
-                    if (row.templateID !== state.selectedTemplateRow) return row;
+                    if (row.templateID !== action.payload) return row;
                 });
                 state.selectedTemplateRow = "";
                 state.selectedTemplateCell = "";
@@ -368,14 +368,17 @@ const editorSlice = createSlice({
                 state.selectedEntryCell = "";
             }
         },
-        removeTemplateCell: (state) => {
+        removeTemplateCell: (
+            state,
+            action: PayloadAction<{ templateRow: string; templateCell: string }>,
+        ) => {
             if (state.data && state.data.items.length > 1) {
                 let stop = false;
                 const tempRoowList = state.data.items.map((row) => {
-                    if (row.templateID === state.selectedTemplateRow && row.items.length > 0) {
+                    if (row.templateID === action.payload.templateRow && row.items.length > 0) {
                         if (row.items.length === 1) stop = true;
                         const tempCellList = row.items.filter((cell) => {
-                            if (cell.templateID !== state.selectedTemplateCell) return cell;
+                            if (cell.templateID !== action.payload.templateCell) return cell;
                         });
                         return {
                             ...row,
@@ -392,6 +395,9 @@ const editorSlice = createSlice({
                 state.selectedEntryRow = "";
                 state.selectedEntryCell = "";
             }
+        },
+        setRows: (state, action: PayloadAction<EntryRow[]>) => {
+            if (state.data) state.data.items = action.payload;
         },
         setSelected: (
             state,
@@ -449,8 +455,6 @@ const editorSlice = createSlice({
 });
 
 export const {
-    setSelected,
-    reset,
     setEntry,
     setEntryCell,
     setTemplate,
@@ -460,6 +464,9 @@ export const {
     addTemplateCell,
     removeTemplateRow,
     removeTemplateCell,
+    setRows,
+    setSelected,
+    reset,
 } = editorSlice.actions;
 export const selectEditor = (state: RootState) => state.editor;
 export default editorSlice.reducer;
