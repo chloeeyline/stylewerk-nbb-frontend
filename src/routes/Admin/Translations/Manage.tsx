@@ -8,8 +8,8 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import BackendRoutes from "~/constants/backend-routes";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
-import type { TranslationContent } from "~/schemas/translations-schema";
-import { translationContentSchema, translationSchema } from "~/schemas/translations-schema";
+import type { TranslationContent } from "~/schemas/translations";
+import { translationContentSchema, translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
 import { deleteLanguage, updateLanguage } from "./api";
 
@@ -146,7 +146,7 @@ export default function AdminTranslationsManage() {
         if (translationState.code === RouteParams.TranslationId) {
             setTranslationState({
                 ...translationState,
-                error: "Invalid translation-id",
+                error: t("common.invalidId"),
                 loading: false,
             });
             return;
@@ -191,7 +191,7 @@ export default function AdminTranslationsManage() {
                 <h1>{t("nav.adminTranslationsManage")}</h1>
             </div>
             <ScrollContainer direction="vertical">
-                <Grid layout="headerFooter" className="size-block-100 gap-1-rem">
+                <Grid layout="headerFooter" className="size-block-100 gap-1">
                     <div>
                         <InputField
                             label={t("adminTranslations.labelCode")}
@@ -266,7 +266,7 @@ export default function AdminTranslationsManage() {
                                 if (name.trim() === "") {
                                     setTranslationState({
                                         ...translationState,
-                                        error: "Please enter a name!",
+                                        error: t("formErrors.pleaseEnter", { what: t("common.name")}),
                                     });
                                     return;
                                 }
@@ -276,7 +276,7 @@ export default function AdminTranslationsManage() {
                                 if (result.ok === false) {
                                     setTranslationState({
                                         ...translationState,
-                                        error: result.error.message,
+                                        error: t(`errorCodes.${result.error.message}`),
                                     });
                                     return;
                                 }
@@ -298,7 +298,7 @@ export default function AdminTranslationsManage() {
 
                                     navigate(Routes.Admin.Translations.List);
                                 }}>
-                                Delete
+                                {t("adminTranslations.deleteLanguage")}
                             </button>
                         )}
                     </div>

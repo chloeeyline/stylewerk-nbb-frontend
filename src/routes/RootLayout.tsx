@@ -55,7 +55,9 @@ const RootNavBar = () => {
         loggedIn
             ? {
                   type: "button",
-                  onClick: () => dispatch(logoutUser()),
+                  onClick: () => {
+                      dispatch(logoutUser());
+                  },
                   name: t("common.logout"),
               }
             : undefined,
@@ -81,7 +83,7 @@ const RootNavBar = () => {
 export default function RootLayout() {
     return (
         <>
-            <Grid layout="header" className="size-block-100 gap-1-rem">
+            <Grid layout="header" className="size-block-100 gap-1 p-1">
                 <div>
                     <RootNavBar />
                 </div>

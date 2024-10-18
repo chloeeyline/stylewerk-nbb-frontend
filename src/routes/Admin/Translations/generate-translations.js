@@ -1,6 +1,5 @@
 (async () => {
-    const token =
-        "";
+    const token = "";
 
     if (token === "") {
         alert("no token given!");
@@ -13,7 +12,8 @@
             admin: ["Admin", "Admin"],
             adminTranslations: ["Übersetzungen", "Translations"],
             adminTranslationsManage: ["Übersetzung bearbeiten", "Edit translation"],
-            adminThemes: ["Farbschemen", "Themes"],
+            adminThemes: ["Farbschemen", "Color schemes"],
+            adminThemesManage: ["Farbeschema bearbeiten", "Edit color scheme"],
             adminUsers: ["Benutzer", "Users"],
             login: ["Anmeldung", "Login"],
             entries: ["Einträge", "Entries"],
@@ -23,8 +23,8 @@
             resetPassword: ["Passwort zurücksetzen", "Reset password"],
         },
         adminTranslations: {
-            labelCode: ["Sprachcode", "language-code"],
-            labelName: ["Sprachname", "language-name"],
+            labelCode: ["Sprachcode", "Language-code"],
+            labelName: ["Sprachname", "Language-name"],
             labelUploadJson: ["JSON-Datei hochladen", "Upload JSON-file"],
             saveLanguage: ["Sprache speichern", "Save language"],
             deleteLanguage: ["Sprache löschen", "Delete language"],
@@ -32,6 +32,16 @@
             labelFromCode: ["Von code", "From code"],
             fromCodeDefault: ["Standard (de)", "Default (de)"],
             addNewLanguage: ["Neue Sprache hinzufügen", "Add new language"],
+        },
+        adminThemes: {
+            labelId: ["Farbschema-id", "Color scheme id"],
+            labelName: ["Farbschema-name", "Color scheme name"],
+            labelBase: ["Basis des Farbschemas", "Base of the color scheme"],
+            saveTheme: ["Farbschema speichern", "Save color scheme"],
+            deleteTheme: ["Farbschema löschen", "Delete color scheme"],
+            labelNewName: ["Neues Farbschema", "New color scheme"],
+            labelFromId: ["Ausgangs-Farbschema", "Base color scheme"],
+            addNewTheme: ["Neues Farbschema hinzufügen", "Add new color scheme"],
         },
         list: {
             filter: ["Filter", "Filter"],
@@ -89,6 +99,10 @@
                 "Andere Sitzungen wurden entfernt!",
                 "Other sessions have been removed!",
             ],
+            invalidId: ["Ungültige ID", "Inavalid ID"],
+            language_zero: ["Sprachen", "languages"],
+            language_one: ["Sprache", "language"],
+            language_other: ["Sprachen", "languages"],
             user_one: ["Benutzer", "User"],
             email_one: ["E-Mail", "Email"],
             entry_one: ["Eintrag", "Entry"],

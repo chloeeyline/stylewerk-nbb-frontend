@@ -9,54 +9,19 @@ $sizes: (
     "60": 60%,
     "80": 80%,
     "100": 100%,
+    "fit": "fit-content",
+    "min": "min-content",
+    "max": "max-content",
 );
 
-.size {
-    --size: auto;
-
-    block-size: var(--size);
-    inline-size: var(--size);
-
-    @each $name, $value in $sizes {
-        &-#{$name} {
-            --size: #{$value};
-
-            block-size: var(--size);
-            inline-size: var(--size);
-        }
+@each $name, $value in $sizes {
+    .size-#{$name},
+    .size-block-#{$name} {
+        block-size: #{$value};
     }
 
-    /**
-     * Logical property for the block size.
-     * Is equivalent to height in the usual writing modes.
-     */
-    &-block {
-        --block-size: auto;
-
-        block-size: var(--block-size);
-
-        @each $name, $value in $sizes {
-            &-#{$name} {
-                --block-size: #{$value};
-
-                block-size: var(--block-size);
-            }
-        }
-    }
-
-    /**
-     * Logical property for the inline size.
-     * Is equivalent to width in the usual writing modes.
-     */
-    &-inline {
-        --inline-size: auto;
-
-        inline-size: var(--inline-size);
-
-        @each $name, $value in $sizes {
-            &-#{$name} {
-                --inline-size: #{$value};
-            }
-        }
+    .size-#{$name},
+    .size-inline-#{$name} {
+        inline-size: #{$value};
     }
 }

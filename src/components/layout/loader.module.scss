@@ -1,0 +1,65 @@
+.loader {
+    display: grid;
+    block-size: 100%;
+    inline-size: 100%;
+    place-items: center;
+}
+
+.card {
+    display: grid;
+    gap: 1rem;
+
+    padding: 1rem;
+
+    border-radius: 1rem;
+
+    background-color: var(--clr-base-200);
+}
+
+.wrapper {
+    border-radius: 50%;
+    background-color: var(--clr-base-300);
+    padding: 1rem;
+}
+
+.spinner {
+    block-size: 8rem;
+    aspect-ratio: 1;
+
+    border-style: solid;
+    border-width: 5vmin;
+    border-radius: 50%;
+    border-color: var(--clr-body);
+    border-top-color: transparent;
+    border-bottom-color: transparent;
+
+    animation: spinner 1s linear infinite;
+}
+
+.text {
+    line-height: 1;
+}
+
+.dots {
+    display: inline-block;
+    margin-inline-start: 0.25rem;
+    inline-size: 1.5rem;
+    aspect-ratio: 4;
+    background: radial-gradient(circle closest-side, #000 90%, #0000) 0 / calc(100% / 3) 100% space;
+    clip-path: inset(0 100% 0 0);
+    animation: dots 1.5s steps(4) infinite;
+}
+@keyframes dots {
+    to {
+        clip-path: inset(0 -34% 0 0);
+    }
+}
+
+@keyframes spinner {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
