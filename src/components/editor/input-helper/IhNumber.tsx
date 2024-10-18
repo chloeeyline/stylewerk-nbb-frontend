@@ -4,8 +4,9 @@ import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { saveParseEmptyObject } from "~/utils/safe-json";
 
-const ihNumberMetaDataSchema = z
+const ihMetaDataSchema = z
     .object({
         min: z.number().safe().optional().catch(undefined).default(undefined),
         max: z.number().safe().optional().catch(undefined).default(undefined),
@@ -14,51 +15,42 @@ const ihNumberMetaDataSchema = z
     })
     .strip();
 
-const ihNumberDataSchema = z
+const ihDataSchema = z
     .object({
         value: z.number().safe().optional().catch(undefined).default(undefined),
     })
     .strip();
 
-const transformMetaData = (input: unknown) => {
-    try {
-        if (typeof input !== "string") throw new Error("foo");
-        return ihNumberMetaDataSchema.safeParse(JSON.parse(input));
-    } catch (error) {
-        return ihNumberMetaDataSchema.safeParse({});
-    }
-};
-
-const transformData = (input: unknown) => {
-    try {
-        if (typeof input !== "string") throw new Error("foo");
-        return ihNumberDataSchema.safeParse(JSON.parse(input));
-    } catch (error) {
-        return ihNumberDataSchema.safeParse({});
-    }
-};
-
 export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const metadata = transformMetaData(cell.template.metaData);
-    const data = transformData(cell.data);
+    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
+
+    if (editor.isPreview === true) {
+        return (
+            <div>
+                {data.data.value}
+                <p>{cell.template.text ?? ""}</p>
+            </div>
+        );
+    }
 
     return (
         <>
             <InputField
-                label={cell.template.text ?? ""}
-                name={`templaceCell-${cell.templateID}`}
-                useNameAsIs={true}
-                type="number"
-                disabled={isReadOnly}
                 required={cell.template.isRequired}
+                disabled={isReadOnly}
+                name="number"
+                label={cell.template.text ?? ""}
+                placeholder={cell.template.text ?? ""}
+                type="number"
+                value={data.data.value ?? ""}
                 min={metadata.data?.min}
                 max={metadata.data?.max}
                 step={metadata.data?.step}
-                value={data.data.value ?? ""}
                 onChange={(e) => {
                     if (editor.isPreview) return;
                     if (e.target.value.length === 0) {
@@ -80,19 +72,19 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
 export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const temp = transformMetaData(cell.template.metaData);
+    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
-        if (temp.success === false) return;
+        if (metadata.success === false) return;
         dispatch(
             setTemplateCell({
                 type: "metaData",
-                value: JSON.stringify(temp.data),
+                value: JSON.stringify(metadata.data),
             }),
         );
     }, []);
 
-    if (temp.success === false) return null;
+    if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
@@ -104,7 +96,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                     setTemplateCell({
                         type: "metaData",
                         value: JSON.stringify({
-                            ...temp.data,
+                            ...metadata.data,
                             [e.target.name]: Number(e.target.value),
                         }),
                     }),
@@ -115,7 +107,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                     setTemplateCell({
                         type: "metaData",
                         value: JSON.stringify({
-                            ...temp.data,
+                            ...metadata.data,
                             [e.target.name]: e.target.checked,
                         }),
                     }),
@@ -133,7 +125,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="min"
                 type="number"
-                value={temp.data.min ?? ""}
+                value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -141,7 +133,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="max"
                 type="number"
-                value={temp.data.max ?? ""}
+                value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -149,7 +141,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="step"
                 type="number"
-                value={temp.data.step ?? ""}
+                value={metadata.data.step ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
@@ -157,7 +149,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="integer"
                 type="checkbox"
-                checked={temp.data.integer}
+                checked={metadata.data.integer}
                 onChange={dispatchCellSettings}
             />
         </>

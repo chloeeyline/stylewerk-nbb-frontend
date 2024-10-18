@@ -33,3 +33,5 @@ export const safeStringify = (
         };
     }
 };
+
+export const saveParseEmptyObject = (input: string | null) => safeParse(input ?? "").data ?? {};

@@ -1,34 +1,25 @@
 import { EntryCell } from "~/redux/features/editor/editor-schemas";
 import { IhCheckboxSettings } from "../input-helper/IhCheckbox";
-import { IhColorSettings } from "../input-helper/IhColor";
-import { IhDateSettings } from "../input-helper/IhDate";
 import { IhDateTimeSettings } from "../input-helper/IhDateTime";
 import { IhNumberSettings } from "../input-helper/IhNumber";
 import { IhStaticSettings } from "../input-helper/IhStatic";
-import { IhTextLongSettings } from "../input-helper/IhTextLong";
-import { IhTextShortSettings } from "../input-helper/IhTextShort";
-import { IhTimeSettings } from "../input-helper/IhTime";
+import { IhTextSettings } from "../input-helper/IhText";
+import { IhColorSettings } from "../input-helper/IhColor";
 
 const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
     if (!cell) return null;
     switch (cell.template.inputHelper) {
         case 1:
             return <IhStaticSettings cell={cell} />;
-        case 2:
-            return <IhTextShortSettings cell={cell} />;
         case 3:
-            return <IhTextLongSettings cell={cell} />;
+            return <IhTextSettings cell={cell} />;
         case 4:
             return <IhNumberSettings cell={cell} />;
         case 5:
             return <IhCheckboxSettings cell={cell} />;
         case 6:
-            return <IhDateSettings cell={cell} />;
-        case 7:
-            return <IhTimeSettings cell={cell} />;
-        case 8:
             return <IhDateTimeSettings cell={cell} />;
-        case 9:
+        case 7:
             return <IhColorSettings cell={cell} />;
         default:
             return null;

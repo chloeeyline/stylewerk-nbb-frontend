@@ -74,14 +74,11 @@ const TemplateCellSettings = () => {
                 options={[
                     ["0", "Test"],
                     ["1", "Fix Text"],
-                    ["2", "Kurze Texteingabe"],
-                    ["3", "Lange Texteingabe"],
+                    ["3", "Texteingabe"],
                     ["4", "Zahleneingabe"],
                     ["5", "Checkbox"],
-                    ["6", "Datum"],
-                    ["7", "Zeit"],
-                    ["8", "Datetime"],
-                    ["9", "Farbe"],
+                    ["6", "Datetime"],
+                    ["7", "Farbe"],
                 ]}
             />
             <InputField

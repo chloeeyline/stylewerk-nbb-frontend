@@ -22,6 +22,7 @@ const TemplateActions = () => {
         <fieldset className="lrow">
             <legend>Allgemeine Actions</legend>
             <button
+                type="button"
                 className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
@@ -30,6 +31,7 @@ const TemplateActions = () => {
                 {t("common.copy")}
             </button>
             <button
+                type="button"
                 className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
@@ -38,6 +40,7 @@ const TemplateActions = () => {
                 {t("common.delete")}
             </button>
             <button
+                type="button"
                 className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
@@ -45,16 +48,16 @@ const TemplateActions = () => {
                 }}>
                 {t("common.save")}
             </button>
-            <button className="m-1" onClick={() => dispatch(addTemplateRow())}>
+            <button type="button" className="m-1" onClick={() => dispatch(addTemplateRow())}>
                 neue Zelle hinzufügen
             </button>
-            <button className="m-1" onClick={() => dispatch(addTemplateCell())}>
+            <button type="button" className="m-1" onClick={() => dispatch(addTemplateCell())}>
                 neue Zelle zur Zeile hinzufügen
             </button>
-            <button className="m-1" onClick={() => dispatch(removeTemplateRow())}>
+            <button type="button" className="m-1" onClick={() => dispatch(removeTemplateRow())}>
                 zeile löschen
             </button>
-            <button className="m-1" onClick={() => dispatch(removeTemplateCell())}>
+            <button type="button" className="m-1" onClick={() => dispatch(removeTemplateCell())}>
                 Zelle löschen
             </button>
             <Link
