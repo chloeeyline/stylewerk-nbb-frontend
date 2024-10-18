@@ -41,7 +41,7 @@ const TemplateActions = () => {
                 className="m-1"
                 onClick={() => {
                     if (typeof editor.data?.templateID !== "string") return;
-                    dispatch(updateEditor({ isTemplate: true }));
+                    dispatch(updateEditor());
                 }}>
                 {t("common.save")}
             </button>

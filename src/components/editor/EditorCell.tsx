@@ -16,7 +16,6 @@ const EditorCell = ({
     const dispatch = useAppDispatch();
 
     const select = () => {
-        if (editor.isPreview === true) return;
         dispatch(
             setSelected({
                 entryRow: entryRowID,
@@ -31,7 +30,12 @@ const EditorCell = ({
         <div
             onClick={select}
             style={{
-                backgroundColor: cell.templateID == editor.selectedTemplateCell ? "blue" : "",
+                backgroundColor:
+                    editor.isPreview === false &&
+                    editor.isTemplate === true &&
+                    cell.templateID == editor.selectedTemplateCell
+                        ? "blue"
+                        : "",
                 padding: "0.5rem",
             }}
             className="lcell"

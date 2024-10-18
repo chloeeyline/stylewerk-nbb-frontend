@@ -22,6 +22,7 @@ const templateSchema = z.object({
     name: z.string().nullable(),
     description: z.string().nullable(),
     tags: z.string().nullable(),
+    isPublic: z.boolean(),
 });
 
 const entryCellSchema = z.object({
@@ -45,6 +46,7 @@ const editorSchema = z.object({
     name: z.string().nullable(),
     tags: z.string().nullable(),
     isEncrypted: z.boolean(),
+    isPublic: z.boolean(),
     template: templateSchema,
     items: z.array(entryRowSchema),
 });

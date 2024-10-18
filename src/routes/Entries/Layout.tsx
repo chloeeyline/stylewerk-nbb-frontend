@@ -18,12 +18,14 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 import { CSSProperties, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import InputField from "~/components/forms/InputField";
 import Move from "~/components/Icon/Move";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
@@ -47,7 +49,10 @@ import cls from "~/utils/class-name-helper";
 const EntryComponent = ({ item }: { item: EntryItem }) => {
     return (
         <NavLink
-            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id)}
+            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id).replace(
+                RouteParams.IsNew,
+                "false",
+            )}
             className="lcontainer m-be-1">
             <div className="lrow">
                 {item.name && <div className="lcell">{item.name}</div>}
@@ -169,6 +174,8 @@ export default function EntriesLayout() {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
+    const editor = useAppSelector(selectEditor);
+    const navigate = useNavigate();
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
@@ -234,95 +241,130 @@ export default function EntriesLayout() {
 
     return (
         <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-            <div>
-                <button
-                    onClick={() => {
-                        if (entry.hideFilters) dispatch(listFolder());
-                        else dispatch(listEntry());
-                    }}>
-                    {entry.hideFilters ? t("list.refresh") : t("list.filter")}
-                </button>
-                <button
-                    onClick={() => {
-                        dispatch(toggleHideList());
-                    }}>
-                    {entry.hideList ? t("list.showList") : t("list.hideList")}
-                </button>
-                <button
-                    onClick={() => {
-                        dispatch(toggleHideFilters());
-                    }}>
-                    {entry.hideFilters ? t("list.showFilters") : t("list.hideFilters")}
-                </button>
-                <button
-                    onClick={() => {
-                        dispatch(toggleDragMode());
-                        if (entry.dragMode) dispatch(reorderFolder());
-                    }}>
-                    {entry.dragMode
-                        ? t("list.dragFolderModeActive")
-                        : t("list.dragFolderModeDeactive")}
-                </button>
-                {entry.hideFilters && !entry.dragMode && (
-                    <button onClick={() => setDialogIsOpen(true)}>
+            <form>
+                <fieldset>
+                    <legend>Actions</legend>
+                    <button
+                        type="button"
+                        className="m-1"
+                        onClick={() => {
+                            if (entry.hideFilters) dispatch(listFolder());
+                            else dispatch(listEntry());
+                        }}>
+                        {entry.hideFilters ? t("list.refresh") : t("list.filter")}
+                    </button>
+                    <button
+                        type="button"
+                        className="m-1"
+                        onClick={() => {
+                            dispatch(toggleHideList());
+                        }}>
+                        {entry.hideList ? t("list.showList") : t("list.hideList")}
+                    </button>
+                    <button
+                        type="button"
+                        className="m-1"
+                        onClick={() => {
+                            dispatch(toggleHideFilters());
+                        }}>
+                        {entry.hideFilters ? t("list.showFilters") : t("list.hideFilters")}
+                    </button>
+                    <button
+                        type="button"
+                        className="m-1"
+                        onClick={() => {
+                            dispatch(toggleDragMode());
+                            if (entry.dragMode) dispatch(reorderFolder());
+                        }}>
+                        {entry.dragMode
+                            ? t("list.dragFolderModeDeactive")
+                            : t("list.dragFolderModeActive")}
+                    </button>
+                    <button
+                        type="button"
+                        className={cls(
+                            "m-1",
+                            entry.hideFilters === true && entry.dragMode === false
+                                ? undefined
+                                : "hidden",
+                        )}
+                        onClick={() => setDialogIsOpen(true)}>
                         {entry.selectedFolder.isNew ? "Neuen Ordner anlegen" : "Ordner bearbeiten"}
                     </button>
-                )}
-                <button
-                    className={entry.selectedFolder.isNew === true ? "hidden" : undefined}
-                    onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
-                    Ordner Löschen
-                </button>
-                <form
-                    className={cls(
-                        "header",
-                        entry.hideFilters || entry.dragMode ? "hidden" : undefined,
-                    )}>
-                    <fieldset className="header">
-                        <legend>{t("list.filtering")}</legend>
-                        <label htmlFor="name">{t("common.name")}</label>
-                        <input
-                            name="name"
-                            type="text"
-                            value={entry.filter.name ?? ""}
-                            onChange={dispatchFilter}
-                        />
-                        <label htmlFor="templateName">{t("formFields.templateName")}</label>
-                        <input
-                            name="templateName"
-                            type="text"
-                            value={entry.filter.templateName ?? ""}
-                            onChange={dispatchFilter}
-                        />
-                        <label htmlFor="tags">{t("formFields.tags")}</label>
-                        <input
-                            name="tags"
-                            type="text"
-                            value={entry.filter.tags ?? ""}
-                            onChange={dispatchFilter}
-                        />
-                        <label htmlFor="username">{t("formFields.username")}</label>
-                        <input
-                            name="username"
-                            type="text"
-                            value={entry.filter.username ?? ""}
-                            onChange={dispatchFilter}
-                        />
-                        <div>
-                            <input
-                                name="includePublic"
-                                type="checkbox"
-                                checked={entry.filter.includePublic === "true"}
-                                onChange={dispatchFilterCheckbox}
-                            />
-                            <label htmlFor="includeOwned">{t("formFields.owned")}</label>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
+                    <button
+                        type="button"
+                        className={cls(
+                            "m-1",
+                            entry.selectedFolder.isNew === true ? "hidden" : undefined,
+                        )}
+                        onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
+                        Ordner Löschen
+                    </button>
+                    <button
+                        type="button"
+                        className={cls(
+                            "m-1",
+                            typeof editor.data?.id === "string" ? undefined : "hidden",
+                        )}
+                        onClick={() =>
+                            navigate(
+                                Routes.Entries.Edit.replace(
+                                    RouteParams.EntryId,
+                                    editor.data?.id ?? "",
+                                ).replace(RouteParams.IsNew, "false"),
+                            )
+                        }>
+                        {t("common.edit")}
+                    </button>
+                </fieldset>
+                <fieldset className={entry.hideFilters || entry.dragMode ? "hidden" : undefined}>
+                    <legend>{t("list.filtering")}</legend>
+                    <InputField
+                        label={t("common.name")}
+                        name="name"
+                        useNameAsIs={true}
+                        type="text"
+                        value={entry.filter.name ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        label={t("formFields.templateName")}
+                        name="templateName"
+                        useNameAsIs={true}
+                        type="text"
+                        value={entry.filter.templateName ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        label={t("formFields.tags")}
+                        name="tags"
+                        useNameAsIs={true}
+                        type="text"
+                        value={entry.filter.tags ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        label={t("formFields.username")}
+                        name="username"
+                        useNameAsIs={true}
+                        type="text"
+                        value={entry.filter.username ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        label={t("formFields.public")}
+                        name="includePublic"
+                        useNameAsIs={true}
+                        type="checkbox"
+                        checked={entry.filter.includePublic === "true"}
+                        onChange={dispatchFilterCheckbox}
+                    />
+                </fieldset>
+            </form>
             <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
             <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-                <div>
+                <fieldset>
+                    <legend>Liste</legend>
                     <ScrollContainer
                         direction="vertical"
                         className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
@@ -344,7 +386,7 @@ export default function EntriesLayout() {
                         ))}
                     </ScrollContainer>
                     <div className={entry!.hideList ? "hidden" : undefined}></div>
-                </div>
+                </fieldset>
                 <Outlet />
             </Grid>
         </Grid>

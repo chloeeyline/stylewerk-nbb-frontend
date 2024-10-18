@@ -11,6 +11,7 @@ const CreateEditor = () => {
         name: null,
         tags: null,
         isEncrypted: false,
+        isPublic: false,
         template: CreateTemplate(templateID),
         items: [CreateEntryRow(templateRowID, templateCellID)],
     };
@@ -23,6 +24,7 @@ const CreateTemplate = (templateID: string): Template => {
         name: null,
         description: null,
         tags: null,
+        isPublic: false,
     };
 };
 

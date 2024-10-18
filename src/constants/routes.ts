@@ -9,14 +9,14 @@ export const User = {
 
 export const Templates = {
     List: "/templates",
-    View: `/templates/${RouteParams.TemplateId}`,
-    Edit: `/templates/${RouteParams.TemplateId}/edit`,
+    View: `/templates/${RouteParams.TemplateId}/${RouteParams.IsNew}`,
+    Edit: `/templates/edit/${RouteParams.TemplateId}/${RouteParams.IsNew}`,
 } as const;
 
 export const Entries = {
     List: "/entries",
-    View: `/entries/${RouteParams.EntryId}`,
-    Edit: `/entries/${RouteParams.EntryId}/edit`,
+    View: `/entries/${RouteParams.EntryId}/${RouteParams.IsNew}`,
+    Edit: `/entries/edit/${RouteParams.EntryId}/${RouteParams.IsNew}`,
 } as const;
 
 export const Admin = {

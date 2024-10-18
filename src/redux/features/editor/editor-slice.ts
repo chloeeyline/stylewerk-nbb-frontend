@@ -1,8 +1,9 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import Backend from "~/constants/backend-routes";
+import { DEFAULT_UUID } from "~/constants/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import { CreateEntryCell, CreateEntryRow } from "./editor-create";
+import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
 import type { Editor } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
@@ -11,6 +12,7 @@ export type EditorState = {
     data: Editor | null;
     isTemplate: boolean;
     isPreview: boolean;
+    isNew: boolean;
     selectedEntryRow: string;
     selectedEntryCell: string;
     selectedTemplateRow: string;
@@ -22,6 +24,7 @@ const initialState: EditorState = {
     data: null,
     isTemplate: false,
     isPreview: false,
+    isNew: false,
     selectedEntryRow: "",
     selectedEntryCell: "",
     selectedTemplateRow: "",
@@ -30,20 +33,33 @@ const initialState: EditorState = {
 
 export const getEditor = createAsyncThunk<
     EditorState,
-    { id: string; isTemplate: boolean },
+    { id: string; isTemplate: boolean; isPreview: boolean; isNew: boolean },
     {
         dispatch: AppDispatch;
         state: RootState;
     }
 >(
     "editor/get-editor",
-    async ({ id, isTemplate }, thunkApi) => {
+    async ({ id, isTemplate, isPreview, isNew }, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-        const path = isTemplate ? Backend.Editor.GetTemplate : Backend.Editor.GetEntry;
+
+        if (isTemplate && isNew) {
+            return {
+                ...editor,
+                status: "succeeded",
+                data: CreateEditor(),
+                id: DEFAULT_UUID,
+                isTemplate: isTemplate,
+                isPreview: isPreview,
+                isNew: isNew,
+            };
+        }
+
+        const path = isTemplate || isNew ? Backend.Editor.GetTemplate : Backend.Editor.GetEntry;
 
         const response = await Ajax.get(path, {
             search: {
-                id,
+                id: id,
             },
             auth: true,
         });
@@ -62,31 +78,32 @@ export const getEditor = createAsyncThunk<
             ...editor,
             status: "succeeded",
             data: result.data,
+            id: id,
+            isTemplate: isTemplate,
+            isPreview: isPreview,
+            isNew: isNew,
         };
     },
     {
         condition(_arg, { getState }) {
             const editor = selectEditor(getState());
-
-            if (editor.status === "loading") {
-                return false;
-            }
+            if (editor.status === "loading") return false;
         },
     },
 );
 
 export const updateEditor = createAsyncThunk<
     EditorState,
-    { isTemplate: boolean },
+    void,
     {
         dispatch: AppDispatch;
         state: RootState;
     }
 >(
     "editor/update-editor",
-    async ({ isTemplate }, thunkApi) => {
+    async (_arg, thunkApi) => {
         const editor = selectEditor(thunkApi.getState());
-        const path = isTemplate ? Backend.Editor.UpdateTemplate : Backend.Editor.UpdateEntry;
+        const path = editor.isTemplate ? Backend.Editor.UpdateTemplate : Backend.Editor.UpdateEntry;
 
         const response = await Ajax.post(path, {
             body: {
@@ -114,10 +131,7 @@ export const updateEditor = createAsyncThunk<
     {
         condition(_arg, { getState }) {
             const editor = selectEditor(getState());
-
-            if (editor.status === "loading") {
-                return false;
-            }
+            if (editor.status === "loading") return false;
         },
     },
 );
@@ -146,9 +160,54 @@ const editorSlice = createSlice({
     initialState,
     // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
-        setEditor: (state, action: PayloadAction<Editor>) => {
-            state.data = action.payload;
-            state.status = "succeeded";
+        setEntry: (
+            state,
+            action: PayloadAction<{
+                type: string;
+                value: string | undefined;
+            }>,
+        ) => {
+            switch (action.payload.type) {
+                case "name":
+                case "tags":
+                    const valueText = action.payload.value?.trim() ?? "";
+                    if (state.data && valueText.length > 0)
+                        state.data[action.payload.type] = valueText;
+
+                    break;
+                case "folderID":
+                    var valueID: string | null = action.payload.value?.trim() ?? "";
+                    if (valueID.length === 0) valueID = null;
+                    if (state.data) state.data[action.payload.type] = valueID;
+                    break;
+                case "isEncrypted":
+                case "isPublic":
+                    if (state.data)
+                        state.data[action.payload.type] = action.payload.value === "true";
+                    break;
+            }
+        },
+        setEntryCell: (state, action: PayloadAction<string | null>) => {
+            if (state.data && state.data.items.length > 0) {
+                state.data.items = state.data.items.map((row) => {
+                    if (row.id === state.selectedEntryRow) {
+                        const tempCellList = row.items.map((cell) => {
+                            if (cell.id === state.selectedEntryCell) {
+                                return {
+                                    ...cell,
+                                    data: action.payload,
+                                };
+                            }
+                            return cell;
+                        });
+                        return {
+                            ...row,
+                            items: tempCellList,
+                        };
+                    }
+                    return row;
+                });
+            }
         },
         setTemplate: (
             state,
@@ -161,8 +220,8 @@ const editorSlice = createSlice({
                 case "name":
                 case "description":
                 case "tags":
-                    const value = action.payload.value?.trim() ?? "";
-                    if (state.data && value.length > 0) {
+                    const value = action.payload.value?.trim() ?? null;
+                    if (state.data) {
                         state.data.template[action.payload.type] = value;
                     }
                     break;
@@ -217,10 +276,38 @@ const editorSlice = createSlice({
                                 const tempCellList = row.items.map((cell) => {
                                     if (cell.templateID === state.selectedTemplateCell) {
                                         const tempCell = { ...cell };
-                                        const value =
-                                            action.payload.type === "inputHelper"
-                                                ? Number(action.payload.value)
-                                                : action.payload.value;
+                                        var value: string | number | boolean | null = null;
+                                        switch (action.payload.type) {
+                                            case "hideOnEmpty":
+                                            case "isRequired":
+                                                if (typeof action.payload.value === "boolean")
+                                                    value = Boolean(action.payload.value);
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                            case "inputHelper":
+                                                if (typeof action.payload.value === "string")
+                                                    value = Number(action.payload.value);
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                            case "text":
+                                            case "description":
+                                            case "metaData":
+                                                if (typeof action.payload.value === "string")
+                                                    value = String(
+                                                        action.payload.value?.trim() ?? null,
+                                                    );
+                                                else
+                                                    return {
+                                                        ...tempCell,
+                                                    };
+                                                break;
+                                        }
 
                                         tempCell.template = {
                                             ...tempCell.template,
@@ -306,10 +393,6 @@ const editorSlice = createSlice({
                 state.selectedEntryCell = "";
             }
         },
-        setMode(state, action: PayloadAction<{ isTemplate: boolean; isPreview: boolean }>) {
-            state.isTemplate = action.payload.isTemplate;
-            state.isPreview = action.payload.isPreview;
-        },
         setSelected: (
             state,
             action: PayloadAction<{
@@ -344,6 +427,9 @@ const editorSlice = createSlice({
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
                 state.data = action.payload.data;
+                state.isTemplate = action.payload.isTemplate;
+                state.isPreview = action.payload.isPreview;
+                state.isNew = action.payload.isNew;
             })
             .addCase(getEditor.rejected, (state) => {
                 state.status = "failed";
@@ -363,17 +449,17 @@ const editorSlice = createSlice({
 });
 
 export const {
-    setEditor,
-    setTemplate,
     setSelected,
     reset,
+    setEntry,
+    setEntryCell,
+    setTemplate,
     setTemplateRow,
-    setMode,
-    addTemplateCell,
+    setTemplateCell,
     addTemplateRow,
+    addTemplateCell,
     removeTemplateRow,
     removeTemplateCell,
-    setTemplateCell,
 } = editorSlice.actions;
 export const selectEditor = (state: RootState) => state.editor;
 export default editorSlice.reducer;
