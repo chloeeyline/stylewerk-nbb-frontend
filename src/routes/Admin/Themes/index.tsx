@@ -57,62 +57,65 @@ const Themes = () => {
     }
 
     return (
-        <ul>
-            {themes.map(({ id, name }) => (
-                <li key={id}>
-                    <Link to={Routes.Admin.Themes.Manage.replace(RouteParams.ThemeId, id)}>
-                        {name} ({id})
-                    </Link>
-                    <a
-                        className="p-is-1"
-                        href={`${BACKEND_URL}${BackendRoutes.ColorTheme.Index}?id=${id}`}
-                        download={`${name}.json`}>
-                        <Download className="icon-inline" fill="currentColor" />
-                    </a>
-                </li>
-            ))}
-            <li>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
+        <>
+            <ul>
+                {themes.map(({ id, name }) => (
+                    <li key={id}>
+                        <Link to={Routes.Admin.Themes.Manage.replace(RouteParams.ThemeId, id)}>
+                            {name} ({id})
+                        </Link>
+                        <a
+                            className="p-is-1"
+                            href={`${BACKEND_URL}${BackendRoutes.ColorTheme.Index}?id=${id}`}
+                            download={`${name}.json`}>
+                            <Download className="icon-inline" fill="currentColor" />
+                        </a>
+                    </li>
+                ))}
+            </ul>
+            <form
+                className="d-grid gap-1"
+                onSubmit={(e) => {
+                    e.preventDefault();
 
-                        if (newThemeRef.current === null || fromThemeRef.current === null) return;
+                    if (newThemeRef.current === null || fromThemeRef.current === null) return;
 
-                        const newId = newThemeRef.current.value;
-                        const fromId = fromThemeRef.current.value;
+                    const newId = newThemeRef.current.value;
+                    const fromId = fromThemeRef.current.value;
 
-                        if (newId.length == 0) {
-                            newThemeRef.current.value = "Id too short!";
-                            return;
-                        }
+                    if (newId.length == 0) {
+                        newThemeRef.current.value = "Id too short!";
+                        return;
+                    }
 
-                        navigate(
-                            Routes.Admin.Themes.Manage.replace(
-                                RouteParams.ThemeId,
-                                crypto.randomUUID(),
-                            ) +
-                                `?name=${newId}` +
-                                (fromId.length !== 0 ? `&from=${fromId}` : ""),
-                        );
-                    }}>
-                    <InputField
-                        label={t("adminThemes.labelNewName")}
-                        name="newName"
-                        ref={newThemeRef}
-                    />
-                    <SelectField
-                        label={t("adminThemes.labelFromId")}
-                        name="from"
-                        ref={fromThemeRef}
-                        options={[
-                            ["light", "Light"],
-                            ["dark", "Dark"],
-                        ]}
-                    />
-                    <button type="submit">{t("adminThemes.addNewTheme")}</button>
-                </form>
-            </li>
-        </ul>
+                    navigate(
+                        Routes.Admin.Themes.Manage.replace(
+                            RouteParams.ThemeId,
+                            crypto.randomUUID(),
+                        ) +
+                            `?name=${newId}` +
+                            (fromId.length !== 0 ? `&from=${fromId}` : ""),
+                    );
+                }}>
+                <InputField
+                    label={t("adminThemes.labelNewName")}
+                    name="newName"
+                    ref={newThemeRef}
+                />
+                <SelectField
+                    label={t("adminThemes.labelFromId")}
+                    name="from"
+                    ref={fromThemeRef}
+                    options={[
+                        ["light", "Light"],
+                        ["dark", "Dark"],
+                    ]}
+                />
+                <button className="btn" type="submit">
+                    {t("adminThemes.addNewTheme")}
+                </button>
+            </form>
+        </>
     );
 };
 

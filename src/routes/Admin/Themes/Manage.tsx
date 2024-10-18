@@ -228,6 +228,7 @@ export default function AdminThemesManage() {
                         </button>
                         {Object.keys(builtInThemes).includes(themeState.id) ? null : (
                             <button
+                                className="btn"
                                 type="button"
                                 onClick={async () => {
                                     const result = await deleteTheme(themeState.id);
@@ -237,7 +238,7 @@ export default function AdminThemesManage() {
                                         return;
                                     }
 
-                                    navigate(Routes.Admin.Translations.List);
+                                    navigate(Routes.Admin.Themes.List);
                                 }}>
                                 {t("adminThemes.deleteTheme")}
                             </button>

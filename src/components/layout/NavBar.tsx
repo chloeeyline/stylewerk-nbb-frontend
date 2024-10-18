@@ -89,6 +89,16 @@ const ThemeSwitcher = () => {
 
     const allThemes = [...Object.values(builtInThemes), ...switcherState.themes];
 
+    const fetchRemoteThemes = async (innerId?: string) => {
+        const themes = await getRemoteThemes();
+
+        setSwitcherState({
+            ...switcherState,
+            selected: innerId ?? switcherState.selected,
+            themes,
+        });
+    };
+
     useEffect(() => {
         const selected = getStoredThemes()[0];
 
@@ -108,26 +118,12 @@ const ThemeSwitcher = () => {
                         selected: innerId,
                         pending: undefined,
                     });
-                    getRemoteThemes().then((themes) => {
-                        setSwitcherState({
-                            ...switcherState,
-                            selected: innerId,
-                            pending: undefined,
-                            themes: themes,
-                        });
-                    });
+                    fetchRemoteThemes(innerId);
                 });
                 return;
             }
 
-            getRemoteThemes().then((themes) => {
-                setSwitcherState({
-                    ...switcherState,
-                    selected: selected.id,
-                    pending: undefined,
-                    themes: themes,
-                });
-            });
+            fetchRemoteThemes(selected.id);
         });
     }, []);
 
@@ -137,7 +133,10 @@ const ThemeSwitcher = () => {
                 type="button"
                 style={{ flexGrow: 1, flexShrink: 0 }}
                 className={cls("btn", "btn-loader")}
-                onClick={() => setDialogOpen(true)}>
+                onClick={() => {
+                    setDialogOpen(true);
+                    fetchRemoteThemes();
+                }}>
                 Theme
             </button>
             <dialog
@@ -195,7 +194,6 @@ const ThemeSwitcher = () => {
 
 const LanguageSwitcher = () => {
     const { i18n, t } = useTranslation();
-    const [isPending, startTransition] = useTransition();
     const [switcherState, setSwitcherState] = useState<{
         languages: Record<string, string>;
     }>({
@@ -220,17 +218,15 @@ const LanguageSwitcher = () => {
             <button
                 type="button"
                 style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls("btn", "btn-loader", isPending ? "pending" : undefined)}
+                className={cls("btn")}
                 onClick={() => {
-                    startTransition(() => {
-                        getSupportedLanguages().then((languages) => {
-                            setSwitcherState({
-                                ...switcherState,
-                                languages,
-                            });
+                    getSupportedLanguages().then((languages) => {
+                        setSwitcherState({
+                            ...switcherState,
+                            languages,
                         });
-                        setDialogOpen(true);
                     });
+                    setDialogOpen(true);
                 }}>
                 i81n
             </button>
@@ -294,3 +290,4 @@ const MemoNavbar = memo(Navbar);
 
 export { MemoNavbar, Navbar };
 export type { NavbarProps, NavbarRoute };
+
