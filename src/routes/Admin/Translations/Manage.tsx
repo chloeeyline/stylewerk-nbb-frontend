@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
+import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import BackendRoutes from "~/constants/backend-routes";
@@ -11,17 +12,23 @@ import Routes from "~/constants/routes";
 import type { TranslationContent } from "~/schemas/translations";
 import { translationContentSchema, translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
+import cls from "~/utils/class-name-helper";
 import { deleteLanguage, updateLanguage } from "./api";
 
 type TranslationState = {
     loading: boolean;
+    pending: "save" | "delete" | null;
     error: string | null;
     code: string;
     name: string;
     data: TranslationContent;
+    blob: string | null;
 };
 
 const getFromParameter = () => new URLSearchParams(document.location.search).get("from") ?? "de";
+
+const createBlobString = (input: Record<string, Record<string, string>>) =>
+    URL.createObjectURL(new Blob([JSON.stringify(input)], { type: "octet/stream" }));
 
 const getLanguage = async (
     code: string,
@@ -110,6 +117,9 @@ const LanguageEditor = ({
                                     const newTranslationState = { ...translationState };
 
                                     newTranslationState.data[ns][key] = e.target.value;
+                                    newTranslationState.blob = createBlobString(
+                                        newTranslationState.data,
+                                    );
 
                                     setTranslationState(newTranslationState);
                                 }}
@@ -129,10 +139,12 @@ export default function AdminTranslationsManage() {
 
     const [translationState, setTranslationState] = useState<TranslationState>({
         loading: false,
+        pending: null,
         error: null,
         code: translationId ?? RouteParams.TranslationId,
         name: "",
         data: {},
+        blob: null,
     });
 
     const fetchTranslationContent = async () => {
@@ -168,6 +180,7 @@ export default function AdminTranslationsManage() {
             name: result.name,
             error: null,
             data: result.data,
+            blob: createBlobString(result.data),
             loading: false,
         });
     };
@@ -193,6 +206,9 @@ export default function AdminTranslationsManage() {
             <ScrollContainer direction="vertical">
                 <Grid layout="headerFooter" className="size-block-100 gap-1">
                     <div>
+                        {translationState.error !== null ? (
+                            <span>{translationState.error}</span>
+                        ) : null}
                         <InputField
                             label={t("adminTranslations.labelCode")}
                             name="code"
@@ -257,16 +273,30 @@ export default function AdminTranslationsManage() {
                             setTranslationState={setTranslationState}
                         />
                     </ScrollContainer>
-                    <div>
+                    <div className="d-flex flex-wrap gap-1">
                         <button
                             type="button"
+                            className={cls(
+                                "btn",
+                                "btn-primary",
+                                "btn-loader",
+                                translationState.pending === "save" ? "pending" : undefined,
+                                "p-1",
+                            )}
                             onClick={async () => {
+                                setTranslationState({
+                                    ...translationState,
+                                    pending: "save",
+                                });
                                 const { code, name, data } = translationState;
 
                                 if (name.trim() === "") {
                                     setTranslationState({
                                         ...translationState,
-                                        error: t("formErrors.pleaseEnter", { what: t("common.name")}),
+                                        error: t("formErrors.pleaseEnter", {
+                                            what: t("common.name"),
+                                        }),
+                                        pending: null,
                                     });
                                     return;
                                 }
@@ -277,9 +307,16 @@ export default function AdminTranslationsManage() {
                                     setTranslationState({
                                         ...translationState,
                                         error: t(`errorCodes.${result.error.message}`),
+                                        pending: null,
                                     });
                                     return;
                                 }
+
+                                setTranslationState({
+                                    ...translationState,
+                                    error: null,
+                                    pending: null,
+                                });
 
                                 await fetchTranslationContent();
                             }}>
@@ -288,11 +325,25 @@ export default function AdminTranslationsManage() {
                         {["de", "en"].includes(translationState.code) ? null : (
                             <button
                                 type="button"
+                                className={cls(
+                                    "btn",
+                                    "btn-loader",
+                                    translationState.pending === "delete" ? "pending" : undefined,
+                                    "p-1",
+                                )}
                                 onClick={async () => {
+                                    setTranslationState({
+                                        ...translationState,
+                                        pending: "delete",
+                                    });
                                     const result = await deleteLanguage(translationState.code);
 
                                     if (result.ok === false) {
-                                        alert(t(`errorCodes.${result.error.message}`));
+                                        setTranslationState({
+                                            ...translationState,
+                                            error: t(`errorCodes.${result.error.message}`),
+                                            pending: null,
+                                        });
                                         return;
                                     }
 
@@ -301,6 +352,13 @@ export default function AdminTranslationsManage() {
                                 {t("adminTranslations.deleteLanguage")}
                             </button>
                         )}
+                        <a
+                            className="btn btn-accent p-1"
+                            href={translationState.blob ?? "#"}
+                            download={translationState.name + ".json"}>
+                            {t("common.download")}
+                            <Download className="icon-inline m-is-1" fill="currentColor" />
+                        </a>
                     </div>
                 </Grid>
             </ScrollContainer>

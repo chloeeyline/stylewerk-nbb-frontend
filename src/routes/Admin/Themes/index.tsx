@@ -1,16 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
-import Download from "~/components/Icon/Download";
+import SelectField from "~/components/forms/SelectField";
 import Grid from "~/components/layout/Grid";
-import BackendRoutes from "~/constants/backend-routes";
-import { BACKEND_URL } from "~/constants/general";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
 import type { ThemeApi } from "~/schemas/themes";
 import { getRemoteThemes } from "./api";
-import SelectField from "~/components/forms/SelectField";
 
 const Themes = () => {
     const { t } = useTranslation();
@@ -58,18 +56,12 @@ const Themes = () => {
 
     return (
         <>
-            <ul>
+            <ul className="d-grid gap-1 p-is-7">
                 {themes.map(({ id, name }) => (
                     <li key={id}>
                         <Link to={Routes.Admin.Themes.Manage.replace(RouteParams.ThemeId, id)}>
                             {name} ({id})
                         </Link>
-                        <a
-                            className="p-is-1"
-                            href={`${BACKEND_URL}${BackendRoutes.ColorTheme.Index}?id=${id}`}
-                            download={`${name}.json`}>
-                            <Download className="icon-inline" fill="currentColor" />
-                        </a>
                     </li>
                 ))}
             </ul>
@@ -97,21 +89,23 @@ const Themes = () => {
                             (fromId.length !== 0 ? `&from=${fromId}` : ""),
                     );
                 }}>
-                <InputField
-                    label={t("adminThemes.labelNewName")}
-                    name="newName"
-                    ref={newThemeRef}
-                />
-                <SelectField
-                    label={t("adminThemes.labelFromId")}
-                    name="from"
-                    ref={fromThemeRef}
-                    options={[
-                        ["light", "Light"],
-                        ["dark", "Dark"],
-                    ]}
-                />
-                <button className="btn" type="submit">
+                <Columns>
+                    <InputField
+                        label={t("adminThemes.labelNewName")}
+                        name="newName"
+                        ref={newThemeRef}
+                    />
+                    <SelectField
+                        label={t("adminThemes.labelFromId")}
+                        name="from"
+                        ref={fromThemeRef}
+                        options={[
+                            ["light", "Light"],
+                            ["dark", "Dark"],
+                        ]}
+                    />
+                </Columns>
+                <button type="submit" className="btn btn-primary p-1 size-inline-fit">
                     {t("adminThemes.addNewTheme")}
                 </button>
             </form>
