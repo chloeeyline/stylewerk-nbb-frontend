@@ -60,30 +60,29 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
     if (data.success === false) return null;
 
     return (
-        <>
-            <input
-                type={getType(metadata.data.type)}
-                placeholder={cell.template.text ?? ""}
-                disabled={isReadOnly}
-                required={cell.template.isRequired}
-                min={metadata.data?.min}
-                max={metadata.data?.max}
-                value={data.data.value ?? metadata.data.value ?? ""}
-                onChange={(e) => {
-                    if (editor.isPreview) return;
-                    if (e.target.value.length === 0) {
-                        dispatch(setEntryCell(null));
-                        return;
-                    }
-                    var temp = {
-                        ...data.data,
-                        value: e.target.value,
-                    };
-                    dispatch(setEntryCell(JSON.stringify(temp)));
-                }}
-            />
-            <label>{cell.template.text ?? ""}</label>
-        </>
+        <InputField
+            required={cell.template.isRequired}
+            disabled={isReadOnly}
+            name="dateTime"
+            label={cell.template.text ?? ""}
+            placeholder={cell.template.text ?? ""}
+            type={getType(metadata.data.type)}
+            value={data.data.value ?? metadata.data.value ?? ""}
+            min={metadata.data?.min}
+            max={metadata.data?.max}
+            onChange={(e) => {
+                if (editor.isPreview) return;
+                if (e.target.value.length === 0) {
+                    dispatch(setEntryCell(null));
+                    return;
+                }
+                var temp = {
+                    ...data.data,
+                    value: e.target.value,
+                };
+                dispatch(setEntryCell(JSON.stringify(temp)));
+            }}
+        />
     );
 };
 
@@ -166,6 +165,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="type"
                 type="radio"
+                value="0"
                 checked={temp.data.type == 0}
                 onChange={dispatchCellSettings}
             />
@@ -174,6 +174,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="type"
                 type="radio"
+                value="1"
                 checked={temp.data.type == 1}
                 onChange={dispatchCellSettings}
             />
@@ -182,6 +183,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="type"
                 type="radio"
+                value="2"
                 checked={temp.data.type == 2}
                 onChange={dispatchCellSettings}
             />
@@ -190,6 +192,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
                 useNameAsIs={true}
                 name="type"
                 type="radio"
+                value="3"
                 checked={temp.data.type == 3}
                 onChange={dispatchCellSettings}
             />

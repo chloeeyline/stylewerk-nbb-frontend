@@ -5,6 +5,7 @@ import { IhNumberSettings } from "../input-helper/IhNumber";
 import { IhStaticSettings } from "../input-helper/IhStatic";
 import { IhTextLongSettings } from "../input-helper/IhTextLong";
 import { IhTextShortSettings } from "../input-helper/IhTextShort";
+import { IhColorSettings } from "../input-helper/IhColor";
 
 const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
     if (!cell) return null;
@@ -21,6 +22,8 @@ const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
             return <IhCheckboxSettings cell={cell} />;
         case 6:
             return <IhDateTimeSettings cell={cell} />;
+        case 7:
+            return <IhColorSettings cell={cell} />;
         default:
             return null;
     }

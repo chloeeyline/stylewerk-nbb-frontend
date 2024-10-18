@@ -58,16 +58,16 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
     return (
         <>
             <InputField
-                label={cell.template.text ?? ""}
-                name={`templaceCell-${cell.templateID}`}
-                useNameAsIs={true}
-                type="number"
-                disabled={isReadOnly}
                 required={cell.template.isRequired}
+                disabled={isReadOnly}
+                name="number"
+                label={cell.template.text ?? ""}
+                placeholder={cell.template.text ?? ""}
+                type="number"
+                value={data.data.value ?? ""}
                 min={metadata.data?.min}
                 max={metadata.data?.max}
                 step={metadata.data?.step}
-                value={data.data.value ?? ""}
                 onChange={(e) => {
                     if (editor.isPreview) return;
                     if (e.target.value.length === 0) {
