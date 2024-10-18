@@ -1,14 +1,17 @@
-import { StrictMode } from "react";
+import { StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
-import "./utils/i18n";
 
 import RouterProvider from "~/providers/RouterProvider";
+import Loader from "./components/layout/Loader";
 import ReduxProvider from "./providers/ReduxProvider";
+import "./utils/i18n";
 
 createRoot(document.getElementById("root")!).render(
     <StrictMode>
-        <ReduxProvider>
-            <RouterProvider />
-        </ReduxProvider>
+        <Suspense fallback={<Loader />}>
+            <ReduxProvider>
+                <RouterProvider />
+            </ReduxProvider>
+        </Suspense>
     </StrictMode>,
 );

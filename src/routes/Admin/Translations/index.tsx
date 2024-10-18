@@ -9,8 +9,8 @@ import BackendRoutes from "~/constants/backend-routes";
 import { BACKEND_URL } from "~/constants/general";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
-import type { Translation } from "~/schemas/translations-schema";
-import { translationSchema } from "~/schemas/translations-schema";
+import type { Translation } from "~/schemas/translations";
+import { translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
 import translateError from "~/utils/translate-error-helper";
 

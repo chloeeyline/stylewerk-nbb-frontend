@@ -2,4 +2,39 @@
 
 @include theme.create(dark) {
     @include theme.scheme-dark();
+
+    --clr-primary: #3b5bdb;
+    --clr-primary-content: #ffffff;
+    --clr-primary-active: #2f44ad;
+
+    --clr-accent: #099268;
+    --clr-accent-content: #ffffff;
+    --clr-accent-active: #066649;
+
+    --clr-neutral: #313b47;
+    --clr-neutral-content: #ffffff;
+    --clr-neutral-active: #252c35;
+
+    --clr-base-100: #1d232a;
+    --clr-base-200: #191e24;
+    --clr-base-300: #15191e;
+
+    --clr-header: #e5ebf9;
+    --clr-body: #b7c0d2;
+
+    --clr-info: #1971c2;
+    --clr-info-content: #ffffff;
+    --clr-info-active: #145591;
+
+    --clr-success: #66a80f;
+    --clr-success-content: #ffffff;
+    --clr-success-active: #4c7a0b;
+
+    --clr-warning: #f08c00;
+    --clr-warning-content: #ffffff;
+    --clr-warning-active: #b35c00;
+
+    --clr-error: #e03131;
+    --clr-error-content: #ffffff;
+    --clr-error-active: #b02525;
 }

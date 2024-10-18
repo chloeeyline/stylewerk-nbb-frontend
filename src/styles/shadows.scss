@@ -1,0 +1,17 @@
+.shadow {
+    box-shadow: 0.01875rem 0.03125rem 0.04375rem var(--clr-base-300),
+        0.05rem 0.1rem 0.125rem -0.05rem var(--clr-base-300),
+        0.13125rem 0.25625rem 0.325rem -0.10625rem var(--clr-base-300),
+        0.3125rem 0.625rem 0.7875rem -0.15625rem var(--clr-base-300);
+}
+
+.shadow-high {
+    box-shadow: 0.01875rem 0.03125rem 0.04375rem var(--clr-base-300),
+        0.09375rem 0.18125rem 0.23125rem -0.025rem var(--clr-base-300),
+        0.16875rem 0.3375rem 0.425rem -0.04375rem var(--clr-base-300),
+        0.28125rem 0.55625rem 0.7rem -0.06875rem var(--clr-base-300),
+        0.44375rem 0.89375rem 1.125rem -0.0875rem var(--clr-base-300),
+        0.7rem 1.39375rem 1.75625rem -0.1125rem var(--clr-base-300),
+        1.0625rem 2.11875rem 2.66875rem -0.13125rem var(--clr-base-300),
+        1.5625rem 3.125rem 3.93125rem -0.15625rem var(--clr-base-300);
+}

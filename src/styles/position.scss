@@ -1,0 +1,21 @@
+@each $position in "relative", "static", "absolute", "fixed", "sticky" {
+    .p-#{$position} {
+        position: #{$position};
+    }
+}
+
+.inset {
+    inset: var(--inset);
+
+    @each $dir in "inline", "block" {
+        &-#{$dir} {
+            inset-#{$dir}: var(--inset-#{$dir});
+
+            @each $align in "start", "end" {
+                &-#{$align} {
+                    inset-#{$dir}-#{$align}: var(--inset-#{$dir}-#{$align});
+                }
+            }
+        }
+    }
+}

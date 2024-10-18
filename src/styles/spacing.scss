@@ -6,29 +6,17 @@ $types: (
 );
 
 @each $type-name, $type-value in $types {
-    .#{$type-value} {
-        #{$type-value}: var(--#{$type-value});
+    .#{$type-name} {
+        #{$type-value}: var(--#{$type-name});
     }
 
     @each $spacer-name, $spacer-value in props.$spacing {
         .#{$type-name}-#{$spacer-name} {
-            #{$type-value}: #{$spacer-value}em;
-        }
-
-        @each $logical-name, $logical-value in props.$logical {
-            .#{$type-name}-#{$logical-name}-#{$spacer-name} {
-                #{$type-value}-#{$logical-value}: #{$spacer-value}em;
-            }
-        }
-    }
-
-    @each $spacer-name, $spacer-value in props.$spacing {
-        .#{$type-name}-#{$spacer-name}-rem {
             #{$type-value}: #{$spacer-value}rem;
         }
 
         @each $logical-name, $logical-value in props.$logical {
-            .#{$type-name}-#{$logical-name}-#{$spacer-name}-rem {
+            .#{$type-name}-#{$logical-name}-#{$spacer-name} {
                 #{$type-value}-#{$logical-value}: #{$spacer-value}rem;
             }
         }
@@ -48,12 +36,6 @@ $gap-types: (
 
     @each $spacer-name, $spacer-value in props.$spacing {
         .#{$type-name}-#{$spacer-name} {
-            #{$type-value}: #{$spacer-value}em;
-        }
-    }
-
-    @each $spacer-name, $spacer-value in props.$spacing {
-        .#{$type-name}-#{$spacer-name}-rem {
             #{$type-value}: #{$spacer-value}rem;
         }
     }

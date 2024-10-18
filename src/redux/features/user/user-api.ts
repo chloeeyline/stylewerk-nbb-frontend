@@ -153,8 +153,6 @@ export const autoLogin = async (): Promise<UserIsLoggedIn | UserIsGuest> => {
         },
     });
 
-    console.log(response);
-
     if (response.ok === false) {
         console.error(response.error);
         clear();

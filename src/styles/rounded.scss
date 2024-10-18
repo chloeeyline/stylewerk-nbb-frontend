@@ -1,0 +1,7 @@
+@use "./props";
+
+@each $spacer-name, $spacer-value in props.$spacing {
+    .rounded-#{$spacer-name} {
+        border-radius: #{$spacer-value}rem;
+    }
+}

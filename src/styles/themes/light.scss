@@ -2,4 +2,41 @@
 
 @include theme.create(light) {
     @include theme.scheme-light();
+
+    --clr-primary: #da77f2;
+    --clr-primary-content: #000000;
+    --clr-primary-active: #e599f7;
+
+    --clr-accent: #ffd43b;
+    --clr-accent-content: #000000;
+    --clr-accent-active: #ffe066;
+
+    --clr-neutral: #d8d8d8;
+    --clr-neutral-content: #000000;
+    --clr-neutral-active: #e5e5e5;
+
+    --clr-base-100: #ffffff;
+    --clr-base-200: #f2f2f2;
+    --clr-base-300: #e6e6e6;
+
+    --clr-header: #191111;
+    --clr-body: #402b2b;
+
+    --clr-info: #4dabf7;
+    --clr-info-content: #000000;
+    --clr-info-active: #74c0fc;
+
+    --clr-success: #a9e34b;
+    --clr-success-content: #000000;
+    --clr-success-active: #c0eb75;
+
+    --clr-warning: #ffa94d;
+    --clr-warning-content: #000000;
+    --clr-warning-active: #ffc078;
+
+    --clr-error: #ff8787;
+    --clr-error-content: #000000;
+    --clr-error-active: #ffa8a8;
+
+    --clr-shadow: #9a9178;
 }
