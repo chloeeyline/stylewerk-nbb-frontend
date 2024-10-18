@@ -17,8 +17,15 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { EntryRow } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setRows } from "~/redux/features/editor/editor-slice";
+import {
+    addTemplateCell,
+    removeTemplateRow,
+    selectEditor,
+    setRows,
+} from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import AdditionSign from "../Icon/AdditionSign";
+import Cross from "../Icon/Cross";
 import Move from "../Icon/Move";
 import EditorCell from "./EditorCell";
 
@@ -40,13 +47,6 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
     const style = {
         transform: CSS.Transform.toString(transform),
         transition,
-        backgroundColor:
-            editor.isPreview === false &&
-            editor.isTemplate === true &&
-            row.templateID == editor.selectedTemplateRow
-                ? "green"
-                : "",
-        margin: "0.5rem",
     };
 
     const dragFolder = (e: DragEndEvent) => {
@@ -81,7 +81,27 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
     return (
         <div className="lrow" {...attributes} ref={setNodeRef} style={style}>
             <div className={editor.isPreview ? "hidden" : undefined}>
-                <Move {...listeners} />
+                <button type="button" className="btn btn-accent p-0" {...listeners}>
+                    <Move />
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-accent p-0"
+                    onClick={() => {
+                        if (typeof editor.data?.templateID !== "string") return;
+                        dispatch(addTemplateCell(row.templateID));
+                    }}>
+                    <AdditionSign />
+                </button>
+                <button
+                    type="button"
+                    className="btn btn-accent p-0"
+                    onClick={() => {
+                        if (typeof editor.data?.templateID !== "string") return;
+                        dispatch(removeTemplateRow(row.templateID));
+                    }}>
+                    <Cross />
+                </button>
             </div>
             <DndContext
                 modifiers={[restrictToHorizontalAxis, restrictToParentElement]}

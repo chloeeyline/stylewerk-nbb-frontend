@@ -340,10 +340,10 @@ const editorSlice = createSlice({
                 ];
             }
         },
-        addTemplateCell: (state) => {
+        addTemplateCell: (state, action: PayloadAction<string>) => {
             if (state.data && state.data.items.length > 0) {
                 state.data.items = state.data.items.map((row) => {
-                    if (row.templateID === state.selectedTemplateRow) {
+                    if (row.templateID === action.payload) {
                         const temp = { ...row };
 
                         const templateID = crypto.randomUUID();
@@ -357,10 +357,10 @@ const editorSlice = createSlice({
                 });
             }
         },
-        removeTemplateRow: (state) => {
+        removeTemplateRow: (state, action: PayloadAction<string>) => {
             if (state.data && state.data.items.length > 1) {
                 state.data.items = state.data.items.filter((row) => {
-                    if (row.templateID !== state.selectedTemplateRow) return row;
+                    if (row.templateID !== action.payload) return row;
                 });
                 state.selectedTemplateRow = "";
                 state.selectedTemplateCell = "";
@@ -368,14 +368,17 @@ const editorSlice = createSlice({
                 state.selectedEntryCell = "";
             }
         },
-        removeTemplateCell: (state) => {
+        removeTemplateCell: (
+            state,
+            action: PayloadAction<{ templateRow: string; templateCell: string }>,
+        ) => {
             if (state.data && state.data.items.length > 1) {
                 let stop = false;
                 const tempRoowList = state.data.items.map((row) => {
-                    if (row.templateID === state.selectedTemplateRow && row.items.length > 0) {
+                    if (row.templateID === action.payload.templateRow && row.items.length > 0) {
                         if (row.items.length === 1) stop = true;
                         const tempCellList = row.items.filter((cell) => {
-                            if (cell.templateID !== state.selectedTemplateCell) return cell;
+                            if (cell.templateID !== action.payload.templateCell) return cell;
                         });
                         return {
                             ...row,

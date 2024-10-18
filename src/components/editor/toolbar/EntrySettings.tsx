@@ -52,7 +52,16 @@ const EntrySettings = () => {
 
     return (
         <fieldset className="lrow">
-            <legend>Allgemein</legend>
+            <legend>
+                <button
+                    className="btn btn-primary p-0"
+                    onClick={() => {
+                        if (typeof editor.data?.id !== "string") return;
+                        dispatch(updateEditor());
+                    }}>
+                    {t("common.save")}
+                </button>
+            </legend>
             <InputField
                 label={t("common.name")}
                 name={"name"}
@@ -99,14 +108,6 @@ const EntrySettings = () => {
                     onChange={dispatchGeneralCheckbox}
                 />
             </div>
-            <button
-                className="m-1"
-                onClick={() => {
-                    if (typeof editor.data?.id !== "string") return;
-                    dispatch(updateEditor());
-                }}>
-                {t("common.save")}
-            </button>
         </fieldset>
     );
 };

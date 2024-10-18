@@ -22,9 +22,7 @@ import Grid from "../layout/Grid";
 import ScrollContainer from "../layout/ScrollContainer";
 import EditorRow from "./EditorRow";
 import EntrySettings from "./toolbar/EntrySettings";
-import TemplateActions from "./toolbar/TemplateActions";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
-import TemplateRowSettings from "./toolbar/TemplateRowSettings";
 import TemplateSettings from "./toolbar/TemplateSettings";
 
 const Editor = ({
@@ -105,24 +103,17 @@ const Editor = ({
         <form className="lcontainer">
             <Grid layout="header" className="size-block-100">
                 <div>
-                    {editor.isTemplate === true && editor.isPreview === false ? (
-                        <TemplateActions />
-                    ) : null}
-                    {editor.isTemplate === true &&
-                    editor.isPreview === false &&
-                    editor.selectedTemplateRow.length > 0 ? (
-                        <TemplateRowSettings />
+                    {editor.isPreview === false ? (
+                        editor.isTemplate === true ? (
+                            <TemplateSettings />
+                        ) : (
+                            <EntrySettings />
+                        )
                     ) : null}
                     {editor.isTemplate === true &&
                     editor.isPreview === false &&
                     editor.selectedTemplateCell.length > 0 ? (
                         <TemplateCellSettings />
-                    ) : null}
-                    {editor.isTemplate === true && editor.isPreview === false ? (
-                        <TemplateSettings />
-                    ) : null}
-                    {editor.isTemplate === false && editor.isPreview === false ? (
-                        <EntrySettings />
                     ) : null}
                 </div>
                 <ScrollContainer direction="both">
