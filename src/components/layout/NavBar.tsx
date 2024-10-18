@@ -2,6 +2,8 @@ import type React from "react";
 import { memo, useEffect, useRef, useState, useTransition } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
+import Globe from "~/components/Icon/Globe";
+import Paintbrush from "~/components/Icon/Paintbrush";
 import {
     builtInThemes,
     getRemoteThemes,
@@ -36,7 +38,7 @@ type NavbarProps = React.PropsWithChildren<{
 const NavBarLink = ({ name, url }: NavBarLinkProps) => {
     return (
         <li className="d-contents">
-            <NavLink style={{ flexGrow: 1, flexShrink: 0 }} className="btn btn-loader" to={url}>
+            <NavLink style={{ flexGrow: 1, flexShrink: 0 }} className="btn btn-loader p-1" to={url}>
                 {name}
             </NavLink>
         </li>
@@ -51,7 +53,7 @@ const NavBarButton = ({ name, onClick }: NavBarButtonProps) => {
             <button
                 type="button"
                 style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls("btn", "btn-loader", isPending ? "pending" : undefined)}
+                className={cls("btn", "btn-loader", "p-1", isPending ? "pending" : undefined)}
                 onClick={() => {
                     startTransition(() => {
                         onClick();
@@ -63,28 +65,162 @@ const NavBarButton = ({ name, onClick }: NavBarButtonProps) => {
     );
 };
 
-const ThemeSwitcher = () => {
-    const { t } = useTranslation();
+const Switchers = () => {
+    const { i18n, t } = useTranslation();
     const [switcherState, setSwitcherState] = useState<{
+        languages: Record<string, string>;
         selected: string;
         pending?: string;
         themes: ThemeApi[];
     }>({
+        languages: {},
         selected: "system",
         themes: [],
     });
 
-    const dialogRef = useRef<HTMLDialogElement>(null);
+    const themeDialogRef = useRef<HTMLDialogElement>(null);
+    const langDialogRef = useRef<HTMLDialogElement>(null);
 
-    const setDialogOpen = (open: boolean) => {
-        if (!(dialogRef.current instanceof HTMLDialogElement)) return;
+    const setupClosers = (type: "theme" | "lang") => {
+        const abortController = new AbortController();
 
-        if (open) {
-            dialogRef.current.show();
+        switch (type) {
+            case "theme":
+                document.addEventListener(
+                    "keydown",
+                    (e) => {
+                        if (themeDialogRef.current?.open !== true) {
+                            abortController.abort();
+                            return;
+                        }
+                        if (e.key !== "Escape") return;
+
+                        closeDialog("theme");
+                        abortController.abort();
+                    },
+                    { signal: abortController.signal },
+                );
+
+                setTimeout(() => {
+                    document.addEventListener(
+                        "click",
+                        (e) => {
+                            if (themeDialogRef.current?.open !== true) {
+                                abortController.abort();
+                                return;
+                            }
+                            if (
+                                !(themeDialogRef.current instanceof HTMLDialogElement) ||
+                                !(e.target instanceof Node) ||
+                                themeDialogRef.current.contains(e.target)
+                            ) {
+                                return;
+                            }
+
+                            closeDialog("theme");
+                            abortController.abort();
+                        },
+                        {
+                            signal: abortController.signal,
+                        },
+                    );
+                }, 250);
+                break;
+            case "lang":
+                document.addEventListener(
+                    "keydown",
+                    (e) => {
+                        if (langDialogRef.current?.open !== true) {
+                            abortController.abort();
+                            return;
+                        }
+                        if (e.key !== "Escape") return;
+
+                        closeDialog("lang");
+                        abortController.abort();
+                    },
+                    { signal: abortController.signal },
+                );
+
+                setTimeout(() => {
+                    document.addEventListener(
+                        "click",
+                        (e) => {
+                            if (langDialogRef.current?.open !== true) {
+                                abortController.abort();
+                                return;
+                            }
+                            if (
+                                !(langDialogRef.current instanceof HTMLDialogElement) ||
+                                !(e.target instanceof Node) ||
+                                langDialogRef.current.contains(e.target)
+                            ) {
+                                return;
+                            }
+
+                            closeDialog("lang");
+                            abortController.abort();
+                        },
+                        {
+                            signal: abortController.signal,
+                        },
+                    );
+                }, 250);
+                break;
+        }
+    };
+
+    const openDialog = (type: "theme" | "lang") => {
+        switch (type) {
+            case "theme":
+                if (themeDialogRef.current instanceof HTMLDialogElement) {
+                    themeDialogRef.current.show();
+                }
+
+                closeDialog("lang");
+
+                setupClosers("theme");
+                break;
+            case "lang":
+                if (langDialogRef.current instanceof HTMLDialogElement) {
+                    langDialogRef.current.show();
+                }
+
+                closeDialog("theme");
+
+                setupClosers("lang");
+                break;
+        }
+    };
+
+    const closeDialog = (type: "theme" | "lang") => {
+        console.log("closing: " + type);
+        switch (type) {
+            case "theme":
+                if (themeDialogRef.current instanceof HTMLDialogElement) {
+                    themeDialogRef.current.close();
+                }
+                break;
+            case "lang":
+                if (langDialogRef.current instanceof HTMLDialogElement) {
+                    langDialogRef.current.close();
+                }
+                break;
+        }
+    };
+
+    const setDialog = (type: "theme" | "lang", open: boolean) => {
+        if (
+            !(themeDialogRef.current instanceof HTMLDialogElement) ||
+            !(langDialogRef.current instanceof HTMLDialogElement)
+        ) {
             return;
         }
-
-        dialogRef.current.close();
+        if (open) {
+            openDialog(type);
+        } else {
+            closeDialog(type);
+        }
     };
 
     const allThemes = [...Object.values(builtInThemes), ...switcherState.themes];
@@ -128,147 +264,133 @@ const ThemeSwitcher = () => {
     }, []);
 
     return (
-        <li className="p-relative">
-            <button
-                type="button"
-                style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls("btn", "btn-loader")}
-                onClick={() => {
-                    setDialogOpen(true);
-                    fetchRemoteThemes();
-                }}>
-                Theme
-            </button>
-            <dialog
-                className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
-                style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
-                ref={dialogRef}>
-                <div
-                    className="d-grid grid-template-columns"
-                    style={{ "--grid-template-columns": "1fr auto" }}>
-                    <span className="p-i-1 p-b-0 no-line-height">
-                        {t("common.language", { count: 2 })}
-                    </span>
-                    <button type="button" className="btn" onClick={() => setDialogOpen(false)}>
-                        X
-                    </button>
-                </div>
-                <ul className="d-contents">
-                    {allThemes.map(({ id, name }) => (
-                        <li key={id} className="d-contents">
-                            <button
-                                type="button"
-                                className={cls(
-                                    "btn btn-loader",
-                                    switcherState.pending === id ? "pending" : undefined,
-                                    switcherState.selected === id
-                                        ? "btn-primary active"
-                                        : undefined,
-                                )}
-                                onClick={() => {
-                                    setSwitcherState({
-                                        ...switcherState,
-                                        selected: id,
-                                        pending: id,
-                                    });
+        <>
+            <li className="p-relative">
+                <button
+                    type="button"
+                    className="btn p-1"
+                    style={{ flexGrow: 0, flexShrink: 0 }}
+                    onClick={() => {
+                        setDialog("theme", true);
+                        fetchRemoteThemes();
+                    }}>
+                    <Paintbrush className="icon-inline" />
+                </button>
+                <dialog
+                    className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
+                    ref={themeDialogRef}>
+                    <div
+                        className="d-grid grid-template-columns"
+                        style={{ "--grid-template-columns": "1fr auto" }}>
+                        <span className="p-i-1 p-b-0 no-line-height">
+                            {t("common.language", { count: 2 })}
+                        </span>
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => setDialog("theme", false)}>
+                            X
+                        </button>
+                    </div>
+                    <ul className="d-contents">
+                        {allThemes.map(({ id, name }) => (
+                            <li key={id} className="d-contents">
+                                <button
+                                    type="button"
+                                    className={cls(
+                                        "btn btn-loader",
+                                        switcherState.pending === id ? "pending" : undefined,
+                                        switcherState.selected === id
+                                            ? "btn-primary active"
+                                            : undefined,
+                                    )}
+                                    onClick={() => {
+                                        setSwitcherState({
+                                            ...switcherState,
+                                            selected: id,
+                                            pending: id,
+                                        });
 
-                                    switchTheme(id).then(({ ok }) => {
-                                        if (ok) {
-                                            setSwitcherState({
-                                                ...switcherState,
-                                                selected: id,
-                                                pending: undefined,
-                                            });
-                                        }
-                                    });
-                                }}>
-                                {name}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </dialog>
-        </li>
-    );
-};
-
-const LanguageSwitcher = () => {
-    const { i18n, t } = useTranslation();
-    const [switcherState, setSwitcherState] = useState<{
-        languages: Record<string, string>;
-    }>({
-        languages: {},
-    });
-
-    const dialogRef = useRef<HTMLDialogElement>(null);
-
-    const setDialogOpen = (open: boolean) => {
-        if (!(dialogRef.current instanceof HTMLDialogElement)) return;
-
-        if (open) {
-            dialogRef.current.show();
-            return;
-        }
-
-        dialogRef.current.close();
-    };
-
-    return (
-        <li className="p-relative">
-            <button
-                type="button"
-                style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls("btn")}
-                onClick={() => {
-                    getSupportedLanguages().then((languages) => {
-                        setSwitcherState({
-                            ...switcherState,
-                            languages,
+                                        switchTheme(id).then(({ ok }) => {
+                                            if (ok) {
+                                                setSwitcherState({
+                                                    ...switcherState,
+                                                    selected: id,
+                                                    pending: undefined,
+                                                });
+                                            }
+                                        });
+                                    }}>
+                                    {name}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </dialog>
+            </li>
+            <li className="p-relative">
+                <button
+                    type="button"
+                    className="btn p-1"
+                    style={{ flexGrow: 0, flexShrink: 0 }}
+                    onClick={() => {
+                        getSupportedLanguages().then((languages) => {
+                            setSwitcherState({
+                                ...switcherState,
+                                languages,
+                            });
                         });
-                    });
-                    setDialogOpen(true);
-                }}>
-                i81n
-            </button>
-            <dialog
-                className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
-                style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
-                ref={dialogRef}>
-                <div
-                    className="d-grid grid-template-columns"
-                    style={{ "--grid-template-columns": "1fr auto" }}>
-                    <span className="p-i-1 p-b-0 no-line-height">
-                        {t("common.language", { count: 2 })}
-                    </span>
-                    <button type="button" className="btn" onClick={() => setDialogOpen(false)}>
-                        X
-                    </button>
-                </div>
-                <ul className="d-contents">
-                    {Object.entries(switcherState.languages).map(([code, name]) => (
-                        <li key={code} className="d-contents">
-                            <button
-                                type="button"
-                                className={cls(
-                                    "btn",
-                                    i18n.language === code ? "btn-primary active" : undefined,
-                                )}
-                                onClick={() => i18n.changeLanguage(code)}>
-                                {name}
-                            </button>
-                        </li>
-                    ))}
-                </ul>
-            </dialog>
-        </li>
+                        setDialog("lang", true);
+                    }}>
+                    <Globe className="icon-inline" />
+                </button>
+                <dialog
+                    className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
+                    ref={langDialogRef}>
+                    <div
+                        className="d-grid grid-template-columns"
+                        style={{ "--grid-template-columns": "1fr auto" }}>
+                        <span className="p-i-1 p-b-0 no-line-height">
+                            {t("common.language", { count: 2 })}
+                        </span>
+                        <button
+                            type="button"
+                            className="btn"
+                            onClick={() => setDialog("lang", false)}>
+                            X
+                        </button>
+                    </div>
+                    <ul className="d-contents">
+                        {Object.entries(switcherState.languages).map(([code, name]) => (
+                            <li key={code} className="d-contents">
+                                <button
+                                    type="button"
+                                    className={cls(
+                                        "btn",
+                                        i18n.language === code ? "btn-primary active" : undefined,
+                                    )}
+                                    onClick={() => i18n.changeLanguage(code)}>
+                                    {name}
+                                </button>
+                            </li>
+                        ))}
+                    </ul>
+                </dialog>
+            </li>
+        </>
     );
 };
 
-const Navbar = ({ routes, ...props }: NavbarProps) => {
+const Navbar = ({ routes, className, ...props }: NavbarProps) => {
     const filtered = routes.filter((route) => typeof route !== "undefined");
 
     return (
-        <nav {...props}>
+        <nav
+            className={cls(className, "d-grid", "grid-template-columns", "gap-1")}
+            style={{ "--grid-template-columns": "1fr auto" }}
+            {...props}>
             <menu
                 className="d-flex flex-wrap gap-1 reset-list flex-direction-row"
                 style={{ justifyContent: "space-evenly" }}>
@@ -279,8 +401,9 @@ const Navbar = ({ routes, ...props }: NavbarProps) => {
                         <NavBarButton key={route.name} {...route} />
                     ),
                 )}
-                <ThemeSwitcher />
-                <LanguageSwitcher />
+                <Switchers />
+                {/* <ThemeSwitcher />
+                <LanguageSwitcher /> */}
             </menu>
         </nav>
     );
@@ -290,4 +413,3 @@ const MemoNavbar = memo(Navbar);
 
 export { MemoNavbar, Navbar };
 export type { NavbarProps, NavbarRoute };
-

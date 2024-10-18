@@ -100,6 +100,7 @@
                 "Other sessions have been removed!",
             ],
             invalidId: ["Ungültige ID", "Inavalid ID"],
+            download: ["Herunterladen", "Download"],
             language_zero: ["Sprachen", "languages"],
             language_one: ["Sprache", "language"],
             language_other: ["Sprachen", "languages"],
