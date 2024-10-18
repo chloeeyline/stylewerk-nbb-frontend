@@ -30,7 +30,7 @@ export const IhColor = ({ cell, isReadOnly }: InputHelperProps) => {
         <InputField
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="dateTime"
+            name="color"
             label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
             type="color"
