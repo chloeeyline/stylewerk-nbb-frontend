@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { z } from "zod";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { useAppDispatch } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 const ihMetaDataSchema = z
@@ -21,8 +21,8 @@ const ihDataSchema = z
     .strip();
 
 export const IhStatic = ({ cell }: InputHelperProps) => {
-    const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+    // const editor = useAppSelector(selectEditor);
+    // const dispatch = useAppDispatch();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
@@ -33,51 +33,51 @@ export const IhStatic = ({ cell }: InputHelperProps) => {
 
 export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const temp = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
-        if (temp.success === false) return;
+        if (metadata.success === false) return;
         dispatch(
             setTemplateCell({
                 type: "metaData",
-                value: JSON.stringify(temp.data),
+                value: JSON.stringify(metadata.data),
             }),
         );
     }, []);
 
-    if (temp.success === false) return null;
+    if (metadata.success === false) return null;
 
-    const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
-        switch (e.target.name) {
-            case "min":
-            case "max":
-            case "value":
-                dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
-                            ...temp.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    }),
-                );
-                break;
-            case "type":
-                dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
-                            ...temp.data,
-                            [e.target.name]: Number(e.target.value),
-                        }),
-                    }),
-                );
-                break;
-            default:
-                return;
-        }
-    };
+    // const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+    //     if (!e.target.value) return;
+    //     switch (e.target.name) {
+    //         case "min":
+    //         case "max":
+    //         case "value":
+    //             dispatch(
+    //                 setTemplateCell({
+    //                     type: "metaData",
+    //                     value: JSON.stringify({
+    //                         ...metadata.data,
+    //                         [e.target.name]: e.target.value,
+    //                     }),
+    //                 }),
+    //             );
+    //             break;
+    //         case "type":
+    //             dispatch(
+    //                 setTemplateCell({
+    //                     type: "metaData",
+    //                     value: JSON.stringify({
+    //                         ...metadata.data,
+    //                         [e.target.name]: Number(e.target.value),
+    //                     }),
+    //                 }),
+    //             );
+    //             break;
+    //         default:
+    //             return;
+    //     }
+    // };
 
     return (
         <div>
