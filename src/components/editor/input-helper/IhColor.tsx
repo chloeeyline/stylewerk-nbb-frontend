@@ -70,8 +70,6 @@ export const IhColorSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
         switch (e.target.name) {
-            case "min":
-            case "max":
             case "value":
                 dispatch(
                     setTemplateCell({
@@ -79,17 +77,6 @@ export const IhColorSettings = ({ cell }: { cell: EntryCell }) => {
                         value: JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: e.target.value,
-                        }),
-                    }),
-                );
-                break;
-            case "type":
-                dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: Number(e.target.value),
                         }),
                     }),
                 );
