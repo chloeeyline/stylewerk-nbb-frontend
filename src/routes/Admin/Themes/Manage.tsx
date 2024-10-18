@@ -4,11 +4,13 @@ import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
 import type { Theme } from "~/schemas/themes";
+import cls from "~/utils/class-name-helper";
 import {
     applyTheme,
     baseThemes,
@@ -22,10 +24,12 @@ import {
 type ThemeState = {
     loading: boolean;
     error: string | null;
+    pending: "save" | "delete" | null;
     id: string;
     name: string;
     base: "light" | "dark";
     theme: Theme;
+    blob: string | null;
 };
 
 const getNameParameter = (): string =>
@@ -35,6 +39,9 @@ const getFromParameter = (): "light" | "dark" =>
     (new URLSearchParams(document.location.search).get("from") ?? "light") === "dark"
         ? "dark"
         : "light";
+
+const createBlobString = (input: Theme) =>
+    URL.createObjectURL(new Blob([JSON.stringify(input)], { type: "octet/stream" }));
 
 const ThemeEditor = ({
     themeState,
@@ -77,6 +84,8 @@ const ThemeEditor = ({
 
                             newThemeState.theme[key] = e.target.value;
 
+                            newThemeState.blob = createBlobString(newThemeState.theme);
+
                             setThemeState(newThemeState);
                         }}
                     />
@@ -95,10 +104,12 @@ export default function AdminThemesManage() {
     const [themeState, setThemeState] = useState<ThemeState>({
         loading: false,
         error: null,
+        pending: null,
         id: themeId ?? RouteParams.ThemeId,
         name: "",
         base: "light",
         theme: {},
+        blob: null,
     });
 
     const fetchThemeContent = async () => {
@@ -121,13 +132,18 @@ export default function AdminThemesManage() {
         const theme = await loadTheme(themeState.id);
 
         if (theme === null) {
+            const name = getNameParameter();
+            const from = getFromParameter();
+            const baseTheme = from === "dark" ? baseThemes.dark : baseThemes.light;
+
             setThemeState({
                 ...themeState,
                 error: null,
                 loading: false,
-                name: getNameParameter(),
-                base: getFromParameter(),
-                theme: getFromParameter() === "dark" ? baseThemes.dark : baseThemes.light,
+                name,
+                base: from,
+                theme: baseTheme,
+                blob: createBlobString(baseTheme),
             });
             return;
         }
@@ -139,6 +155,7 @@ export default function AdminThemesManage() {
             name: theme.name,
             base: theme.base !== "system" ? theme.base : "light",
             theme: theme.data,
+            blob: createBlobString(theme.data),
         });
     };
 
@@ -150,6 +167,8 @@ export default function AdminThemesManage() {
 
         fetchThemeContent();
     }, [themeId]);
+
+    console.log(themeState);
 
     return (
         <Grid layout="header" className="size-block-100">
@@ -196,10 +215,21 @@ export default function AdminThemesManage() {
                     <ScrollContainer direction="vertical">
                         <ThemeEditor themeState={themeState} setThemeState={setThemeState} />
                     </ScrollContainer>
-                    <div>
+                    <div className="d-flex flex-wrap gap-1">
                         <button
                             type="button"
+                            className={cls(
+                                "btn",
+                                "btn-primary",
+                                "btn-loader",
+                                themeState.pending === "save" ? "pending" : undefined,
+                                "p-1",
+                            )}
                             onClick={async () => {
+                                setThemeState({
+                                    ...themeState,
+                                    pending: "save",
+                                });
                                 const { id, name, base, theme } = themeState;
 
                                 if (name.trim() === "") {
@@ -208,6 +238,7 @@ export default function AdminThemesManage() {
                                         error: t("formErrors.pleaseEnter", {
                                             what: t("common.name"),
                                         }),
+                                        pending: null,
                                     });
                                     return;
                                 }
@@ -218,9 +249,16 @@ export default function AdminThemesManage() {
                                     setThemeState({
                                         ...themeState,
                                         error: t(`errorCodes.${result.error.message}`),
+                                        pending: null,
                                     });
                                     return;
                                 }
+
+                                setThemeState({
+                                    ...themeState,
+                                    error: null,
+                                    pending: null,
+                                });
 
                                 await fetchThemeContent();
                             }}>
@@ -228,13 +266,26 @@ export default function AdminThemesManage() {
                         </button>
                         {Object.keys(builtInThemes).includes(themeState.id) ? null : (
                             <button
-                                className="btn"
                                 type="button"
+                                className={cls(
+                                    "btn",
+                                    "btn-loader",
+                                    themeState.pending === "delete" ? "pending" : undefined,
+                                    "p-1",
+                                )}
                                 onClick={async () => {
+                                    setThemeState({
+                                        ...themeState,
+                                        pending: "delete",
+                                    });
                                     const result = await deleteTheme(themeState.id);
 
                                     if (result.ok === false) {
-                                        alert(t(`errorCodes.${result.error.message}`));
+                                        setThemeState({
+                                            ...themeState,
+                                            error: t(`errorCodes.${result.error.message}`),
+                                            pending: null,
+                                        });
                                         return;
                                     }
 
@@ -243,6 +294,13 @@ export default function AdminThemesManage() {
                                 {t("adminThemes.deleteTheme")}
                             </button>
                         )}
+                        <a
+                            className="btn btn-accent p-1"
+                            href={themeState.blob ?? "#"}
+                            download={themeState.name + ".json"}>
+                            {t("common.download")}
+                            <Download className="icon-inline m-is-1" fill="currentColor" />
+                        </a>
                     </div>
                 </Grid>
             </ScrollContainer>

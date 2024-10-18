@@ -147,7 +147,7 @@ export default {
     GamesMachine: lazy(() => import("./GamesMachine")),
     Giftbox: lazy(() => import("./Giftbox")),
     GlassOfCocktailSilhouette: lazy(() => import("./GlassOfCocktailSilhouette")),
-    GlobalSymbolOfBlackCircleWithGrid: lazy(() => import("./GlobalSymbolOfBlackCircleWithGrid")),
+    Globe: lazy(() => import("./Globe")),
     GraphicOfBarsOnScreen: lazy(() => import("./GraphicOfBarsOnScreen")),
     HotOrBurnInterfaceSymbol: lazy(() => import("./HotOrBurnInterfaceSymbol")),
     ImageSquareInterfaceButton: lazy(() => import("./ImageSquareInterfaceButton")),
@@ -217,9 +217,7 @@ export default {
         () => import("./OvalBlackSpeechBalloonWithThreeDotsInside"),
     ),
     OvalBlackSpeechBalloon: lazy(() => import("./OvalBlackSpeechBalloon")),
-    PaintbrushDesignToolInterfaceSymbol: lazy(
-        () => import("./PaintbrushDesignToolInterfaceSymbol"),
-    ),
+    Paintbrush: lazy(() => import("./Paintbrush")),
     PaperPlaneBlackFoldedShapeOfTriangularArrow: lazy(
         () => import("./PaperPlaneBlackFoldedShapeOfTriangularArrow"),
     ),

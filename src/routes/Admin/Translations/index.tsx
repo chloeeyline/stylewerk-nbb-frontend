@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import BackendRoutes from "~/constants/backend-routes";
-import { BACKEND_URL } from "~/constants/general";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
 import type { Translation } from "~/schemas/translations";
@@ -76,46 +75,43 @@ const Translations = () => {
     }
 
     return (
-        <ul>
-            {translations.map(({ code, name }) => (
-                <li key={code}>
-                    <Link
-                        to={Routes.Admin.Translations.Manage.replace(
-                            RouteParams.TranslationId,
-                            code,
-                        )}>
-                        {name} ({code})
-                    </Link>
-                    <a
-                        className="p-is-1"
-                        href={`${BACKEND_URL}${BackendRoutes.Language.Index}?code=${code}`}
-                        download={`${name}.json`}>
-                        <Download className="icon-inline" fill="currentColor" />
-                    </a>
-                </li>
-            ))}
-            <li>
-                <form
-                    onSubmit={(e) => {
-                        e.preventDefault();
-
-                        if (newLangRef.current === null || fromLangRef.current === null) return;
-
-                        const newCode = newLangRef.current.value;
-                        const fromCode = fromLangRef.current.value;
-
-                        if (newCode.length == 0 || newCode.length >= 6) {
-                            newLangRef.current.value = "Code too long!";
-                            return;
-                        }
-
-                        navigate(
-                            Routes.Admin.Translations.Manage.replace(
+        <>
+            <ul className="d-grid gap-1 p-is-7">
+                {translations.map(({ code, name }) => (
+                    <li key={code}>
+                        <Link
+                            to={Routes.Admin.Translations.Manage.replace(
                                 RouteParams.TranslationId,
-                                newCode,
-                            ) + (fromCode.length !== 0 ? `?from=${fromCode}` : ""),
-                        );
-                    }}>
+                                code,
+                            )}>
+                            {name} ({code})
+                        </Link>
+                    </li>
+                ))}
+            </ul>
+            <form
+                className="d-grid gap-1"
+                onSubmit={(e) => {
+                    e.preventDefault();
+
+                    if (newLangRef.current === null || fromLangRef.current === null) return;
+
+                    const newCode = newLangRef.current.value;
+                    const fromCode = fromLangRef.current.value;
+
+                    if (newCode.length == 0 || newCode.length >= 6) {
+                        newLangRef.current.value = "Code too long!";
+                        return;
+                    }
+
+                    navigate(
+                        Routes.Admin.Translations.Manage.replace(
+                            RouteParams.TranslationId,
+                            newCode,
+                        ) + (fromCode.length !== 0 ? `?from=${fromCode}` : ""),
+                    );
+                }}>
+                <Columns>
                     <InputField
                         label={t("adminTranslations.labelNewCode")}
                         name="newCode"
@@ -130,10 +126,12 @@ const Translations = () => {
                             ...translations,
                         ].map(({ code, name }) => [code, name])}
                     />
-                    <button type="submit">{t("adminTranslations.addNewLanguage")}</button>
-                </form>
-            </li>
-        </ul>
+                </Columns>
+                <button type="submit" className="btn btn-primary p-1 size-inline-fit">
+                    {t("adminTranslations.addNewLanguage")}
+                </button>
+            </form>
+        </>
     );
 };
 
