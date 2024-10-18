@@ -42,6 +42,15 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
+    if (editor.isPreview === true && editor.isTemplate === false) {
+        return (
+            <div>
+                {data.data.value}
+                <p>{cell.template.text ?? ""}</p>
+            </div>
+        );
+    }
+
     return (
         <InputField
             required={cell.template.isRequired}

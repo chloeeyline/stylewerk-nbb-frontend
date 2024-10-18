@@ -242,11 +242,11 @@ export default function EntriesLayout() {
     return (
         <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
             <form>
-                <fieldset>
+                <fieldset className="d-flex gap-1">
                     <legend>Actions</legend>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             if (entry.hideFilters) dispatch(listFolder());
                             else dispatch(listEntry());
@@ -255,7 +255,7 @@ export default function EntriesLayout() {
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             dispatch(toggleHideList());
                         }}>
@@ -263,7 +263,7 @@ export default function EntriesLayout() {
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             dispatch(toggleHideFilters());
                         }}>
@@ -271,7 +271,7 @@ export default function EntriesLayout() {
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             dispatch(toggleDragMode());
                             if (entry.dragMode) dispatch(reorderFolder());
@@ -283,7 +283,7 @@ export default function EntriesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             entry.hideFilters === true && entry.dragMode === false
                                 ? undefined
                                 : "hidden",
@@ -294,7 +294,7 @@ export default function EntriesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             entry.selectedFolder.isNew === true ? "hidden" : undefined,
                         )}
                         onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
@@ -303,7 +303,7 @@ export default function EntriesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             typeof editor.data?.id === "string" ? undefined : "hidden",
                         )}
                         onClick={() =>

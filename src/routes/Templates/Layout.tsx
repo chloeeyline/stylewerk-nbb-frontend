@@ -106,14 +106,17 @@ export default function TemplatesLayout() {
     return (
         <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
             <form>
-                <fieldset>
+                <fieldset className="d-flex gap-1">
                     <legend>Actions</legend>
-                    <button type="button" className="m-1" onClick={() => dispatch(listTemplates())}>
+                    <button
+                        type="button"
+                        className="btn p-0"
+                        onClick={() => dispatch(listTemplates())}>
                         Refresh
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             dispatch(setHideList());
                         }}>
@@ -121,7 +124,7 @@ export default function TemplatesLayout() {
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() => {
                             dispatch(setHideFilters());
                         }}>
@@ -129,7 +132,7 @@ export default function TemplatesLayout() {
                     </button>
                     <button
                         type="button"
-                        className="m-1"
+                        className="btn p-0"
                         onClick={() =>
                             navigate(
                                 Routes.Templates.Edit.replace(
@@ -143,7 +146,7 @@ export default function TemplatesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             typeof editor.data?.templateID === "string" ? undefined : "hidden",
                         )}
                         onClick={() => {
@@ -155,7 +158,7 @@ export default function TemplatesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             typeof editor.data?.templateID === "string" ? undefined : "hidden",
                         )}
                         onClick={() =>
@@ -171,7 +174,7 @@ export default function TemplatesLayout() {
                     <button
                         type="button"
                         className={cls(
-                            "m-1",
+                            "btn p-0",
                             typeof editor.data?.templateID === "string" ? undefined : "hidden",
                         )}
                         onClick={() =>

@@ -29,7 +29,7 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
-    if (editor.isPreview === true) {
+    if (editor.isPreview === true && editor.isTemplate === false) {
         return (
             <div>
                 {data.data.value}
@@ -39,34 +39,32 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
     }
 
     return (
-        <>
-            <InputField
-                required={cell.template.isRequired}
-                disabled={isReadOnly}
-                name="number"
-                label={cell.template.text ?? ""}
-                placeholder={cell.template.text ?? ""}
-                type="number"
-                value={data.data.value ?? ""}
-                min={metadata.data?.min}
-                max={metadata.data?.max}
-                step={metadata.data?.step}
-                onChange={(e) => {
-                    if (editor.isPreview) return;
-                    if (e.target.value.length === 0) {
-                        dispatch(setEntryCell(null));
-                        return;
-                    }
-                    var temp = {
-                        ...data.data,
-                        value: metadata.data.integer
-                            ? Number.parseInt(e.target.value)
-                            : Number.parseFloat(e.target.value),
-                    };
-                    dispatch(setEntryCell(JSON.stringify(temp)));
-                }}
-            />
-        </>
+        <InputField
+            required={cell.template.isRequired}
+            disabled={isReadOnly}
+            name="number"
+            label={cell.template.text ?? ""}
+            placeholder={cell.template.text ?? ""}
+            type="number"
+            value={data.data.value ?? ""}
+            min={metadata.data?.min}
+            max={metadata.data?.max}
+            step={metadata.data?.step}
+            onChange={(e) => {
+                if (editor.isPreview) return;
+                if (e.target.value.length === 0) {
+                    dispatch(setEntryCell(null));
+                    return;
+                }
+                var temp = {
+                    ...data.data,
+                    value: metadata.data.integer
+                        ? Number.parseInt(e.target.value)
+                        : Number.parseFloat(e.target.value),
+                };
+                dispatch(setEntryCell(JSON.stringify(temp)));
+            }}
+        />
     );
 };
 
