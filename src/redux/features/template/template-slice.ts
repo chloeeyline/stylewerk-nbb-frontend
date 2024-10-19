@@ -7,7 +7,7 @@ import { editorSchema } from "../editor/editor-schemas";
 import type { TemplateItem, TemplateSearchParams } from "./template-schemas";
 import { templatePagingSchema } from "./template-schemas";
 
-type TemplateState = {
+export type TemplateState = {
     status: "idle" | "loading" | "succeeded" | "failed";
     paging: Paging;
     items?: TemplateItem[];

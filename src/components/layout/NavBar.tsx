@@ -387,10 +387,7 @@ const Navbar = ({ routes, className, ...props }: NavbarProps) => {
     const filtered = routes.filter((route) => typeof route !== "undefined");
 
     return (
-        <nav
-            className={cls(className, "d-grid", "grid-template-columns", "gap-1")}
-            style={{ "--grid-template-columns": "1fr auto" }}
-            {...props}>
+        <nav className={cls("d-grid gap-1", className)} {...props}>
             <menu
                 className="d-flex flex-wrap gap-1 reset-list flex-direction-row"
                 style={{ justifyContent: "space-evenly" }}>
@@ -402,8 +399,6 @@ const Navbar = ({ routes, className, ...props }: NavbarProps) => {
                     ),
                 )}
                 <Switchers />
-                {/* <ThemeSwitcher />
-                <LanguageSwitcher /> */}
             </menu>
         </nav>
     );

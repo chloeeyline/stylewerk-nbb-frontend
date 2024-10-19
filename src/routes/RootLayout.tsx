@@ -89,7 +89,7 @@ export default function RootLayout() {
                 <div>
                     <RootNavBar />
                 </div>
-                <ScrollContainer direction="vertical" className="p-i-2">
+                <ScrollContainer direction="vertical">
                     <Outlet />
                 </ScrollContainer>
             </Grid>

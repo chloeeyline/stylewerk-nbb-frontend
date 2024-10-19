@@ -24,6 +24,7 @@ import EditorRow from "./EditorRow";
 import EntrySettings from "./toolbar/EntrySettings";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateSettings from "./toolbar/TemplateSettings";
+import cls from "~/utils/class-name-helper";
 
 const Editor = ({
     id,
@@ -100,25 +101,24 @@ const Editor = ({
     };
 
     return (
-        <form className="lcontainer">
-            <Grid layout="header" className="size-block-100">
+        <div
+            className={cls(
+                "d-grid max-block-size-100 block-size-100",
+                editor.isPreview === false ? "grid-template-rows" : undefined,
+            )}
+            style={{ "--grid-template-rows": "auto 1fr" }}>
+            {editor.isPreview === false ? (
                 <div>
-                    {editor.isPreview === false ? (
-                        editor.isTemplate === true ? (
-                            <TemplateSettings />
-                        ) : (
-                            <EntrySettings />
-                        )
-                    ) : null}
-                    {editor.isTemplate === true &&
-                    editor.isPreview === false &&
-                    editor.selectedTemplateCell.length > 0 ? (
+                    {editor.isTemplate === true ? <TemplateSettings /> : <EntrySettings />}
+                    {editor.isTemplate === true && editor.selectedTemplateCell.length > 0 ? (
                         <TemplateCellSettings />
                     ) : null}
                 </div>
+            ) : null}
+            <fieldset className="fieldset">
+                <legend className="legend">Editor</legend>
                 <ScrollContainer direction="both">
-                    <fieldset>
-                        <legend>Editor</legend>
+                    <div className="max-size-100">
                         <DndContext
                             modifiers={[restrictToVerticalAxis, restrictToParentElement]}
                             sensors={sensors}
@@ -137,10 +137,10 @@ const Editor = ({
                                     )}
                             </SortableContext>
                         </DndContext>
-                    </fieldset>
+                    </div>
                 </ScrollContainer>
-            </Grid>
-        </form>
+            </fieldset>
+        </div>
     );
 };
 

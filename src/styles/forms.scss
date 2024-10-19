@@ -1,7 +1,32 @@
 .input {
+    min-inline-size: 0;
+
     padding: 0.5rem;
-    background-color: var(--clr-base-200);
+
+    background-color: var(--clr-base-300);
+
     border: none;
     border-radius: 0.5rem;
-    min-inline-size: 0;
+}
+
+.fieldset {
+    display: grid;
+    gap: 0.25rem;
+
+    padding: 0.5rem;
+
+    border: none;
+    border-radius: 0.75rem;
+
+    background-color: var(--clr-base-200);
+}
+
+.legend {
+    padding: 0.5rem;
+
+    border-radius: 0.5rem;
+
+    background-color: var(--clr-base-100);
+
+    line-height: 1;
 }
