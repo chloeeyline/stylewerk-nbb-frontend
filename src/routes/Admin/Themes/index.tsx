@@ -89,25 +89,30 @@ const Themes = () => {
                             (fromId.length !== 0 ? `&from=${fromId}` : ""),
                     );
                 }}>
-                <Columns>
-                    <InputField
-                        label={t("adminThemes.labelNewName")}
-                        name="newName"
-                        ref={newThemeRef}
-                    />
-                    <SelectField
-                        label={t("adminThemes.labelFromId")}
-                        name="from"
-                        ref={fromThemeRef}
-                        options={[
-                            ["light", "Light"],
-                            ["dark", "Dark"],
-                        ]}
-                    />
-                </Columns>
-                <button type="submit" className="btn btn-primary p-1 size-inline-fit">
-                    {t("adminThemes.addNewTheme")}
-                </button>
+                <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                    <Columns>
+                        <InputField
+                            className="input bg-base-300"
+                            label={t("adminThemes.labelNewName")}
+                            name="newName"
+                            ref={newThemeRef}
+                        />
+                        <SelectField
+                            className="input bg-base-300"
+                            label={t("adminThemes.labelFromId")}
+                            name="from"
+                            ref={fromThemeRef}
+                            options={[
+                                ["light", "Light"],
+                                ["dark", "Dark"],
+                            ]}
+                        />
+                    </Columns>
+
+                    <button type="submit" className="btn btn-primary p-1 size-inline-fit m-bs-0">
+                        {t("adminThemes.addNewTheme")}
+                    </button>
+                </fieldset>
             </form>
         </>
     );
@@ -117,7 +122,7 @@ export default function AdminThemesList() {
     const { t } = useTranslation();
 
     return (
-        <Grid layout="header">
+        <Grid layout="header" className="gap-1">
             <div>
                 <Link to={Routes.Admin.Index}>{t("common.back")}</Link>
                 <h1>{t("nav.adminThemes")}</h1>

@@ -1,6 +1,6 @@
 import type React from "react";
 import { forwardRef, useId } from "react";
-import styles from "./form-fields.module.scss";
+import cls from "~/utils/class-name-helper";
 
 export default forwardRef(function SelectField(
     {
@@ -9,6 +9,7 @@ export default forwardRef(function SelectField(
         options,
         error,
         useNameAsIs,
+        className,
         ...props
     }: React.SelectHTMLAttributes<HTMLSelectElement> & {
         name: string;
@@ -22,16 +23,16 @@ export default forwardRef(function SelectField(
     const id = useId();
 
     return (
-        <div className={styles.inputWrapper}>
-            <label htmlFor={useNameAsIs ? name : `${name}-${id}`}>{label}</label>
-            <select ref={ref} name={useNameAsIs ? name : `${name}-${id}`} {...props}>
+        <div className="d-grid">
+            <label htmlFor={id}>{label}</label>
+            <select ref={ref} id={id} name={name} className={cls("input cursor-pointer", className)} {...props}>
                 {options.map(([key, value]) => (
                     <option key={key} value={key}>
                         {value}
                     </option>
                 ))}
             </select>
-            {error !== null ? <span>{error}</span> : null}
+            {(error ?? null) !== null ? <span className="error">{error}</span> : null}
         </div>
     );
 });

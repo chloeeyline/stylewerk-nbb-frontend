@@ -82,6 +82,10 @@ h6 {
     line-height: 1;
 }
 
+.no-border {
+    border: none;
+}
+
 .prose {
     h1,
     h2,
@@ -99,4 +103,47 @@ h6 {
 
 .font-mono {
     font-family: monospace;
+}
+
+a.no-link {
+    color: currentColor;
+    text-decoration: none;
+}
+
+@each $type in "hidden", "scroll", "auto" {
+    .overflow-#{$type},
+    .overflow-x-#{$type} {
+        overflow-x: #{$type};
+    }
+
+    .overflow-#{$type},
+    .overflow-y-#{$type} {
+        overflow-y: #{$type};
+    }
+}
+
+span {
+    &.info,
+    &.success,
+    &.warning,
+    &.error {
+        max-inline-size: fit-content;
+
+        padding-block: 0.25rem;
+        padding-inline: 0.5rem;
+        border-radius: 0.5rem;
+    }
+
+    @each $type in "info", "success", "warning", "error" {
+        &.#{$type} {
+            color: var(--clr-#{$type}-content);
+            background-color: var(--clr-#{$type});
+        }
+    }
+}
+
+@each $cursor-type in "pointer", "none" {
+    .cursor-#{$cursor-type} {
+        cursor: #{$cursor-type};
+    }
 }

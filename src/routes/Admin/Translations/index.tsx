@@ -111,25 +111,29 @@ const Translations = () => {
                         ) + (fromCode.length !== 0 ? `?from=${fromCode}` : ""),
                     );
                 }}>
-                <Columns>
-                    <InputField
-                        label={t("adminTranslations.labelNewCode")}
-                        name="newCode"
-                        ref={newLangRef}
-                    />
-                    <SelectField
-                        label={t("adminTranslations.labelFromCode")}
-                        name="fromCode"
-                        ref={fromLangRef}
-                        options={[
-                            { code: "", name: t("adminTranslations.fromCodeDefault") },
-                            ...translations,
-                        ].map(({ code, name }) => [code, name])}
-                    />
-                </Columns>
-                <button type="submit" className="btn btn-primary p-1 size-inline-fit">
-                    {t("adminTranslations.addNewLanguage")}
-                </button>
+                <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                    <Columns>
+                        <InputField
+                            className="input bg-base-300"
+                            label={t("adminTranslations.labelNewCode")}
+                            name="newCode"
+                            ref={newLangRef}
+                        />
+                        <SelectField
+                            className="input bg-base-300"
+                            label={t("adminTranslations.labelFromCode")}
+                            name="fromCode"
+                            ref={fromLangRef}
+                            options={[
+                                { code: "", name: t("adminTranslations.fromCodeDefault") },
+                                ...translations,
+                            ].map(({ code, name }) => [code, name])}
+                        />
+                    </Columns>
+                    <button type="submit" className="btn btn-primary p-1 m-bs-0 size-inline-fit">
+                        {t("adminTranslations.addNewLanguage")}
+                    </button>
+                </fieldset>
             </form>
         </>
     );
@@ -139,7 +143,7 @@ export default function AdminTranslationsList() {
     const { t } = useTranslation();
 
     return (
-        <Grid layout="header">
+        <Grid layout="header" className="gap-1">
             <div>
                 <Link to={Routes.Admin.Index}>{t("common.back")}</Link>
                 <h1>{t("nav.adminTranslations")}</h1>

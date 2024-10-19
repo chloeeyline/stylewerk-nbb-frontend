@@ -19,11 +19,13 @@ const RootNavBar = () => {
     const dispatch = useAppDispatch();
 
     const routes: (NavbarRoute | undefined)[] = [
-        {
-            type: "link",
-            url: Frontend.Home,
-            name: t("nav.homepage"),
-        },
+        loggedIn === false
+            ? {
+                  type: "link",
+                  url: Frontend.Home,
+                  name: t("nav.homepage"),
+              }
+            : undefined,
         loggedIn
             ? {
                   type: "link",

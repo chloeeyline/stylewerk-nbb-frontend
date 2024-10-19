@@ -45,7 +45,8 @@
     margin-inline-start: 0.25rem;
     inline-size: 1.5rem;
     aspect-ratio: 4;
-    background: radial-gradient(circle closest-side, #000 90%, #0000) 0 / calc(100% / 3) 100% space;
+    background: radial-gradient(circle closest-side, var(--clr-body) 90%, transparent) 0 /
+        calc(100% / 3) 100% space;
     clip-path: inset(0 100% 0 0);
     animation: dots 1.5s steps(4) infinite;
 }

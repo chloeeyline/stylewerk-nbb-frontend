@@ -16,12 +16,26 @@ type GridLayouts =
     | "itemsCenter"
     | "contentCenter";
 
-type GridProps = React.PropsWithChildren<{
+export default function Grid({
+    layout,
+    allowOverflow,
+    children,
+    className,
+    ...props
+}: React.HTMLAttributes<HTMLDivElement> & {
     layout: GridLayouts;
-    className?: string;
-    style?: React.CSSProperties;
-}>;
-
-export default function Grid({ layout, className, ...props }: GridProps) {
-    return <div className={cls(styles.grid, styles[layout], className)} {...props} />;
+    allowOverflow?: boolean;
+}) {
+    return (
+        <div
+            className={cls(
+                "d-grid",
+                allowOverflow !== true ? "max-size-100 overflow-hidden" : undefined,
+                styles[layout],
+                className,
+            )}
+            {...props}>
+            {children}
+        </div>
+    );
 }

@@ -1,5 +1,5 @@
 import type React from "react";
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
@@ -70,29 +70,27 @@ const ThemeEditor = ({
     );
 
     return (
-        <div
-            className="d-grid gap-1 grid-template-columns"
-            style={{ "--grid-template-columns": "auto auto 1fr" }}>
+        <>
             {Object.entries(themeState.theme).map(([key, value]) => (
-                <Fragment key={key}>
-                    <span>{key}:</span>
-                    <input
-                        type="color"
-                        value={value}
-                        onChange={(e) => {
-                            const newThemeState = { ...themeState };
+                <InputField
+                    type="color"
+                    className="cursor-pointer"
+                    key={key}
+                    name={key}
+                    label={key}
+                    value={value}
+                    onChange={(e) => {
+                        const newThemeState = { ...themeState };
 
-                            newThemeState.theme[key] = e.target.value;
+                        newThemeState.theme[key] = e.target.value;
 
-                            newThemeState.blob = createBlobString(newThemeState.theme);
+                        newThemeState.blob = createBlobString(newThemeState.theme);
 
-                            setThemeState(newThemeState);
-                        }}
-                    />
-                    <span className="font-mono">({value})</span>
-                </Fragment>
+                        setThemeState(newThemeState);
+                    }}
+                />
             ))}
-        </div>
+        </>
     );
 };
 
@@ -180,12 +178,14 @@ export default function AdminThemesManage() {
                 <Grid layout="headerFooter" className="size-block-100 gap-1">
                     <div>
                         <InputField
+                            className="input"
                             label={t("adminThemes.labelId")}
                             name="id"
                             value={themeState.id}
                             readOnly
                         />
                         <InputField
+                            className="input"
                             label={t("adminThemes.labelName")}
                             name="name"
                             value={themeState.name}
@@ -197,6 +197,7 @@ export default function AdminThemesManage() {
                             }}
                         />
                         <SelectField
+                            className="input"
                             label={t("adminThemes.labelBase")}
                             name="base"
                             value={themeState.base}

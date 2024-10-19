@@ -1,5 +1,5 @@
 import type React from "react";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
@@ -99,36 +99,31 @@ const LanguageEditor = ({
     setTranslationState: React.Dispatch<TranslationState>;
 }) => {
     return (
-        <div style={{ display: "grid" }} className="gap-1">
+        <>
             {Object.entries(translationState.data).map(([ns, translations]) => (
-                <div key={ns} style={{ display: "grid" }} className="gap-1">
+                <Fragment key={ns}>
                     {Object.entries(translations).map(([key, value]) => (
-                        <div
+                        <InputField
                             key={key}
-                            style={{ display: "grid", gridTemplateColumns: "auto 1fr" }}
-                            className="gap-1">
-                            <span>
-                                {ns}.{key}:
-                            </span>
-                            <input
-                                type="text"
-                                value={value}
-                                onChange={(e) => {
-                                    const newTranslationState = { ...translationState };
+                            label={`${ns}.${key}`}
+                            name={`${ns}.${key}`}
+                            value={value}
+                            className="input"
+                            onChange={(e) => {
+                                const newTranslationState = { ...translationState };
 
-                                    newTranslationState.data[ns][key] = e.target.value;
-                                    newTranslationState.blob = createBlobString(
-                                        newTranslationState.data,
-                                    );
+                                newTranslationState.data[ns][key] = e.target.value;
+                                newTranslationState.blob = createBlobString(
+                                    newTranslationState.data,
+                                );
 
-                                    setTranslationState(newTranslationState);
-                                }}
-                            />
-                        </div>
+                                setTranslationState(newTranslationState);
+                            }}
+                        />
                     ))}
-                </div>
+                </Fragment>
             ))}
-        </div>
+        </>
     );
 };
 
@@ -198,170 +193,164 @@ export default function AdminTranslationsManage() {
     }
 
     return (
-        <Grid layout="header" className="size-block-100">
+        <Grid layout="headerFooter" className="gap-1">
             <div>
                 <Link to={Routes.Admin.Translations.List}>{t("common.back")}</Link>
                 <h1>{t("nav.adminTranslationsManage")}</h1>
             </div>
-            <ScrollContainer direction="vertical">
-                <Grid layout="headerFooter" className="size-block-100 gap-1">
-                    <div>
-                        {translationState.error !== null ? (
-                            <span>{translationState.error}</span>
-                        ) : null}
-                        <InputField
-                            label={t("adminTranslations.labelCode")}
-                            name="code"
-                            value={translationState.code}
-                            readOnly
-                        />
-                        <InputField
-                            label={t("adminTranslations.labelName")}
-                            name="name"
-                            value={translationState.name}
-                            onChange={(e) => {
-                                setTranslationState({
-                                    ...translationState,
-                                    name: e.target.value,
-                                });
-                            }}
-                        />
-                        <InputField
-                            type="file"
-                            label={t("adminTranslations.labelUploadJson")}
-                            name="json"
-                            accept=".json"
-                            onChange={(e) => {
-                                if (e.target.files === null || e.target.files.length === 0) return;
+            <Grid layout="header" className="gap-1">
+                <div>
+                    {translationState.error !== null ? <span>{translationState.error}</span> : null}
+                    <InputField
+                        className="input"
+                        label={t("adminTranslations.labelCode")}
+                        name="code"
+                        value={translationState.code}
+                        readOnly
+                    />
+                    <InputField
+                        className="input"
+                        label={t("adminTranslations.labelName")}
+                        name="name"
+                        value={translationState.name}
+                        onChange={(e) => {
+                            setTranslationState({
+                                ...translationState,
+                                name: e.target.value,
+                            });
+                        }}
+                    />
+                    <InputField
+                        className="input"
+                        type="file"
+                        label={t("adminTranslations.labelUploadJson")}
+                        name="json"
+                        accept=".json"
+                        onChange={(e) => {
+                            if (e.target.files === null || e.target.files.length === 0) return;
 
-                                const fileReader = new FileReader();
+                            const fileReader = new FileReader();
 
-                                fileReader.addEventListener(
-                                    "load",
-                                    (f) => {
-                                        if (typeof f.target?.result !== "string") return;
+                            fileReader.addEventListener(
+                                "load",
+                                (f) => {
+                                    if (typeof f.target?.result !== "string") return;
 
-                                        try {
-                                            const result = translationContentSchema.safeParse(
-                                                JSON.parse(f.target.result),
-                                            );
+                                    try {
+                                        const result = translationContentSchema.safeParse(
+                                            JSON.parse(f.target.result),
+                                        );
 
-                                            if (result.success === false) {
-                                                e.target.files = null;
-                                                return;
-                                            }
-
-                                            setTranslationState({
-                                                ...translationState,
-                                                data: result.data,
-                                            });
+                                        if (result.success === false) {
                                             e.target.files = null;
-                                        } catch (error) {
-                                            e.target.files = null;
+                                            return;
                                         }
-                                    },
-                                    false,
-                                );
 
-                                fileReader.readAsText(e.target.files[0], "UTF-8");
-                            }}
-                        />
-                    </div>
-                    <ScrollContainer direction="vertical">
-                        <LanguageEditor
-                            translationState={translationState}
-                            setTranslationState={setTranslationState}
-                        />
-                    </ScrollContainer>
-                    <div className="d-flex flex-wrap gap-1">
-                        <button
-                            type="button"
-                            className={cls(
-                                "btn",
-                                "btn-primary",
-                                "btn-loader",
-                                translationState.pending === "save" ? "pending" : undefined,
-                                "p-1",
-                            )}
-                            onClick={async () => {
-                                setTranslationState({
-                                    ...translationState,
-                                    pending: "save",
-                                });
-                                const { code, name, data } = translationState;
-
-                                if (name.trim() === "") {
-                                    setTranslationState({
-                                        ...translationState,
-                                        error: t("formErrors.pleaseEnter", {
-                                            what: t("common.name"),
-                                        }),
-                                        pending: null,
-                                    });
-                                    return;
-                                }
-
-                                const result = await updateLanguage(code, name, data);
-
-                                if (result.ok === false) {
-                                    setTranslationState({
-                                        ...translationState,
-                                        error: t(`errorCodes.${result.error.message}`),
-                                        pending: null,
-                                    });
-                                    return;
-                                }
-
-                                setTranslationState({
-                                    ...translationState,
-                                    error: null,
-                                    pending: null,
-                                });
-
-                                await fetchTranslationContent();
-                            }}>
-                            {t("adminTranslations.saveLanguage")}
-                        </button>
-                        {["de", "en"].includes(translationState.code) ? null : (
-                            <button
-                                type="button"
-                                className={cls(
-                                    "btn",
-                                    "btn-loader",
-                                    translationState.pending === "delete" ? "pending" : undefined,
-                                    "p-1",
-                                )}
-                                onClick={async () => {
-                                    setTranslationState({
-                                        ...translationState,
-                                        pending: "delete",
-                                    });
-                                    const result = await deleteLanguage(translationState.code);
-
-                                    if (result.ok === false) {
                                         setTranslationState({
                                             ...translationState,
-                                            error: t(`errorCodes.${result.error.message}`),
-                                            pending: null,
+                                            data: result.data,
                                         });
-                                        return;
+                                        e.target.files = null;
+                                    } catch (error) {
+                                        e.target.files = null;
                                     }
+                                },
+                                false,
+                            );
 
-                                    navigate(Routes.Admin.Translations.List);
-                                }}>
-                                {t("adminTranslations.deleteLanguage")}
-                            </button>
+                            fileReader.readAsText(e.target.files[0], "UTF-8");
+                        }}
+                    />
+                </div>
+                <ScrollContainer direction="vertical">
+                    <LanguageEditor
+                        translationState={translationState}
+                        setTranslationState={setTranslationState}
+                    />
+                </ScrollContainer>
+            </Grid>
+            <div className="d-flex flex-wrap gap-1">
+                <button
+                    type="button"
+                    className={cls(
+                        "btn btn-primary btn-loader p-1",
+                        translationState.pending === "save" ? "pending" : undefined,
+                    )}
+                    onClick={async () => {
+                        setTranslationState({
+                            ...translationState,
+                            pending: "save",
+                        });
+                        const { code, name, data } = translationState;
+
+                        if (name.trim() === "") {
+                            setTranslationState({
+                                ...translationState,
+                                error: t("formErrors.pleaseEnter", {
+                                    what: t("common.name"),
+                                }),
+                                pending: null,
+                            });
+                            return;
+                        }
+
+                        const result = await updateLanguage(code, name, data);
+
+                        if (result.ok === false) {
+                            setTranslationState({
+                                ...translationState,
+                                error: t(`errorCodes.${result.error.message}`),
+                                pending: null,
+                            });
+                            return;
+                        }
+
+                        setTranslationState({
+                            ...translationState,
+                            error: null,
+                            pending: null,
+                        });
+
+                        await fetchTranslationContent();
+                    }}>
+                    {t("adminTranslations.saveLanguage")}
+                </button>
+                {["de", "en"].includes(translationState.code) ? null : (
+                    <button
+                        type="button"
+                        className={cls(
+                            "btn btn-loader p-1",
+                            translationState.pending === "delete" ? "pending" : undefined,
                         )}
-                        <a
-                            className="btn btn-accent p-1"
-                            href={translationState.blob ?? "#"}
-                            download={translationState.name + ".json"}>
-                            {t("common.download")}
-                            <Download className="icon-inline m-is-1" fill="currentColor" />
-                        </a>
-                    </div>
-                </Grid>
-            </ScrollContainer>
+                        onClick={async () => {
+                            setTranslationState({
+                                ...translationState,
+                                pending: "delete",
+                            });
+                            const result = await deleteLanguage(translationState.code);
+
+                            if (result.ok === false) {
+                                setTranslationState({
+                                    ...translationState,
+                                    error: t(`errorCodes.${result.error.message}`),
+                                    pending: null,
+                                });
+                                return;
+                            }
+
+                            navigate(Routes.Admin.Translations.List);
+                        }}>
+                        {t("adminTranslations.deleteLanguage")}
+                    </button>
+                )}
+                <a
+                    className="btn btn-accent p-1"
+                    href={translationState.blob ?? "#"}
+                    download={translationState.name + ".json"}>
+                    {t("common.download")}
+                    <Download className="icon-inline m-is-1" fill="currentColor" />
+                </a>
+            </div>
         </Grid>
     );
 }
