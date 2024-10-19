@@ -8,6 +8,7 @@ import {
     validateUsername,
 } from "~/redux/features/user/user-api";
 import { genders } from "~/redux/features/user/user-schemas";
+import cls from "~/utils/class-name-helper";
 import styles from "./form-fields.module.scss";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
@@ -65,18 +66,6 @@ export default function RegistrationForm() {
                     Registration complete! Please verify your email using the link sent to you to
                     activate login for your account.
                 </p>
-                <button
-                    type="button"
-                    onClick={() => {
-                        setFormError({ ...initialFormErrors });
-                        setRegistration({
-                            submitting: false,
-                            done: false,
-                            error: null,
-                        });
-                    }}>
-                    Reset
-                </button>
             </div>
         );
     }
@@ -196,12 +185,23 @@ export default function RegistrationForm() {
     };
 
     return (
-        <form className={styles.form} onSubmit={submitForm}>
-            <fieldset className={styles.fieldset}>
-                <legend>{t("formNames.registration")}</legend>
-                {registration.error !== null ? <div>{registration.error}</div> : null}
+        <form
+            className={cls(
+                "p-relative m-i-auto size-inline-100",
+                styles.spinner,
+                registration.submitting ? styles.submitting : undefined,
+            )}
+            onSubmit={submitForm}>
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.registration")}
+                </legend>
+                {registration.error !== null ? (
+                    <span className="error">{registration.error}</span>
+                ) : null}
 
                 <InputField
+                    className="bg-base-300"
                     label={t("formFields.username")}
                     name="username"
                     required
@@ -210,6 +210,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     label={t("formFields.email")}
                     name="email"
                     required
@@ -218,6 +219,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.password")}
                     name="password"
@@ -227,6 +229,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.repeatPassword")}
                     name="repeatPassword"
@@ -236,6 +239,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     label={t("formFields.firstName")}
                     name="firstName"
                     required
@@ -244,6 +248,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     label={t("formFields.lastName")}
                     name="lastName"
                     required
@@ -252,6 +257,7 @@ export default function RegistrationForm() {
                 />
 
                 <SelectField
+                    className="bg-base-300"
                     label={t("formFields.gender")}
                     name="gender"
                     required
@@ -263,6 +269,7 @@ export default function RegistrationForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="date"
                     label={t("formFields.birthday")}
                     name="birthday"
@@ -270,9 +277,10 @@ export default function RegistrationForm() {
                     ref={birthdayRef}
                     error={formError.birthday}
                 />
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.registration")}
+                </button>
             </fieldset>
-
-            <button type="submit">{t("formSubmit.registration")}</button>
         </form>
     );
 }

@@ -268,7 +268,7 @@ const Switchers = () => {
             <li className="p-relative">
                 <button
                     type="button"
-                    className="btn p-1"
+                    className="btn btn-square p-1"
                     style={{ flexGrow: 0, flexShrink: 0 }}
                     onClick={() => {
                         setDialog("theme", true);
@@ -288,7 +288,7 @@ const Switchers = () => {
                         </span>
                         <button
                             type="button"
-                            className="btn"
+                            className="btn btn-square"
                             onClick={() => setDialog("theme", false)}>
                             X
                         </button>
@@ -332,7 +332,7 @@ const Switchers = () => {
             <li className="p-relative">
                 <button
                     type="button"
-                    className="btn p-1"
+                    className="btn btn-square p-1"
                     style={{ flexGrow: 0, flexShrink: 0 }}
                     onClick={() => {
                         getSupportedLanguages().then((languages) => {
@@ -357,7 +357,7 @@ const Switchers = () => {
                         </span>
                         <button
                             type="button"
-                            className="btn"
+                            className="btn btn-square"
                             onClick={() => setDialog("lang", false)}>
                             X
                         </button>
@@ -387,10 +387,7 @@ const Navbar = ({ routes, className, ...props }: NavbarProps) => {
     const filtered = routes.filter((route) => typeof route !== "undefined");
 
     return (
-        <nav
-            className={cls(className, "d-grid", "grid-template-columns", "gap-1")}
-            style={{ "--grid-template-columns": "1fr auto" }}
-            {...props}>
+        <nav className={cls("d-grid gap-1", className)} {...props}>
             <menu
                 className="d-flex flex-wrap gap-1 reset-list flex-direction-row"
                 style={{ justifyContent: "space-evenly" }}>
@@ -402,8 +399,6 @@ const Navbar = ({ routes, className, ...props }: NavbarProps) => {
                     ),
                 )}
                 <Switchers />
-                {/* <ThemeSwitcher />
-                <LanguageSwitcher /> */}
             </menu>
         </nav>
     );

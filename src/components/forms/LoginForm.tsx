@@ -7,15 +7,15 @@ import { validatePassword } from "~/redux/features/user/user-api";
 import { loginUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
+import InputField from "./InputField";
 
 type FormErrors = {
     username: string | null;
     password: string | null;
 };
 
-export default function LoginForm() {
+export default function LoginForm({ onLogin }: { onLogin?: () => void }) {
     const { t } = useTranslation();
 
     const user = useAppSelector(selectUser);
@@ -39,9 +39,13 @@ export default function LoginForm() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if (user.status === "loggedIn") {
-            navigate(Frontend.Entries.List);
+        if (user.status !== "loggedIn") return;
+        if (typeof onLogin === "function") {
+            onLogin();
+            return;
         }
+
+        navigate(Frontend.Entries.List);
     }, [user.status]);
 
     const submitForm = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -85,7 +89,6 @@ export default function LoginForm() {
 
         setLogin({
             ...login,
-            submitting: false,
             error: null,
         });
     };
@@ -93,20 +96,23 @@ export default function LoginForm() {
     return (
         <form
             className={cls(
-                styles.form,
+                "p-relative m-i-auto size-inline-100",
                 styles.spinner,
                 login.submitting ? styles.submitting : undefined,
             )}
             onSubmit={submitForm}>
-            <fieldset className={styles.fieldset}>
-                <legend>{t("formNames.login")}</legend>
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.login")}
+                </legend>
 
-                {login.error !== null ? <span className={styles.error}>{login.error}</span> : null}
+                {login.error !== null ? <span className="error">{login.error}</span> : null}
                 {typeof user.error?.text === "string" ? (
-                    <span className={styles.error}>{t(`errorCodes.${user.error.text}`)}</span>
+                    <span className="error">{t(`errorCodes.${user.error.text}`)}</span>
                 ) : null}
 
                 <InputField
+                    className="bg-base-300"
                     label={t("formFields.username")}
                     name="username"
                     required
@@ -115,6 +121,7 @@ export default function LoginForm() {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.password")}
                     name="password"
@@ -129,9 +136,11 @@ export default function LoginForm() {
                     name="rememberMe"
                     ref={rememberMeRef}
                 />
-            </fieldset>
 
-            <button type="submit">{t("formSubmit.login")}</button>
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.login")}
+                </button>
+            </fieldset>
         </form>
     );
 }

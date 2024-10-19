@@ -153,17 +153,20 @@ export default function UpdateUserForm(props: {
     return (
         <form
             className={cls(
-                styles.form,
+                "p-relative m-i-auto size-inline-100",
                 styles.spinner,
                 state.submitting ? styles.submitting : undefined,
             )}
             onSubmit={submitForm}>
-            <fieldset>
-                <legend>{t("formNames.updateUserData")}</legend>
-                {state.error !== null ? <span className={styles.error}>{state.error}</span> : null}
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.updateUserData")}
+                </legend>
+                {state.error !== null ? <span className="error">{state.error}</span> : null}
 
                 <Columns>
                     <InputField
+                        className="bg-base-300"
                         label={t("formFields.firstName")}
                         name="firstName"
                         required
@@ -173,6 +176,7 @@ export default function UpdateUserForm(props: {
                     />
 
                     <InputField
+                        className="bg-base-300"
                         label={t("formFields.lastName")}
                         name="lastName"
                         required
@@ -183,6 +187,7 @@ export default function UpdateUserForm(props: {
                 </Columns>
 
                 <SelectField
+                    className="bg-base-300"
                     label={t("formFields.gender")}
                     name="gender"
                     required
@@ -195,6 +200,7 @@ export default function UpdateUserForm(props: {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.password")}
                     name="password"
@@ -203,15 +209,18 @@ export default function UpdateUserForm(props: {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.repeatPassword")}
                     name="repeatPassword"
                     ref={repeatPasswordRef}
                     error={formError.repeatPassword}
                 />
-            </fieldset>
 
-            <button type="submit">{t("formSubmit.updateUserData")}</button>
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.updateUserData")}
+                </button>
+            </fieldset>
         </form>
     );
 }

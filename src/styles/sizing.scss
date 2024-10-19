@@ -24,4 +24,16 @@ $sizes: (
     .size-inline-#{$name} {
         inline-size: #{$value};
     }
+
+    @each $type in "min", "max" {
+        .#{$type}-size-#{$name},
+        .#{$type}-size-block-#{$name} {
+            #{$type}-block-size: #{$value};
+        }
+
+        .#{$type}-size-#{$name},
+        .#{$type}-size-inline-#{$name} {
+            #{$type}-inline-size: #{$value};
+        }
+    }
 }

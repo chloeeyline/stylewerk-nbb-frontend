@@ -1,0 +1,31 @@
+.responsiveSidebar {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+
+    > * {
+        grid-column: 1 / 1;
+        grid-row: 1 / 1;
+    }
+
+    &:not(.showSidebar) > *:first-child {
+        display: none;
+    }
+
+    &.showSidebar > *:last-child {
+        display: none;
+    }
+
+    @media (min-width: 35rem) {
+        grid-template-columns: auto 1fr;
+        grid-template-rows: unset;
+
+        > * {
+            grid-column: unset;
+            grid-row: unset;
+        }
+
+        &.showSidebar > *:last-child {
+            display: inherit;
+        }
+    }
+}

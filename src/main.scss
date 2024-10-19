@@ -3,6 +3,8 @@
 @use "./styles/themes/dark";
 @use "./styles/themes/light";
 @use "./styles/base-styles.scss";
+@use "./styles/forms";
+@use "./styles/DivLayout";
 @use "./styles/colors";
 @use "./styles/buttons";
 @use "./styles/sizing";
@@ -10,4 +12,4 @@
 @use "./styles/shadows";
 @use "./styles/rounded";
 @use "./styles/position";
-@use "./styles/DivLayout";
+@use "./styles/helpers.scss";

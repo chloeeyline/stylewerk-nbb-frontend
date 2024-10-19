@@ -1,13 +1,8 @@
 import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
-import {
-    addTemplateRow,
-    selectEditor,
-    setTemplate,
-    updateEditor,
-} from "~/redux/features/editor/editor-slice";
+import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
-import { useAppSelector, useAppDispatch } from "~/redux/hooks";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 const TemplateSettings = () => {
     const editor = useAppSelector(selectEditor);
@@ -28,8 +23,8 @@ const TemplateSettings = () => {
     }
 
     return (
-        <fieldset className="lrow">
-            <legend className="d-flex gap-2">
+        <fieldset className="fieldset d-flex flex-wrap gap-1">
+            <legend className="legend d-flex gap-0 rounded-2">
                 <button
                     type="button"
                     className="btn btn-primary p-0"
@@ -57,17 +52,16 @@ const TemplateSettings = () => {
                     }}>
                     {t("common.delete")}
                 </button>
-                <button
+                {/* <button
                     type="button"
                     className="btn btn-primary p-0"
                     onClick={() => dispatch(addTemplateRow())}>
                     neue Zelle hinzufügen
-                </button>
+                </button> */}
             </legend>
             <InputField
                 label={t("common.name")}
-                name={"name"}
-                useNameAsIs={true}
+                name="name"
                 type="text"
                 maxLength={100}
                 value={editor.data.template.name ?? ""}
@@ -75,17 +69,16 @@ const TemplateSettings = () => {
             />
             <InputField
                 label={t("formFields.description")}
-                name={"description"}
-                useNameAsIs={true}
+                name="description"
                 type="text"
                 maxLength={100}
                 value={editor.data.template.description ?? ""}
                 onChange={dispatchGeneral}
             />
             <InputField
+                className="input"
                 label={t("formFields.tags")}
-                name={"tags"}
-                useNameAsIs={true}
+                name="tags"
                 type="text"
                 maxLength={100}
                 value={editor.data.template.tags ?? ""}

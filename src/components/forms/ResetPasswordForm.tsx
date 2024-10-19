@@ -73,22 +73,30 @@ function RequestReset() {
     return (
         <form
             className={cls(
-                styles.form,
+                "p-relative m-i-auto size-inline-100",
                 styles.spinner,
                 request.submitting ? styles.submitting : undefined,
             )}
             onSubmit={submitResetRequest}>
-            <fieldset className={styles.fieldset}>
-                <legend>{t("formNames.requestPasswordReset")}</legend>
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.requestPasswordReset")}
+                </legend>
 
-                {request.error !== null ? (
-                    <span className={styles.error}>{request.error}</span>
-                ) : null}
+                {request.error !== null ? <span className="error">{request.error}</span> : null}
 
-                <InputField label={t("formFields.email")} name="email" required ref={emailRef} />
+                <InputField
+                    className="bg-base-300"
+                    label={t("formFields.email")}
+                    name="email"
+                    required
+                    ref={emailRef}
+                />
+
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.requestPasswordReset")}
+                </button>
             </fieldset>
-
-            <button type="submit">{t("formSubmit.requestPasswordReset")}</button>
         </form>
     );
 }
@@ -180,17 +188,20 @@ function ResetPassword({ token }: { token: string }) {
     return (
         <form
             className={cls(
-                styles.form,
+                "p-relative m-i-auto size-inline-100",
                 styles.spinner,
                 reset.submitting ? styles.submitting : undefined,
             )}
             onSubmit={submitReset}>
-            <fieldset className={styles.fieldset}>
-                <legend>{t("formNames.passwordReset")}</legend>
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.passwordReset")}
+                </legend>
 
-                {reset.error !== null ? <span className={styles.error}>{reset.error}</span> : null}
+                {reset.error !== null ? <span className="error">{reset.error}</span> : null}
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.password")}
                     name="password"
@@ -199,15 +210,18 @@ function ResetPassword({ token }: { token: string }) {
                 />
 
                 <InputField
+                    className="bg-base-300"
                     type="password"
                     label={t("formFields.repeatPassword")}
                     name="repeatPassword"
                     required
                     ref={repeatPasswordRef}
                 />
-            </fieldset>
 
-            <button type="submit">{t("formSubmit.passwordReset")}</button>
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.passwordReset")}
+                </button>
+            </fieldset>
         </form>
     );
 }

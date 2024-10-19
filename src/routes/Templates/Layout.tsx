@@ -2,15 +2,17 @@ import type React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
+import Equalizer from "~/components/Icon/Equalizer";
+import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
+import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { DEFAULT_UUID } from "~/constants/general";
 import RouteParams from "~/constants/route-params";
 import Routes from "~/constants/routes";
-import { selectEditor } from "~/redux/features/editor/editor-slice";
 import {
-    copyTemplates,
     listTemplates,
     selectTemplate,
     setFilter,
@@ -21,6 +23,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
 const TemplatesList = () => {
+    const { t } = useTranslation();
     const template = useAppSelector(selectTemplate);
     const dispatch = useAppDispatch();
 
@@ -29,61 +32,75 @@ const TemplatesList = () => {
     }, []);
 
     return (
-        <>
-            <fieldset className={template.hideList ? "hidden" : undefined}>
-                <legend>Liste</legend>
-                <ScrollContainer direction="vertical" className={"p-1"}>
-                    {template.items &&
-                        template.items.length > 0 &&
-                        template.items?.map((item) => (
-                            <NavLink
-                                to={Routes.Templates.View.replace(
-                                    RouteParams.TemplateId,
-                                    item.id,
-                                ).replace(RouteParams.IsNew, "false")}
-                                key={item.id}
-                                className="lcontainer m-be-1">
-                                <div className="lrow">
-                                    {item.name && <div className="lcell">{item.name}</div>}
-                                    {item.username && (
-                                        <div className="lcell" style={{ textAlign: "right" }}>
-                                            {item.username}
-                                        </div>
-                                    )}
+        <fieldset
+            className="fieldset grid-template-rows gap-1 size-block-100"
+            style={{ "--grid-template-rows": template.hideFilters ? "auto 1fr" : "auto auto 1fr" }}>
+            <legend className="legend">{t("common.list")}</legend>
+            <div
+                className="d-grid grid-template-columns gap-1"
+                style={{ "--grid-template-columns": "1fr 1fr" }}>
+                <button type="button" className="btn p-1" onClick={() => dispatch(listTemplates())}>
+                    <Refresh className="icon-inline" />
+                </button>
+                <button
+                    type="button"
+                    className={cls("btn p-1", template.hideFilters !== true ? "active" : undefined)}
+                    onClick={() => dispatch(setHideFilters())}>
+                    <Equalizer className="icon-inline" />
+                </button>
+            </div>
+            {template.hideFilters !== true ? <TemplateFilters /> : null}
+            <ScrollContainer direction="vertical" className="">
+                <div className="d-grid gap-1">
+                    {(template.items ?? []).map(({ id, name, username, description, tags }) => (
+                        <NavLink
+                            className="d-grid gap-0 no-link rounded-1 bg-base-300 p-1"
+                            key={id}
+                            to={Routes.Templates.View.replace(RouteParams.TemplateId, id).replace(
+                                RouteParams.IsNew,
+                                "false",
+                            )}>
+                            <div
+                                className="d-flex"
+                                style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+                                <span className="no-line-height">{name}</span>
+                                <span className="no-line-height fs-1">{username}</span>
+                            </div>
+                            {description !== null ? (
+                                <p
+                                    className="fs-2 no-line-height"
+                                    style={{
+                                        maxInlineSize: "15ch",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                        overflow: "hidden",
+                                    }}>
+                                    {description}
+                                </p>
+                            ) : null}
+                            {tags !== null && tags.trim().length > 0 ? (
+                                <div className="d-flex gap-0">
+                                    {tags.split(",").map((tag) => (
+                                        <span
+                                            key={tag}
+                                            className="p-0 fs-1 rounded-0 bg-accent no-line-height">
+                                            #{tag}
+                                        </span>
+                                    ))}
                                 </div>
-                                {item.description && (
-                                    <div className="lrow">
-                                        <div className="lcell">{item.description}</div>
-                                    </div>
-                                )}
-                                {item.tags && (
-                                    <div className="lrow">
-                                        {item.tags.split(",").map((tag) => (
-                                            <div key={tag} className="lcell tag">
-                                                {tag}
-                                            </div>
-                                        ))}
-                                    </div>
-                                )}
-                            </NavLink>
-                        ))}
-                </ScrollContainer>
-            </fieldset>
-            <div className={!template.hideList ? "hidden" : undefined}></div>
-        </>
+                            ) : null}
+                        </NavLink>
+                    ))}
+                </div>
+            </ScrollContainer>
+        </fieldset>
     );
 };
 
-export default function TemplatesLayout() {
-    const template = useAppSelector(selectTemplate);
-    const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+const TemplateFilters = () => {
     const { t } = useTranslation();
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (template.items && template.items.length == 0) dispatch(listTemplates());
-    }, []);
+    const template = useAppSelector(selectTemplate);
+    const dispatch = useAppDispatch();
 
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
@@ -104,138 +121,97 @@ export default function TemplatesLayout() {
     };
 
     return (
-        <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-            <form>
-                <fieldset className="d-flex gap-1">
-                    <legend>Actions</legend>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => dispatch(listTemplates())}>
-                        Refresh
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            dispatch(setHideList());
-                        }}>
-                        {template.hideList ? "Liste anzeigen" : "Liste verstecken"}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            dispatch(setHideFilters());
-                        }}>
-                        {template.hideFilters ? "Filter anzeigen" : "Filter verstecken"}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() =>
-                            navigate(
-                                Routes.Templates.Edit.replace(
-                                    RouteParams.TemplateId,
-                                    DEFAULT_UUID,
-                                ).replace(RouteParams.IsNew, "true"),
-                            )
-                        }>
-                        Create new Template
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            typeof editor.data?.templateID === "string" ? undefined : "hidden",
-                        )}
-                        onClick={() => {
-                            if (typeof editor.data?.templateID !== "string") return;
-                            dispatch(copyTemplates({ id: editor.data.templateID }));
-                        }}>
-                        {t("common.copy")}
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            typeof editor.data?.templateID === "string" ? undefined : "hidden",
-                        )}
-                        onClick={() =>
-                            navigate(
-                                Routes.Templates.Edit.replace(
-                                    RouteParams.TemplateId,
-                                    editor.data?.templateID ?? "",
-                                ).replace(RouteParams.IsNew, "false"),
-                            )
-                        }>
-                        {t("common.edit")}
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            typeof editor.data?.templateID === "string" ? undefined : "hidden",
-                        )}
-                        onClick={() =>
-                            navigate(
-                                Routes.Entries.Edit.replace(
-                                    RouteParams.EntryId,
-                                    editor.data?.templateID ?? "",
-                                ).replace(RouteParams.IsNew, "true"),
-                            )
-                        }>
-                        Eintrag aus Vorlage erstellen
-                    </button>
-                </fieldset>
-                <fieldset className={template.hideFilters ? "hidden" : undefined}>
-                    <legend>Filter</legend>
-                    <InputField
-                        label={t("common.name")}
-                        name="name"
-                        useNameAsIs={true}
-                        type="text"
-                        value={template.filter.name ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.description")}
-                        name="description"
-                        useNameAsIs={true}
-                        type="text"
-                        value={template.filter.description ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.tags")}
-                        name="tags"
-                        useNameAsIs={true}
-                        type="text"
-                        value={template.filter.tags ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.username")}
-                        name="username"
-                        useNameAsIs={true}
-                        type="text"
-                        value={template.filter.username ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.public")}
-                        name="includePublic"
-                        useNameAsIs={true}
-                        type="checkbox"
-                        checked={template.filter.includePublic === "true"}
-                        onChange={dispatchFilterCheckbox}
-                    />
-                </fieldset>
-            </form>
-            <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
+        <fieldset className="fieldset bg-base-300">
+            <legend className="legend bg-base-100">{t("common.filters")}</legend>
+            <Columns>
+                <InputField
+                    type="text"
+                    label={t("common.name")}
+                    name="name"
+                    className="input bg-base-200"
+                    value={template.filter.name ?? ""}
+                    onChange={dispatchFilter}
+                />
+                <InputField
+                    type="text"
+                    label={t("formFields.description")}
+                    name="description"
+                    className="input bg-base-200"
+                    value={template.filter.description ?? ""}
+                    onChange={dispatchFilter}
+                />
+            </Columns>
+            <Columns>
+                <InputField
+                    type="text"
+                    label={t("formFields.tags")}
+                    name="tags"
+                    className="input bg-base-200"
+                    value={template.filter.tags ?? ""}
+                    onChange={dispatchFilter}
+                />
+                <InputField
+                    type="text"
+                    label={t("formFields.username")}
+                    name="username"
+                    className="input bg-base-200"
+                    value={template.filter.username ?? ""}
+                    onChange={dispatchFilter}
+                />
+            </Columns>
+            <InputField
+                type="checkbox"
+                label={t("formFields.public")}
+                name="includePublic"
+                className="input"
+                checked={template.filter.includePublic === "true"}
+                onChange={dispatchFilterCheckbox}
+            />
+        </fieldset>
+    );
+};
+
+export default function TemplatesLayout() {
+    const template = useAppSelector(selectTemplate);
+    const dispatch = useAppDispatch();
+    const { t } = useTranslation();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        dispatch(listTemplates());
+    }, []);
+
+    return (
+        <Grid layout="header" className="gap-0 size-block-100">
+            <div className="fieldset p-1 d-flex flex-wrap gap-1">
+                <button
+                    type="button"
+                    className="btn p-0"
+                    onClick={() => {
+                        dispatch(setHideList());
+                    }}>
+                    {template.hideList ? t("common.showList") : t("common.hideList")}
+                </button>
+                <button
+                    type="button"
+                    className="btn p-0"
+                    onClick={() =>
+                        navigate(
+                            Routes.Templates.Edit.replace(
+                                RouteParams.TemplateId,
+                                DEFAULT_UUID,
+                            ).replace(RouteParams.IsNew, "true"),
+                        )
+                    }>
+                    {t("common.createNewTemplate")}
+                </button>
+            </div>
+            <ResponsiveSidebar
+                showSidebar={template.hideList !== true}
+                className={cls("size-block-100", template.hideList ? "gap-none" : "gap-2")}>
                 <TemplatesList />
                 <Outlet />
-            </Grid>
+            </ResponsiveSidebar>
         </Grid>
     );
 }

@@ -19,11 +19,13 @@ const RootNavBar = () => {
     const dispatch = useAppDispatch();
 
     const routes: (NavbarRoute | undefined)[] = [
-        {
-            type: "link",
-            url: Frontend.Home,
-            name: t("nav.homepage"),
-        },
+        loggedIn === false
+            ? {
+                  type: "link",
+                  url: Frontend.Home,
+                  name: t("nav.homepage"),
+              }
+            : undefined,
         loggedIn
             ? {
                   type: "link",
@@ -87,7 +89,7 @@ export default function RootLayout() {
                 <div>
                     <RootNavBar />
                 </div>
-                <ScrollContainer direction="vertical" className="p-i-2">
+                <ScrollContainer direction="vertical">
                     <Outlet />
                 </ScrollContainer>
             </Grid>

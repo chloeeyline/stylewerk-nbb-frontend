@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
+import TextareaField from "~/components/forms/TextareaField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
@@ -36,28 +37,26 @@ export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
     }
 
     return (
-        <>
-            <textarea
-                required={cell.template.isRequired}
-                disabled={isReadOnly}
-                name="text"
-                placeholder={cell.template.text ?? ""}
-                value={data.data.value ?? metadata.data.value ?? ""}
-                onChange={(e) => {
-                    if (editor.isPreview) return;
-                    if (e.target.value.length === 0) {
-                        dispatch(setEntryCell(null));
-                        return;
-                    }
-                    var temp = {
-                        ...data.data,
-                        value: e.target.value,
-                    };
-                    dispatch(setEntryCell(JSON.stringify(temp)));
-                }}
-            />
-            <label>{cell.template.text ?? ""}</label>
-        </>
+        <TextareaField
+            label="Text"
+            name="text"
+            required={cell.template.isRequired}
+            disabled={isReadOnly}
+            placeholder={cell.template.text ?? ""}
+            value={data.data.value ?? metadata.data.value ?? ""}
+            onChange={(e) => {
+                if (editor.isPreview) return;
+                if (e.target.value.length === 0) {
+                    dispatch(setEntryCell(null));
+                    return;
+                }
+                const temp = {
+                    ...data.data,
+                    value: e.target.value,
+                };
+                dispatch(setEntryCell(JSON.stringify(temp)));
+            }}
+        />
     );
 };
 

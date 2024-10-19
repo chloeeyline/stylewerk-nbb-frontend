@@ -14,74 +14,6 @@ h6 {
     color: var(--clr-header);
 }
 
-@each $type in "none", "block", "inline", "flex", "grid", "contents" {
-    dialog.d-#{$type} {
-        display: none;
-    }
-
-    .d-#{$type},
-    dialog[open].d-#{$type} {
-        display: #{$type};
-    }
-}
-
-.flex {
-    &-wrap {
-        flex-wrap: wrap;
-
-        &-reverse {
-            flex-wrap: wrap-reverse;
-        }
-
-        &-none {
-            flex-wrap: nowrap;
-        }
-    }
-
-    &-direction {
-        &-row {
-            flex-direction: row;
-
-            &-reverse {
-                flex-direction: row-reverse;
-            }
-        }
-
-        &-col {
-            flex-direction: column;
-
-            &-reverse {
-                flex-direction: column-reverse;
-            }
-        }
-    }
-}
-
-.grid {
-    &-template {
-        &-columns {
-            grid-template-columns: var(--grid-template-columns);
-        }
-
-        &-rows {
-            grid-template-rows: var(--grid-template-rows);
-        }
-    }
-}
-
-.no-border {
-    border: none;
-}
-
-.reset-list {
-    list-style: none;
-    padding: 0;
-}
-
-.no-line-height {
-    line-height: 1;
-}
-
 .prose {
     h1,
     h2,
@@ -95,8 +27,4 @@ h6 {
     p {
         margin-block-end: 1rem;
     }
-}
-
-.font-mono {
-    font-family: monospace;
 }

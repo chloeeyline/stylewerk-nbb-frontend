@@ -10,8 +10,9 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Cross from "../Icon/Cross";
 import Move from "../Icon/Move";
 import InputHelper from "./input-helper/InputHelper";
+import cls from "~/utils/class-name-helper";
 
-const EditorCell = ({
+export default function EditorCell({
     cell,
     entryRowID,
     templateRowID,
@@ -19,24 +20,13 @@ const EditorCell = ({
     cell: EntryCell;
     entryRowID: string;
     templateRowID: string;
-}) => {
+}) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: cell.id,
     });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-        backgroundColor:
-            editor.isPreview === false &&
-            editor.isTemplate === true &&
-            cell.templateID == editor.selectedTemplateCell
-                ? "blue"
-                : undefined,
-    };
 
     const select = () => {
         dispatch(
@@ -51,34 +41,49 @@ const EditorCell = ({
 
     return (
         <div
-            onClick={select}
-            style={style}
-            {...attributes}
             ref={setNodeRef}
-            className="lcell"
-            title={cell.template?.description ?? ""}>
-            <div className={editor.isPreview ? "hidden" : undefined}>
-                <button type="button" className="btn btn-accent p-0" {...listeners}>
-                    <Move />
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-accent p-0"
-                    onClick={() => {
-                        if (typeof editor.data?.templateID !== "string") return;
-                        dispatch(
-                            removeTemplateCell({
-                                templateRow: templateRowID,
-                                templateCell: cell.templateID,
-                            }),
-                        );
-                    }}>
-                    <Cross />
-                </button>
-            </div>
+            className={cls(
+                "d-grid grid-template-columns gap-0 p-1 rounded-2",
+                editor.isPreview === false &&
+                    editor.isTemplate === true &&
+                    cell.templateID === editor.selectedTemplateCell
+                    ? "bg-info-active"
+                    : "bg-base-200",
+            )}
+            title={cell.template?.description ?? ""}
+            onClick={select}
+            style={{
+                "flex": 1,
+                "--grid-template-columns": "1fr auto",
+                "transform": CSS.Transform.toString(transform),
+                transition,
+            }}
+            {...attributes}>
             <InputHelper cell={cell} />
+            {editor.isPreview !== true ? (
+                <div
+                    className="d-flex flex-direction-column gap-0"
+                    style={{ justifyContent: "flex-end" }}>
+                    <button
+                        type="button"
+                        className="btn btn-error btn-square p-0"
+                        onClick={() => {
+                            if (typeof editor.data?.templateID !== "string") return;
+                            dispatch(
+                                removeTemplateCell({
+                                    templateRow: templateRowID,
+                                    templateCell: cell.templateID,
+                                }),
+                            );
+                        }}>
+                        <Cross className="fill-current-color" />
+                    </button>
+
+                    <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+                        <Move className="fill-current-color" />
+                    </button>
+                </div>
+            ) : null}
         </div>
     );
-};
-
-export default EditorCell;
+}

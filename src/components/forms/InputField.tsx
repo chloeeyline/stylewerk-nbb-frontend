@@ -1,6 +1,6 @@
 import type React from "react";
 import { forwardRef, useId } from "react";
-import styles from "./form-fields.module.scss";
+import cls from "~/utils/class-name-helper";
 
 export default forwardRef(function InputField(
     {
@@ -8,6 +8,7 @@ export default forwardRef(function InputField(
         label,
         error,
         useNameAsIs,
+        className,
         ...props
     }: React.InputHTMLAttributes<HTMLInputElement> & {
         name: string;
@@ -20,15 +21,37 @@ export default forwardRef(function InputField(
     const id = useId();
 
     return (
-        <div className={`${styles.inputWrapper} ${styles[props?.type ?? ""]}`}>
-            <label htmlFor={useNameAsIs ? name : `${name}-${id}`}>{label}</label>
-            <input
-                ref={ref}
-                name={useNameAsIs ? name : `${name}-${id}`}
-                placeholder={label}
-                {...props}
-            />
-            {error !== null ? <span>{error}</span> : null}
+        <div className={props.type === "checkbox" ? "d-flex gap-0" : "d-grid"}>
+            <label htmlFor={id}>{label}</label>
+            {props.type === "color" ? (
+                <div
+                    className="d-grid grid-template-columns gap-0"
+                    style={{ "--grid-template-columns": "auto 1fr", "alignItems": "center" }}>
+                    <input
+                        ref={ref}
+                        id={id}
+                        name={name}
+                        placeholder={label}
+                        className={cls("input", className, "p-0")}
+                        {...props}
+                    />
+                    <span className="font-mono">({props.value})</span>
+                </div>
+            ) : (
+                <input
+                    ref={ref}
+                    id={id}
+                    name={name}
+                    placeholder={label}
+                    className={cls(
+                        "input",
+                        className,
+                        props.type === "checkbox" ? "d-inline size-inline-auto" : undefined,
+                    )}
+                    {...props}
+                />
+            )}
+            {(error ?? null) !== null ? <span className="error">{error}</span> : null}
         </div>
     );
 });

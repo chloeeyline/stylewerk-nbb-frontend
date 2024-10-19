@@ -8,10 +8,7 @@ export default {
     AdditionSign: lazy(() => import("./AdditionSign")),
     AirplaneSilhouette: lazy(() => import("./AirplaneSilhouette")),
     AlarmClock: lazy(() => import("./AlarmClock")),
-    ArrowAnglePointingToRight: lazy(() => import("./ArrowAnglePointingToRight")),
-    ArrowsCoupleCounterclockwiseRotatingSymbol: lazy(
-        () => import("./ArrowsCoupleCounterclockwiseRotatingSymbol"),
-    ),
+    ArrowRight: lazy(() => import("./ArrowRight")),
     AscendantArrow: lazy(() => import("./AscendantArrow")),
     AttachPaperclipSymbol: lazy(() => import("./AttachPaperclipSymbol")),
     AuricularsSolidToolSymbol: lazy(() => import("./AuricularsSolidToolSymbol")),
@@ -236,6 +233,7 @@ export default {
     PrintingButtonInterfaceSymbol: lazy(() => import("./PrintingButtonInterfaceSymbol")),
     PrizeBadge: lazy(() => import("./PrizeBadge")),
     RadioBlackToolSymbol: lazy(() => import("./RadioBlackToolSymbol")),
+    Refresh: lazy(() => import("./Refresh")),
     RewindMultimediaButtonSymbolOfTwoBlackArrows: lazy(
         () => import("./RewindMultimediaButtonSymbolOfTwoBlackArrows"),
     ),

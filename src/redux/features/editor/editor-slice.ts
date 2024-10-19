@@ -374,7 +374,7 @@ const editorSlice = createSlice({
         ) => {
             if (state.data && state.data.items.length > 1) {
                 let stop = false;
-                const tempRoowList = state.data.items.map((row) => {
+                const tempRowList = state.data.items.map((row) => {
                     if (row.templateID === action.payload.templateRow && row.items.length > 0) {
                         if (row.items.length === 1) stop = true;
                         const tempCellList = row.items.filter((cell) => {
@@ -389,7 +389,7 @@ const editorSlice = createSlice({
                 });
 
                 if (stop) return;
-                state.data.items = tempRoowList;
+                state.data.items = tempRowList;
                 state.selectedTemplateRow = "";
                 state.selectedTemplateCell = "";
                 state.selectedEntryRow = "";

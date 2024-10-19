@@ -77,7 +77,18 @@
             loaded: ["Benutzerdaten geladen", "User data loaded"],
             error: ["Fehler beim Laden der Benutzerdaten!", "Error loading the user data!"],
         },
+        editor: {
+            addNewRow: ["Neue Zeile einfügen", "Add new row"]
+        },
         common: {
+            createNewTemplate: ["Neue Vorlage erstellen", "Create new template"],
+            createNewEntryFromTemplate: ["Neuen Eintrag aus Vorlage erstellen", "Create new entry from template"],
+            list: ["Liste", "list"],
+            hideList: ["Liste verstecken", "Hide list"],
+            showList: ["Liste anzeigen", "Show list"],
+            filters: ["Filter", "Filters"],
+            actions: ["Aktionen", "Actions"],
+            editor: ["Editor", "editor"],
             back: ["Zurück", "Back"],
             copy: ["Kopieren", "Copy"],
             edit: ["Bearbeiten", "Edit"],

@@ -7,6 +7,7 @@ import { useAppDispatch } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
+import TextareaField from "./TextareaField";
 
 export default function UpdateEmailForm({ email }: { email: string }) {
     const { t } = useTranslation();
@@ -108,18 +109,19 @@ export default function UpdateEmailForm({ email }: { email: string }) {
     return (
         <form
             className={cls(
-                styles.form,
+                "p-relative m-i-auto size-inline-100",
                 styles.spinner,
                 state.submitting ? styles.submitting : undefined,
             )}
             onSubmit={submitForm}>
-            <fieldset>
-                <legend>{t("formNames.updateEmail")}</legend>
-
-                {state.submitting ? <h2>{t("formStatus.update")}...</h2> : null}
-                {state.error !== null ? <h2>{state.error}</h2> : null}
+            <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
+                <legend className="bg-base-100 rounded-1 p-1 no-line-height">
+                    {t("formNames.updateEmail")}
+                </legend>
+                {state.error !== null ? <span className="error">{state.error}</span> : null}
 
                 <InputField
+                    className="rounded-1 bg-base-300 no-border p-1"
                     label={t("formFields.email")}
                     name="email"
                     required
@@ -128,12 +130,15 @@ export default function UpdateEmailForm({ email }: { email: string }) {
                     error={state.error}
                 />
 
+                <TextareaField label="Field" name="field" />
+
                 {state.askForCode === true ? (
                     <InputField label="Token" name="token" ref={tokenRef} />
                 ) : null}
+                <button type="submit" className="btn btn-primary p-1 m-bs-0">
+                    {t("formSubmit.updateEmail")}
+                </button>
             </fieldset>
-
-            <button type="submit">{t("formSubmit.updateEmail")}</button>
         </form>
     );
 }
