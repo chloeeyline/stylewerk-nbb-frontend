@@ -10,10 +10,10 @@ import {
 import { restrictToHorizontalAxis, restrictToParentElement } from "@dnd-kit/modifiers";
 import {
     arrayMove,
+    horizontalListSortingStrategy,
     SortableContext,
     sortableKeyboardCoordinates,
     useSortable,
-    verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { EntryRow } from "~/redux/features/editor/editor-schemas";
@@ -29,7 +29,7 @@ import Cross from "../Icon/Cross";
 import Move from "../Icon/Move";
 import EditorCell from "./EditorCell";
 
-const EditorRow = ({ row }: { row: EntryRow }) => {
+export default function EditorRow({ row }: { row: EntryRow }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
@@ -43,11 +43,6 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: row.id,
     });
-
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
 
     const dragFolder = (e: DragEndEvent) => {
         const { active, over } = e;
@@ -79,48 +74,65 @@ const EditorRow = ({ row }: { row: EntryRow }) => {
     };
 
     return (
-        <div className="lrow" {...attributes} ref={setNodeRef} style={style}>
-            <div className={editor.isPreview ? "hidden" : undefined}>
-                <button type="button" className="btn btn-accent p-0" {...listeners}>
-                    <Move />
-                </button>
+        <div
+            ref={setNodeRef}
+            className="d-grid grid-template-columns gap-0 p-1 bg-base-300 rounded-2"
+            style={{
+                "--grid-template-columns": "auto 1fr",
+                "transform": CSS.Transform.toString(transform),
+                transition,
+            }}
+            {...attributes}>
+            <div
+                className="d-flex flex-direction-column gap-2"
+                style={{ justifyContent: "space-between" }}>
                 <button
                     type="button"
-                    className="btn btn-accent p-0"
-                    onClick={() => {
-                        if (typeof editor.data?.templateID !== "string") return;
-                        dispatch(addTemplateCell(row.templateID));
-                    }}>
-                    <AdditionSign />
-                </button>
-                <button
-                    type="button"
-                    className="btn btn-accent p-0"
+                    className="btn btn-error p-0"
                     onClick={() => {
                         if (typeof editor.data?.templateID !== "string") return;
                         dispatch(removeTemplateRow(row.templateID));
                     }}>
-                    <Cross />
+                    <Cross className="fill-current-color" />
+                </button>
+
+                <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+                    <Move className="fill-current-color" />
                 </button>
             </div>
-            <DndContext
-                modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(e) => dragFolder(e)}>
-                <SortableContext items={row.items} strategy={verticalListSortingStrategy}>
-                    {row.items.map((cell) => (
-                        <EditorCell
-                            key={cell.templateID}
-                            cell={cell}
-                            entryRowID={row.id}
-                            templateRowID={row.templateID}
-                        />
-                    ))}
-                </SortableContext>
-            </DndContext>
+            <div
+                className="d-grid grid-template-columns gap-0"
+                style={{ "--grid-template-columns": "1fr auto" }}>
+                <div className="d-flex flex-wrap gap-0">
+                    <DndContext
+                        modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(e) => dragFolder(e)}>
+                        <SortableContext items={row.items} strategy={horizontalListSortingStrategy}>
+                            {row.items.map((cell) => (
+                                <EditorCell
+                                    key={cell.templateID}
+                                    cell={cell}
+                                    entryRowID={row.id}
+                                    templateRowID={row.templateID}
+                                />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
+                </div>
+                <div className="d-grid bg-base-200 rounded-2 p-1" style={{ placeItems: "center" }}>
+                    <button
+                        type="button"
+                        className="btn btn-success btn-square p-0"
+                        onClick={() => {
+                            if (typeof editor.data?.templateID !== "string") return;
+                            dispatch(addTemplateCell(row.templateID));
+                        }}>
+                        <AdditionSign className="fill-current-color" />
+                    </button>
+                </div>
+            </div>
         </div>
     );
-};
-
-export default EditorRow;
+}

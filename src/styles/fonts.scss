@@ -1,3 +1,5 @@
+@use "./props";
+
 /* atkinson-hyperlegible */
 @font-face {
     font-display: swap;
@@ -41,9 +43,19 @@ body {
     font-weight: normal;
 }
 
+.fill-current-color {
+    fill: currentColor;
+}
+
 .icon-inline {
     display: inline;
     block-size: 1em;
     vertical-align: -0.25em;
     fill: currentColor;
+}
+
+@each $spacer-name, $spacer-value in props.$spacing {
+    .fs-#{$spacer-name} {
+        font-size: #{$spacer-value}rem;
+    }
 }

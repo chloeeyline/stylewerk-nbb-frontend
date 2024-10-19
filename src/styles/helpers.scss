@@ -1,6 +1,6 @@
 
 
-@each $type in "none", "block", "inline", "flex", "grid", "contents" {
+@each $type in "none", "block", "inline", "inline-flex", "inline-grid", "flex", "grid", "contents" {
     dialog.d-#{$type} {
         display: none;
     }
@@ -33,7 +33,7 @@
             }
         }
 
-        &-col {
+        &-column {
             flex-direction: column;
 
             &-reverse {

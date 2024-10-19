@@ -1,19 +1,17 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
-import Routes from "#/routes";
 import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import Editor from "~/components/editor/Editor";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { DEFAULT_UUID } from "~/constants/general";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
-import { copyTemplates, selectTemplate } from "~/redux/features/template/template-slice";
-import { useAppSelector, useAppDispatch } from "~/redux/hooks";
-import cls from "~/utils/class-name-helper";
+import { copyTemplates } from "~/redux/features/template/template-slice";
+import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
 export default function TemplateView() {
-    const template = useAppSelector(selectTemplate);
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -21,9 +19,9 @@ export default function TemplateView() {
     const { templateId, isNew } = useParams();
 
     return (
-        <Grid layout="header">
+        <Grid layout="header" className="size-block-100">
             <fieldset className="fieldset">
-                <legend className="legend">Actions</legend>
+                <legend className="legend">{t("common.actions")}</legend>
                 <div className="d-flex gap-0">
                     <button
                         type="button"
@@ -60,7 +58,7 @@ export default function TemplateView() {
                                 ).replace(RouteParams.IsNew, "true"),
                             );
                         }}>
-                        Eintrag aus Vorlage erstellen
+                        {t("common.createNewEntryFromTemplate")}
                     </button>
                 </div>
             </fieldset>

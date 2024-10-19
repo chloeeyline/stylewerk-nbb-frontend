@@ -7,6 +7,7 @@ import { useAppDispatch } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
+import TextareaField from "./TextareaField";
 
 export default function UpdateEmailForm({ email }: { email: string }) {
     const { t } = useTranslation();
@@ -128,6 +129,8 @@ export default function UpdateEmailForm({ email }: { email: string }) {
                     ref={emailRef}
                     error={state.error}
                 />
+
+                <TextareaField label="Field" name="field" />
 
                 {state.askForCode === true ? (
                     <InputField label="Token" name="token" ref={tokenRef} />

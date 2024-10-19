@@ -268,7 +268,7 @@ const Switchers = () => {
             <li className="p-relative">
                 <button
                     type="button"
-                    className="btn p-1"
+                    className="btn btn-square p-1"
                     style={{ flexGrow: 0, flexShrink: 0 }}
                     onClick={() => {
                         setDialog("theme", true);
@@ -288,7 +288,7 @@ const Switchers = () => {
                         </span>
                         <button
                             type="button"
-                            className="btn"
+                            className="btn btn-square"
                             onClick={() => setDialog("theme", false)}>
                             X
                         </button>
@@ -332,7 +332,7 @@ const Switchers = () => {
             <li className="p-relative">
                 <button
                     type="button"
-                    className="btn p-1"
+                    className="btn btn-square p-1"
                     style={{ flexGrow: 0, flexShrink: 0 }}
                     onClick={() => {
                         getSupportedLanguages().then((languages) => {
@@ -357,7 +357,7 @@ const Switchers = () => {
                         </span>
                         <button
                             type="button"
-                            className="btn"
+                            className="btn btn-square"
                             onClick={() => setDialog("lang", false)}>
                             X
                         </button>

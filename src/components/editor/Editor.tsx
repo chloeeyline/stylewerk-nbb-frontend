@@ -16,17 +16,24 @@ import {
 } from "@dnd-kit/sortable";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { getEditor, reset, selectEditor, setRows } from "~/redux/features/editor/editor-slice";
+
+import ScrollContainer from "~/components/layout/ScrollContainer";
+import {
+    addTemplateRow,
+    getEditor,
+    reset,
+    selectEditor,
+    setRows,
+} from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import Grid from "../layout/Grid";
-import ScrollContainer from "../layout/ScrollContainer";
+import cls from "~/utils/class-name-helper";
 import EditorRow from "./EditorRow";
 import EntrySettings from "./toolbar/EntrySettings";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateSettings from "./toolbar/TemplateSettings";
-import cls from "~/utils/class-name-helper";
+import AdditionSign from "../Icon/AdditionSign";
 
-const Editor = ({
+export default function Editor({
     id,
     isTemplate,
     isPreview,
@@ -36,7 +43,7 @@ const Editor = ({
     isTemplate: boolean;
     isPreview: boolean;
     isNew: boolean;
-}) => {
+}) {
     const editor = useAppSelector(selectEditor);
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
@@ -115,10 +122,10 @@ const Editor = ({
                     ) : null}
                 </div>
             ) : null}
-            <fieldset className="fieldset">
-                <legend className="legend">Editor</legend>
+            <fieldset className="fieldset rounded-3">
+                <legend className="legend">{t("common.editor")}</legend>
                 <ScrollContainer direction="both">
-                    <div className="max-size-100">
+                    <div className="d-grid max-size-100 gap-1">
                         <DndContext
                             modifiers={[restrictToVerticalAxis, restrictToParentElement]}
                             sensors={sensors}
@@ -137,11 +144,23 @@ const Editor = ({
                                     )}
                             </SortableContext>
                         </DndContext>
+                        <div
+                            className="d-grid bg-base-300 rounded-2 p-1"
+                            style={{ placeItems: "center" }}>
+                            <button
+                                type="button"
+                                className="btn p-0 no-line-height d-flex gap-1"
+                                style={{ alignItems: "center" }}
+                                onClick={() => dispatch(addTemplateRow())}>
+                                {t("editor.addNewRow")}
+                                <span className="btn btn-square btn-success p-0 no-line-height">
+                                    <AdditionSign className="icon-inline" />
+                                </span>
+                            </button>
+                        </div>
                     </div>
                 </ScrollContainer>
             </fieldset>
         </div>
     );
-};
-
-export default Editor;
+}

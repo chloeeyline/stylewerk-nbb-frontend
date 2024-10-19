@@ -59,24 +59,24 @@ const TemplateCellSettings = () => {
             <fieldset className="lcell">
                 <legend>Zeile</legend>
                 <InputField
-                    label={"CanWrapCells"}
-                    name={"canWrapCells"}
+                    label="CanWrapCells"
+                    name="canWrapCells"
                     useNameAsIs={true}
                     type="checkbox"
                     checked={selectedRowSettings()?.canWrapCells ?? false}
                     onChange={dispatchRowSettings}
                 />
                 <InputField
-                    label={"CanRepeat"}
-                    name={"canRepeat"}
+                    label="CanRepeat"
+                    name="canRepeat"
                     useNameAsIs={true}
                     type="checkbox"
                     checked={selectedRowSettings()?.canRepeat ?? false}
                     onChange={dispatchRowSettings}
                 />
                 <InputField
-                    label={"HideOnNoInput"}
-                    name={"hideOnNoInput"}
+                    label="HideOnNoInput"
+                    name="hideOnNoInput"
                     useNameAsIs={true}
                     type="checkbox"
                     checked={selectedRowSettings()?.hideOnNoInput ?? false}
@@ -88,8 +88,8 @@ const TemplateCellSettings = () => {
                 <div className="lrow">
                     <div>
                         <InputField
-                            label={"HideOnEmpty"}
-                            name={"hideOnEmpty"}
+                            label="HideOnEmpty"
+                            name="hideOnEmpty"
                             useNameAsIs={true}
                             type="checkbox"
                             maxLength={100}
@@ -97,8 +97,8 @@ const TemplateCellSettings = () => {
                             onChange={(e) => dispatchCellSettings(e, e.target.checked)}
                         />
                         <InputField
-                            label={"IsRequired"}
-                            name={"isRequired"}
+                            label="IsRequired"
+                            name="isRequired"
                             useNameAsIs={true}
                             type="checkbox"
                             maxLength={100}
@@ -108,7 +108,7 @@ const TemplateCellSettings = () => {
                     </div>
                     <SelectField
                         name="inputHelper"
-                        label={"InputHelper"}
+                        label="InputHelper"
                         useNameAsIs={true}
                         value={selectedCellSettings()?.template.inputHelper ?? 1}
                         onChange={(e) => dispatchCellSettings(e, e.target.value)}
@@ -123,8 +123,8 @@ const TemplateCellSettings = () => {
                         ]}
                     />
                     <InputField
-                        label={"Text"}
-                        name={"text"}
+                        label="Text"
+                        name="text"
                         useNameAsIs={true}
                         type="text"
                         maxLength={100}
@@ -132,8 +132,8 @@ const TemplateCellSettings = () => {
                         onChange={(e) => dispatchCellSettings(e, e.target.value)}
                     />
                     <InputField
-                        label={"Description"}
-                        name={"description"}
+                        label="Description"
+                        name="description"
                         useNameAsIs={true}
                         type="text"
                         maxLength={100}

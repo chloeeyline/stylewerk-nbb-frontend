@@ -25,7 +25,7 @@ const initialState: TemplateState = {
         maxPage: 0,
     },
     filter: {},
-    hideFilters: false,
+    hideFilters: true,
     hideList: false,
 };
 
