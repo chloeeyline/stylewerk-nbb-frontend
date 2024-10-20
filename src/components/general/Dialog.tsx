@@ -12,13 +12,13 @@ export default function Dialog({
     const dialogRef = useRef<HTMLDialogElement>(null);
     const abortControllerRef = useRef<AbortController>();
 
-    const getAbortController = () => {
-        if (typeof abortControllerRef.current === "undefined") {
-            abortControllerRef.current = new AbortController();
-        }
+    // const getAbortController = () => {
+    //     if (typeof abortControllerRef.current === "undefined") {
+    //         abortControllerRef.current = new AbortController();
+    //     }
 
-        return abortControllerRef.current;
-    };
+    //     return abortControllerRef.current;
+    // };
 
     const openDialog = () => {
         if (!(dialogRef.current instanceof HTMLDialogElement)) return;
@@ -27,7 +27,7 @@ export default function Dialog({
             abortControllerRef.current.abort();
         }
 
-        const abortController = getAbortController();
+        // const abortController = getAbortController();
 
         if (notModal === true) {
             dialogRef.current.show();
