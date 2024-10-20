@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setData, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -74,12 +74,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(
-            setTemplateCell({
-                type: "metaData",
-                value: JSON.stringify(metadata.data),
-            }),
-        );
+        dispatch(setMetadata(JSON.stringify(metadata.data)));
     }, []);
 
     if (metadata.success === false) return null;
@@ -91,24 +86,22 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
             case "max":
             case "step":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: Number(e.target.value),
                         }),
-                    }),
+                    ),
                 );
                 break;
             case "integer":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: e.target.checked,
                         }),
-                    }),
+                    ),
                 );
                 break;
             default:

@@ -1,6 +1,5 @@
 import { useEffect } from "react";
 import { z } from "zod";
-import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
