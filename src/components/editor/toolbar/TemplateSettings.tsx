@@ -15,11 +15,14 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
 
-    const dispatchGeneral = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const dispatchGeneral = (
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+        value: boolean | number | string,
+    ) => {
         dispatch(
             setTemplate({
                 type: e.target.name,
-                value: e.target.value,
+                value: value,
             }),
         );
     };
@@ -79,7 +82,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     name="name"
                     maxLength={100}
                     value={editor.data.template.name ?? ""}
-                    onChange={dispatchGeneral}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
                 />
                 <InputField
                     style={{ minInlineSize: "10ch" }}
@@ -88,7 +91,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     name="tags"
                     maxLength={100}
                     value={editor.data.template.tags ?? ""}
-                    onChange={dispatchGeneral}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
                 />
                 <InputField
                     style={{ minInlineSize: "30ch" }}
@@ -97,7 +100,16 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     name="description"
                     maxLength={100}
                     value={editor.data.template.description ?? ""}
-                    onChange={dispatchGeneral}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
+                />
+                <InputField
+                    label={t("formFields.public")}
+                    name={"isPublic"}
+                    useNameAsIs={true}
+                    type="checkbox"
+                    maxLength={100}
+                    checked={editor.data.template.isPublic}
+                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
                 />
             </InlineScroller>
         </fieldset>
