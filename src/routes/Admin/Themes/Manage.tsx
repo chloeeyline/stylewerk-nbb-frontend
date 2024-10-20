@@ -2,13 +2,14 @@ import type React from "react";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
+
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
 import type { Theme } from "~/schemas/themes";
 import cls from "~/utils/class-name-helper";
 import {

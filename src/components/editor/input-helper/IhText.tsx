@@ -91,10 +91,9 @@ export const IhTextSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="checkbox"
+            label="Standartwert"
+            name="value"
             value={metadata.data.value ?? false}
             onChange={dispatchCellSettings}
         />

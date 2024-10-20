@@ -82,10 +82,9 @@ export const IhColorSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="color"
+            label="Standartwert"
+            name="value"
             value={metadata.data.value ?? ""}
             onChange={dispatchCellSettings}
         />

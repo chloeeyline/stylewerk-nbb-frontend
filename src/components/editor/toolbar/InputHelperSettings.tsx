@@ -1,10 +1,10 @@
-import { EntryCell } from "~/redux/features/editor/editor-schemas";
-import { IhCheckboxSettings } from "../input-helper/IhCheckbox";
-import { IhDateTimeSettings } from "../input-helper/IhDateTime";
-import { IhNumberSettings } from "../input-helper/IhNumber";
-import { IhStaticSettings } from "../input-helper/IhStatic";
-import { IhTextSettings } from "../input-helper/IhText";
-import { IhColorSettings } from "../input-helper/IhColor";
+import { IhCheckboxSettings } from "~/components/editor/input-helper/IhCheckbox";
+import { IhColorSettings } from "~/components/editor/input-helper/IhColor";
+import { IhDateTimeSettings } from "~/components/editor/input-helper/IhDateTime";
+import { IhNumberSettings } from "~/components/editor/input-helper/IhNumber";
+import { IhStaticSettings } from "~/components/editor/input-helper/IhStatic";
+import { IhTextSettings } from "~/components/editor/input-helper/IhText";
+import type { EntryCell } from "~/redux/features/editor/editor-schemas";
 
 export default function InputHelperSettings({ cell }: { cell: EntryCell | null }) {
     if (!cell) return null;

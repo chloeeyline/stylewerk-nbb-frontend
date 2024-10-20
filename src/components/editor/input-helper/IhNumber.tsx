@@ -40,12 +40,12 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <InputField
+            type="number"
+            label={cell.template.text ?? ""}
+            name="number"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="number"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type="number"
             value={data.data.value ?? ""}
             min={metadata.data?.min}
             max={metadata.data?.max}
@@ -112,34 +112,30 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                label={"Minimalwert"}
-                useNameAsIs={true}
-                name="min"
                 type="number"
+                label="Minimalwert"
+                name="min"
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Maximalwert"}
-                useNameAsIs={true}
-                name="max"
                 type="number"
+                label="Maximalwert"
+                name="max"
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Schrittgröße"}
-                useNameAsIs={true}
-                name="step"
                 type="number"
+                label="Schrittgröße"
+                name="step"
                 value={metadata.data.step ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Ganzzahlswert"}
-                useNameAsIs={true}
-                name="integer"
                 type="checkbox"
+                label="Ganzzahlswert"
+                name="integer"
                 checked={metadata.data.integer}
                 onChange={dispatchCellSettings}
             />

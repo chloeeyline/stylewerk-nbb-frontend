@@ -1,5 +1,5 @@
 (async () => {
-    const token = "";
+    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiJkOTc0YzZlMC0wNjFiLTRlMTEtYmM2Yy1iNDU1YTA3ZDI3ZTUiLCJleHAiOjE3Mjk0MjIwMDYsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCJ9.7KoctjJWLi6w6boIoeacOUtjOiQGUhmSwlYrpM0pEHs";
 
     if (token === "") {
         alert("no token given!");

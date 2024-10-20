@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 
+import { DEFAULT_UUID } from "#/general";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import Editor from "~/components/editor/Editor";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { DEFAULT_UUID } from "~/constants/general";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";

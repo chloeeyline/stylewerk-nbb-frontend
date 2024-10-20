@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Backend from "~/constants/backend-routes";
+import Backend from "#/backend-routes";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
 
-const EntrySettings = () => {
+export default function EntrySettings() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -28,14 +29,20 @@ const EntrySettings = () => {
         });
     }, []);
 
-    const dispatchGeneral = (
-        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
-        value: boolean | number | string,
-    ) => {
+    const dispatchGeneral = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         dispatch(
             setEntry({
                 type: e.target.name,
-                value: value,
+                value: e.target.value,
+            }),
+        );
+    };
+
+    const dispatchGeneralCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setEntry({
+                type: e.target.name,
+                value: e.target.checked ? "true" : "false",
             }),
         );
     };
@@ -63,7 +70,7 @@ const EntrySettings = () => {
                 type="text"
                 maxLength={100}
                 value={editor.data.name ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
+                onChange={dispatchGeneral}
             />
             <InputField
                 label={t("formFields.tags")}
@@ -72,14 +79,14 @@ const EntrySettings = () => {
                 type="text"
                 maxLength={100}
                 value={editor.data.tags ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
+                onChange={dispatchGeneral}
             />
             <SelectField
                 name="folderID"
                 label={"Folder"}
                 useNameAsIs={true}
                 value={editor.data.folderID ?? 1}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
+                onChange={dispatchGeneral}
                 options={folders ?? []}
             />
             <div>
@@ -90,7 +97,7 @@ const EntrySettings = () => {
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isPublic}
-                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    onChange={dispatchGeneralCheckbox}
                 />
                 <InputField
                     label={"Encrypted"}
@@ -99,11 +106,9 @@ const EntrySettings = () => {
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isEncrypted}
-                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    onChange={dispatchGeneralCheckbox}
                 />
             </div>
         </fieldset>
     );
-};
-
-export default EntrySettings;
+}

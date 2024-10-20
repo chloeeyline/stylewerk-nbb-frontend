@@ -4,6 +4,7 @@ import { NavLink } from "react-router-dom";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
+import InlineScroller from "~/components/layout/InlineScroller";
 import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -30,7 +31,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     }
 
     return (
-        <fieldset className="fieldset d-flex flex-wrap gap-1">
+        <fieldset className="fieldset gap-1">
             <legend className="legend d-flex flex-wrap gap-0 rounded-2">
                 <NavLink
                     className="btn btn-primary p-0"
@@ -72,40 +73,46 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     {t("common.delete")}
                 </button>
             </legend>
-            <InputField
-                label={t("common.name")}
-                name="name"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.name ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-            />
-            <InputField
-                label={t("formFields.description")}
-                name="description"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.description ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-            />
-            <InputField
-                className="input"
-                label={t("formFields.tags")}
-                name="tags"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.tags ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-            />
-            <InputField
-                label={t("formFields.public")}
-                name={"isPublic"}
-                useNameAsIs={true}
-                type="checkbox"
-                maxLength={100}
-                checked={editor.data.template.isPublic}
-                onChange={(e) => dispatchGeneral(e, e.target.checked)}
-            />
+            <InlineScroller>
+                <InputField
+                    style={{ minInlineSize: "10ch" }}
+                    type="text"
+                    label={t("common.name")}
+                    name="name"
+                    maxLength={100}
+                    value={editor.data.template.name ?? ""}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
+                />
+                <InputField
+                    style={{ minInlineSize: "10ch" }}
+                    type="text"
+                    label={t("formFields.tags")}
+                    name="tags"
+                    maxLength={100}
+                    value={editor.data.template.tags ?? ""}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
+                />
+                <InputField
+                    style={{ minInlineSize: "30ch" }}
+                    type="text"
+                    label={t("formFields.description")}
+                    name="description"
+                    maxLength={100}
+                    value={editor.data.template.description ?? ""}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
+                />
+                <div className="d-grid" style={{ placeItems: "center" }}>
+                    <InputField
+                        label={t("formFields.public")}
+                        name={"isPublic"}
+                        useNameAsIs={true}
+                        type="checkbox"
+                        maxLength={100}
+                        checked={editor.data.template.isPublic}
+                        onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    />
+                </div>
+            </InlineScroller>
         </fieldset>
     );
 }

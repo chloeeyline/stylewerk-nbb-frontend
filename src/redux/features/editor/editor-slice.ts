@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Backend from "~/constants/backend-routes";
-import { DEFAULT_UUID } from "~/constants/general";
+
+import Backend from "#/backend-routes";
+import { DEFAULT_UUID } from "#/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";

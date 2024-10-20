@@ -1,13 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate } from "react-router-dom";
+
+import BackendRoutes from "#/backend-routes";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import Grid from "~/components/layout/Grid";
-import BackendRoutes from "~/constants/backend-routes";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
 import type { Translation } from "~/schemas/translations";
 import { translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";

@@ -2,6 +2,10 @@ import type React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
+import { DEFAULT_UUID } from "#/general";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import Equalizer from "~/components/Icon/Equalizer";
@@ -9,9 +13,6 @@ import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { DEFAULT_UUID } from "~/constants/general";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
 import {
     listTemplates,
     selectTemplate,

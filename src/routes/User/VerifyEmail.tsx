@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import Routes from "~/constants/routes";
+
+import Routes from "#/routes";
 import { verifyEmail } from "~/redux/features/user/user-api";
 
 export default function VerifyEmail() {

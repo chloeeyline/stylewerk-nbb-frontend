@@ -16,7 +16,8 @@ import {
     useSortable,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { EntryRow } from "~/redux/features/editor/editor-schemas";
+
+import type { EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
     addTemplateCell,
     removeTemplateRow,
@@ -26,11 +27,11 @@ import {
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import AdditionSign from "../Icon/AdditionSign";
-import Cross from "../Icon/Cross";
-import Move from "../Icon/Move";
+import AdditionSign from "~/components/Icon/AdditionSign";
+import Cross from "~/components/Icon/Cross";
+import Move from "~/components/Icon/Move";
 import EditorCell from "./EditorCell";
-import InputField from "../forms/InputField";
+import InputField from "~/components/forms/InputField";
 
 export default function EditorRow({ row }: { row: EntryRow }) {
     const editor = useAppSelector(selectEditor);

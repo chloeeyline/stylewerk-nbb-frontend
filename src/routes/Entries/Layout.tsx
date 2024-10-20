@@ -16,17 +16,18 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { CSSProperties, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
+
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import Move from "~/components/Icon/Move";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
-import { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
+import type { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     detailFolder,
     listEntry,
@@ -157,7 +158,17 @@ const CreateFolderDialog = ({
     }, [isOpen]);
 
     return (
-        <dialog ref={dialogRef} style={styles}>
+        <dialog
+            ref={dialogRef}
+            style={{
+                position: "fixed", // Use fixed positioning to allow centering relative to the viewport
+                top: "50%", // Move the dialog to the center vertically
+                left: "50%", // Move the dialog to the center horizontally
+                transform: "translate(-50%, -50%)", // Shift back by 50% of its own width and height to center it
+                border: "none",
+                backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: semi-transparent background
+                zIndex: 1000, // Ensure it's on top of other elements
+            }}>
             <h2>Name des Ordners</h2>
             <input
                 type="text"
@@ -392,13 +403,3 @@ export default function EntriesLayout() {
         </Grid>
     );
 }
-
-const styles: CSSProperties = {
-    position: "fixed", // Use fixed positioning to allow centering relative to the viewport
-    top: "50%", // Move the dialog to the center vertically
-    left: "50%", // Move the dialog to the center horizontally
-    transform: "translate(-50%, -50%)", // Shift back by 50% of its own width and height to center it
-    border: "none",
-    backgroundColor: "rgba(0, 0, 0, 0.5)", // Optional: semi-transparent background
-    zIndex: 1000, // Ensure it's on top of other elements
-};

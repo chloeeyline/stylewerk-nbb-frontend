@@ -1,10 +1,11 @@
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import InlineScroller from "~/components/layout/InlineScroller";
 import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputHelperSettings from "./InputHelperSettings";
 
-const TemplateCellSettings = () => {
+export default function TemplateCellSettings() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
@@ -38,11 +39,11 @@ const TemplateCellSettings = () => {
     return (
         <fieldset className="fieldset">
             <legend className="legend">Zelle</legend>
-            <div className="d-flex flex-wrap gap-1">
+            <InlineScroller>
                 <SelectField
+                    style={{ minInlineSize: "10ch" }}
                     name="inputHelper"
                     label="InputHelper"
-                    useNameAsIs={true}
                     value={selectedCellSettings()?.template.inputHelper ?? 1}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                     options={[
@@ -56,27 +57,45 @@ const TemplateCellSettings = () => {
                     ]}
                 />
                 <InputField
+                    style={{ minInlineSize: "10ch" }}
+                    type="text"
                     label="Text"
                     name="text"
-                    useNameAsIs={true}
-                    type="text"
                     maxLength={100}
                     value={selectedCellSettings()?.template.text ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                 />
                 <InputField
+                    style={{ minInlineSize: "30ch" }}
+                    type="text"
                     label="Description"
                     name="description"
-                    useNameAsIs={true}
-                    type="text"
                     maxLength={100}
                     value={selectedCellSettings()?.template.description ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                 />
+                <div className="d-grid grid-template-columns gap-1" style={{ "--grid-template-columns": "1fr 1fr", placeItems: "center" }}>
+                    <InputField
+                        type="checkbox"
+                        label="HideOnEmpty"
+                        name="hideOnEmpty"
+                        useNameAsIs={true}
+                        maxLength={100}
+                        checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
+                        onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                    />
+                    <InputField
+                        type="checkbox"
+                        label="IsRequired"
+                        name="isRequired"
+                        useNameAsIs={true}
+                        maxLength={100}
+                        checked={selectedCellSettings()?.template.isRequired ?? false}
+                        onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                    />
+                </div>
                 <InputHelperSettings cell={selectedCellSettings()} />
-            </div>
+            </InlineScroller>
         </fieldset>
     );
-};
-
-export default TemplateCellSettings;
+}

@@ -28,12 +28,12 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <InputField
+            type="checkbox"
+            label={cell.template.text ?? ""}
+            name="checkbox"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="checkbox"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type="checkbox"
             checked={data.data.value ?? metadata.data.value ?? false}
             onChange={(e) => {
                 if (editor.isPreview) return;
@@ -82,10 +82,9 @@ export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="checkbox"
+            label="Standartwert"
+            name="value"
             checked={metadata.data.value ?? false}
             onChange={dispatchCellSettings}
         />

@@ -122,65 +122,62 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                label={"Minimalwert"}
-                useNameAsIs={true}
                 name="min"
+                label="Minimalwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Maximalwert"}
-                useNameAsIs={true}
                 name="max"
+                label="Maximalwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Standartwert"}
-                useNameAsIs={true}
                 name="value"
+                label="Standartwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <InputField
-                label={"Datum"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="0"
-                checked={metadata.data.type == 0}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Monat"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="1"
-                checked={metadata.data.type == 1}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Woche"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="2"
-                checked={metadata.data.type == 2}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Zeit"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="3"
-                checked={metadata.data.type == 3}
-                onChange={dispatchCellSettings}
-            />
+            <div
+                className="d-grid grid-template-columns gap-1"
+                style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
+                <InputField
+                    name="type"
+                    label="Datum"
+                    type="radio"
+                    value="0"
+                    checked={metadata.data.type == 0}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Monat"
+                    type="radio"
+                    value="1"
+                    checked={metadata.data.type == 1}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Woche"
+                    type="radio"
+                    value="2"
+                    checked={metadata.data.type == 2}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Zeit"
+                    type="radio"
+                    value="3"
+                    checked={metadata.data.type == 3}
+                    onChange={dispatchCellSettings}
+                />
+            </div>
         </>
     );
 };
