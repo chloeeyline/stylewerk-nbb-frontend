@@ -6,7 +6,7 @@ import { IhStaticSettings } from "../input-helper/IhStatic";
 import { IhTextSettings } from "../input-helper/IhText";
 import { IhColorSettings } from "../input-helper/IhColor";
 
-const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
+export default function InputHelperSettings({ cell }: { cell: EntryCell | null }) {
     if (!cell) return null;
     switch (cell.template.inputHelper) {
         case 1:
@@ -24,6 +24,4 @@ const InputHelperSettings = ({ cell }: { cell: EntryCell | null }) => {
         default:
             return null;
     }
-};
-
-export default InputHelperSettings;
+}

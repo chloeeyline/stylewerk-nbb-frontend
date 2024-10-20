@@ -1,4 +1,5 @@
-
+@use "sass:map";
+@use "./props";
 
 @each $type in "none", "block", "inline", "inline-flex", "inline-grid", "flex", "grid", "contents" {
     dialog.d-#{$type} {
@@ -100,9 +101,9 @@ span {
     &.error {
         max-inline-size: fit-content;
 
-        padding-block: 0.25rem;
-        padding-inline: 0.5rem;
-        border-radius: 0.5rem;
+        padding-block: #{map.get(props.$spacing, 0)}em;
+        padding-inline: #{map.get(props.$spacing, 1)}em;
+        border-radius: #{map.get(props.$spacing, 1)}em;
     }
 
     @each $type in "info", "success", "warning", "error" {

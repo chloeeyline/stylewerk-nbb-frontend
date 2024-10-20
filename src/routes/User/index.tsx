@@ -51,7 +51,7 @@ const UserPage = () => {
     const admin = user.admin ?? false;
 
     return (
-        <Grid layout="header" className="size-block-100">
+        <Grid layout="header">
             <h1>
                 {t("common.user", { count: 1 })}: {username}
                 {admin === true ? ` ${t("common.isAdmin")}` : ""}

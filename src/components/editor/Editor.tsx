@@ -110,57 +110,65 @@ export default function Editor({
     return (
         <div
             className={cls(
-                "d-grid max-block-size-100 block-size-100",
+                "d-grid max-size-block-100 size-block-100 overflow-hidden",
                 editor.isPreview === false ? "grid-template-rows" : undefined,
             )}
-            style={{ "--grid-template-rows": "auto 1fr" }}>
+            style={{ "--grid-template-rows": editor.isPreview === false ? "auto 1fr" : "1fr" }}>
             {editor.isPreview === false ? (
                 <div>
-                    {editor.isTemplate === true ? <TemplateSettings /> : <EntrySettings />}
+                    {editor.isTemplate === true ? (
+                        <TemplateSettings isNew={isNew} />
+                    ) : (
+                        <EntrySettings />
+                    )}
                     {editor.isTemplate === true && editor.selectedTemplateCell.length > 0 ? (
                         <TemplateCellSettings />
                     ) : null}
                 </div>
             ) : null}
-            <fieldset className="fieldset rounded-3">
-                <legend className="legend">{t("common.editor")}</legend>
-                <ScrollContainer direction="both">
-                    <div className="d-grid max-size-100 gap-1">
-                        <DndContext
-                            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={(e) => dragFolder(e)}>
-                            <SortableContext
-                                items={getList()}
-                                strategy={verticalListSortingStrategy}>
-                                {getList().length > 0 &&
-                                    getList().map((row) =>
-                                        editor.isTemplate ? (
-                                            <EditorRow key={row.templateID} row={row} />
-                                        ) : (
-                                            <EditorRow key={row.id} row={row} />
-                                        ),
-                                    )}
-                            </SortableContext>
-                        </DndContext>
-                        <div
-                            className="d-grid bg-base-300 rounded-2 p-1"
-                            style={{ placeItems: "center" }}>
-                            <button
-                                type="button"
-                                className="btn p-0 no-line-height d-flex gap-1"
-                                style={{ alignItems: "center" }}
-                                onClick={() => dispatch(addTemplateRow())}>
-                                {t("editor.addNewRow")}
-                                <span className="btn btn-square btn-success p-0 no-line-height">
-                                    <AdditionSign className="icon-inline" />
-                                </span>
-                            </button>
+            <ScrollContainer direction="vertical">
+                <fieldset className="fieldset rounded-3">
+                    <legend className="legend">
+                        {editor.isPreview ? t("common.preview") : t("common.editor")}
+                    </legend>
+                    <ScrollContainer direction="both">
+                        <div className="d-grid max-size-100 gap-1">
+                            <DndContext
+                                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={(e) => dragFolder(e)}>
+                                <SortableContext
+                                    items={getList()}
+                                    strategy={verticalListSortingStrategy}>
+                                    {getList().length > 0 &&
+                                        getList().map((row) =>
+                                            editor.isTemplate ? (
+                                                <EditorRow key={row.templateID} row={row} />
+                                            ) : (
+                                                <EditorRow key={row.id} row={row} />
+                                            ),
+                                        )}
+                                </SortableContext>
+                            </DndContext>
+                            {editor.isPreview !== true && editor.isTemplate === true ? (
+                                <div
+                                    className="d-grid bg-base-300 rounded-2 p-1"
+                                    style={{ placeItems: "center" }}>
+                                    <button
+                                        type="button"
+                                        className="btn btn-success p-1 no-line-height d-flex gap-1"
+                                        style={{ alignItems: "center" }}
+                                        onClick={() => dispatch(addTemplateRow())}>
+                                        {t("editor.addNewRow")}
+                                        <AdditionSign className="icon-inline" />
+                                    </button>
+                                </div>
+                            ) : null}
                         </div>
-                    </div>
-                </ScrollContainer>
-            </fieldset>
+                    </ScrollContainer>
+                </fieldset>
+            </ScrollContainer>
         </div>
     );
 }
