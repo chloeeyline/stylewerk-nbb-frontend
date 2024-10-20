@@ -1,10 +1,11 @@
-import { BACKEND_URL } from "#/general";
 import i18n from "i18next";
 import LanguageDetector from "i18next-browser-languagedetector";
 import type { HttpBackendOptions } from "i18next-http-backend";
 import HttpBackend from "i18next-http-backend";
 import { initReactI18next } from "react-i18next";
-import BackendRoutes from "~/constants/backend-routes";
+
+import BackendRoutes from "#/backend-routes";
+import { BACKEND_URL } from "#/general";
 import Ajax from "./ajax";
 
 const refineLanguageResponse = (data: unknown): Record<string, string> => {
@@ -66,8 +67,8 @@ i18n.use(HttpBackend)
             crossDomain: true,
         },
         react: {
-            bindI18n: 'languageChanged loaded',
-        }
+            bindI18n: "languageChanged loaded",
+        },
     });
 
 i18n.on("languageChanged", (lng) => {

@@ -84,13 +84,15 @@ a.no-link {
 
 @each $type in "hidden", "scroll", "auto", "visible" {
     .overflow-#{$type},
-    .overflow-x-#{$type} {
+    .overflow-inline-#{$type} {
         overflow-x: #{$type};
+        overflow-inline: #{$type};
     }
 
     .overflow-#{$type},
-    .overflow-y-#{$type} {
+    .overflow-block-#{$type} {
         overflow-y: #{$type};
+        overflow-block: #{$type};
     }
 }
 

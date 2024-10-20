@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Backend from "~/constants/backend-routes";
+
+import Backend from "#/backend-routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import type { EntryFolder, EntryFolders, EntryItems, EntrySearchParams } from "./entry-schemas";

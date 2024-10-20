@@ -2,13 +2,14 @@ import type React from "react";
 import { Fragment, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useNavigate, useParams } from "react-router-dom";
+
+import BackendRoutes from "#/backend-routes";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import BackendRoutes from "~/constants/backend-routes";
-import RouteParams from "~/constants/route-params";
-import Routes from "~/constants/routes";
 import type { TranslationContent } from "~/schemas/translations";
 import { translationContentSchema, translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";

@@ -7,6 +7,8 @@ import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import Columns from "~/components/forms/Columns";
+import InlineScroller from "~/components/layout/InlineScroller";
 
 export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
@@ -27,7 +29,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     }
 
     return (
-        <fieldset className="fieldset d-flex flex-wrap gap-1">
+        <fieldset className="fieldset gap-1">
             <legend className="legend d-flex flex-wrap gap-0 rounded-2">
                 <NavLink
                     className="btn btn-primary p-0"
@@ -69,31 +71,35 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     {t("common.delete")}
                 </button>
             </legend>
-            <InputField
-                label={t("common.name")}
-                name="name"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.name ?? ""}
-                onChange={dispatchGeneral}
-            />
-            <InputField
-                label={t("formFields.description")}
-                name="description"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.description ?? ""}
-                onChange={dispatchGeneral}
-            />
-            <InputField
-                className="input"
-                label={t("formFields.tags")}
-                name="tags"
-                type="text"
-                maxLength={100}
-                value={editor.data.template.tags ?? ""}
-                onChange={dispatchGeneral}
-            />
+            <InlineScroller>
+                <InputField
+                    style={{ minInlineSize: "10ch" }}
+                    type="text"
+                    label={t("common.name")}
+                    name="name"
+                    maxLength={100}
+                    value={editor.data.template.name ?? ""}
+                    onChange={dispatchGeneral}
+                />
+                <InputField
+                    style={{ minInlineSize: "10ch" }}
+                    type="text"
+                    label={t("formFields.tags")}
+                    name="tags"
+                    maxLength={100}
+                    value={editor.data.template.tags ?? ""}
+                    onChange={dispatchGeneral}
+                />
+                <InputField
+                    style={{ minInlineSize: "30ch" }}
+                    type="text"
+                    label={t("formFields.description")}
+                    name="description"
+                    maxLength={100}
+                    value={editor.data.template.description ?? ""}
+                    onChange={dispatchGeneral}
+                />
+            </InlineScroller>
         </fieldset>
     );
 }

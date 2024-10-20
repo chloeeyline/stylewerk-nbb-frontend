@@ -1,9 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import Backend from "~/constants/backend-routes";
+
+import Backend from "#/backend-routes";
+import { editorSchema } from "~/redux/features/editor/editor-schemas";
 import type { AppDispatch, RootState } from "~/redux/store";
 import type { Paging } from "~/schemas/paging";
 import Ajax from "~/utils/ajax";
-import { editorSchema } from "../editor/editor-schemas";
 import type { TemplateItem, TemplateSearchParams } from "./template-schemas";
 import { templatePagingSchema } from "./template-schemas";
 

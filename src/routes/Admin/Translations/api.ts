@@ -1,4 +1,4 @@
-import { Language } from "~/constants/backend-routes";
+import BackendRoutes from "#/backend-routes";
 import { createNbbError } from "~/schemas/nbb-error";
 import Ajax from "~/utils/ajax";
 import i18n from "~/utils/i18n";
@@ -15,7 +15,7 @@ export const updateLanguage = async (
         return { ok: false, error: createNbbError(1101, "DataIsInvalid", false) };
     }
 
-    const result = await Ajax.post(Language.Update, {
+    const result = await Ajax.post(BackendRoutes.Language.Update, {
         auth: true,
         body: {
             code,
@@ -38,7 +38,7 @@ export const deleteLanguage = async (code: string) => {
         return { ok: false, error: createNbbError(1101, "DataIsInvalid", false) };
     }
 
-    const result = await Ajax.post(Language.Remove, {
+    const result = await Ajax.post(BackendRoutes.Language.Remove, {
         search: {
             code,
         },

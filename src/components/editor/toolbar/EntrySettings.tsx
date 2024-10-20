@@ -1,14 +1,15 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Backend from "~/constants/backend-routes";
+import Backend from "#/backend-routes";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
 
-const EntrySettings = () => {
+export default function EntrySettings() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -110,6 +111,4 @@ const EntrySettings = () => {
             </div>
         </fieldset>
     );
-};
-
-export default EntrySettings;
+}

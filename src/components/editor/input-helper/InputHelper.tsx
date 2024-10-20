@@ -1,4 +1,4 @@
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import type { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppSelector } from "~/redux/hooks";
 import { IhCheckbox } from "./IhCheckbox";

@@ -131,42 +131,40 @@ export default function Editor({
                     <legend className="legend">
                         {editor.isPreview ? t("common.preview") : t("common.editor")}
                     </legend>
-                    <ScrollContainer direction="both">
-                        <div className="d-grid max-size-100 gap-1">
-                            <DndContext
-                                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-                                sensors={sensors}
-                                collisionDetection={closestCenter}
-                                onDragEnd={(e) => dragFolder(e)}>
-                                <SortableContext
-                                    items={getList()}
-                                    strategy={verticalListSortingStrategy}>
-                                    {getList().length > 0 &&
-                                        getList().map((row) =>
-                                            editor.isTemplate ? (
-                                                <EditorRow key={row.templateID} row={row} />
-                                            ) : (
-                                                <EditorRow key={row.id} row={row} />
-                                            ),
-                                        )}
-                                </SortableContext>
-                            </DndContext>
-                            {editor.isPreview !== true && editor.isTemplate === true ? (
-                                <div
-                                    className="d-grid bg-base-300 rounded-2 p-1"
-                                    style={{ placeItems: "center" }}>
-                                    <button
-                                        type="button"
-                                        className="btn btn-success p-1 no-line-height d-flex gap-1"
-                                        style={{ alignItems: "center" }}
-                                        onClick={() => dispatch(addTemplateRow())}>
-                                        {t("editor.addNewRow")}
-                                        <AdditionSign className="icon-inline" />
-                                    </button>
-                                </div>
-                            ) : null}
-                        </div>
-                    </ScrollContainer>
+                    <div className="d-grid max-size-100 gap-1">
+                        <DndContext
+                            modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                            sensors={sensors}
+                            collisionDetection={closestCenter}
+                            onDragEnd={(e) => dragFolder(e)}>
+                            <SortableContext
+                                items={getList()}
+                                strategy={verticalListSortingStrategy}>
+                                {getList().length > 0 &&
+                                    getList().map((row) =>
+                                        editor.isTemplate ? (
+                                            <EditorRow key={row.templateID} row={row} />
+                                        ) : (
+                                            <EditorRow key={row.id} row={row} />
+                                        ),
+                                    )}
+                            </SortableContext>
+                        </DndContext>
+                        {editor.isPreview !== true && editor.isTemplate === true ? (
+                            <div
+                                className="d-grid bg-base-300 rounded-2 p-1"
+                                style={{ placeItems: "center" }}>
+                                <button
+                                    type="button"
+                                    className="btn btn-success p-1 no-line-height d-flex gap-1"
+                                    style={{ alignItems: "center" }}
+                                    onClick={() => dispatch(addTemplateRow())}>
+                                    {t("editor.addNewRow")}
+                                    <AdditionSign className="icon-inline" />
+                                </button>
+                            </div>
+                        ) : null}
+                    </div>
                 </fieldset>
             </ScrollContainer>
         </div>

@@ -1,6 +1,10 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { EntryCell } from "~/redux/features/editor/editor-schemas";
+
+import InputField from "~/components/forms/InputField";
+import Cross from "~/components/Icon/Cross";
+import Move from "~/components/Icon/Move";
+import type { EntryCell } from "~/redux/features/editor/editor-schemas";
 import {
     removeTemplateCell,
     selectEditor,
@@ -9,10 +13,7 @@ import {
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import Cross from "../Icon/Cross";
-import Move from "../Icon/Move";
 import InputHelper from "./input-helper/InputHelper";
-import InputField from "../forms/InputField";
 
 export default function EditorCell({
     cell,
@@ -71,15 +72,7 @@ export default function EditorCell({
     return (
         <div
             ref={setNodeRef}
-            className={cls(
-                "d-grid grid-template-rows rounded-2 bg-base-200",
-                /* editor.isPreview !== true && editor.isTemplate ? "gap-0" : "gap-none", */
-                /* editor.isPreview === false &&
-                    editor.isTemplate === true &&
-                    cell.templateID === editor.selectedTemplateCell
-                    ? "bg-info-active"
-                    : "bg-base-200", */
-            )}
+            className="d-grid gap-1 grid-template-rows rounded-2 bg-base-200"
             title={cell.template?.description ?? ""}
             style={{
                 "flex": 1,

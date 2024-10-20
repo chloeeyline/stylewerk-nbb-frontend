@@ -1,12 +1,7 @@
-import BackendRoutes from "~/constants/backend-routes";
+import BackendRoutes from "#/backend-routes";
 import { createNbbError } from "~/schemas/nbb-error";
-import {
-    CompleteTheme,
-    completeThemeSchema,
-    Theme,
-    ThemeApi,
-    themeApiSchema,
-} from "~/schemas/themes";
+import type { CompleteTheme, Theme, ThemeApi } from "~/schemas/themes";
+import { completeThemeSchema, themeApiSchema } from "~/schemas/themes";
 import Ajax from "~/utils/ajax";
 import { safeParse, safeStringify } from "~/utils/safe-json";
 
