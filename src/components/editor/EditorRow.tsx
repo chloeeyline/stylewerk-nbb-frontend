@@ -22,12 +22,15 @@ import {
     removeTemplateRow,
     selectEditor,
     setRows,
+    setTemplateRow,
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import cls from "~/utils/class-name-helper";
 import AdditionSign from "../Icon/AdditionSign";
 import Cross from "../Icon/Cross";
 import Move from "../Icon/Move";
 import EditorCell from "./EditorCell";
+import InputField from "../forms/InputField";
 
 export default function EditorRow({ row }: { row: EntryRow }) {
     const editor = useAppSelector(selectEditor);
@@ -73,37 +76,95 @@ export default function EditorRow({ row }: { row: EntryRow }) {
         }
     };
 
+    const selectedRowSettings = () => {
+        if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;
+        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
+        return row?.template;
+    };
+
+    const dispatchRowSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setTemplateRow({
+                type: e.target.name,
+                value: e.target.checked,
+            }),
+        );
+    };
+
     return (
         <div
             ref={setNodeRef}
-            className="d-grid grid-template-columns gap-0 p-1 bg-base-300 rounded-2"
+            className={cls(
+                "d-grid grid-template-rows p-1 bg-base-300 rounded-2",
+                editor.isPreview !== true && editor.isTemplate ? "gap-0" : "gap-none",
+            )}
             style={{
-                "--grid-template-columns": "auto 1fr",
+                "--grid-template-rows":
+                    editor.isPreview !== true && editor.isTemplate ? "auto 1fr" : "1fr",
                 "transform": CSS.Transform.toString(transform),
                 transition,
             }}
             {...attributes}>
-            <div
-                className="d-flex flex-direction-column gap-2"
-                style={{ justifyContent: "space-between" }}>
-                <button
-                    type="button"
-                    className="btn btn-error p-0"
-                    onClick={() => {
-                        if (typeof editor.data?.templateID !== "string") return;
-                        dispatch(removeTemplateRow(row.templateID));
-                    }}>
-                    <Cross className="fill-current-color" />
-                </button>
+            {editor.isPreview !== true && editor.isTemplate ? (
+                <div className="d-flex flex-wrap gap-1" style={{ justifyContent: "flex-start" }}>
+                    <button
+                        type="button"
+                        className="btn btn-error btn-square p-0"
+                        onClick={() => {
+                            if (typeof editor.data?.templateID !== "string") return;
+                            dispatch(removeTemplateRow(row.templateID));
+                        }}>
+                        <Cross className="fill-current-color" />
+                    </button>
 
-                <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
-                    <Move className="fill-current-color" />
-                </button>
-            </div>
+                    <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+                        <Move className="fill-current-color" />
+                    </button>
+
+                    {editor.selectedTemplateRow === row.templateID &&
+                    row.items
+                        .map((item) => item.template.id)
+                        .includes(editor.selectedTemplateCell) ? (
+                        <>
+                            <InputField
+                                label="CanWrapCells"
+                                name="canWrapCells"
+                                useNameAsIs={true}
+                                type="checkbox"
+                                checked={selectedRowSettings()?.canWrapCells ?? false}
+                                onChange={dispatchRowSettings}
+                            />
+                            <InputField
+                                label="CanRepeat"
+                                name="canRepeat"
+                                useNameAsIs={true}
+                                type="checkbox"
+                                checked={selectedRowSettings()?.canRepeat ?? false}
+                                onChange={dispatchRowSettings}
+                            />
+                            <InputField
+                                label="HideOnNoInput"
+                                name="hideOnNoInput"
+                                useNameAsIs={true}
+                                type="checkbox"
+                                checked={selectedRowSettings()?.hideOnNoInput ?? false}
+                                onChange={dispatchRowSettings}
+                            />
+                        </>
+                    ) : null}
+                </div>
+            ) : null}
             <div
-                className="d-grid grid-template-columns gap-0"
+                className={cls(
+                    "d-grid grid-template-columns",
+                    editor.isPreview !== true && editor.isTemplate ? "gap-0" : "gap-none",
+                )}
                 style={{ "--grid-template-columns": "1fr auto" }}>
-                <div className="d-flex flex-wrap gap-0">
+                <div
+                    className={cls(
+                        "d-flex flex-wrap",
+                        editor.isPreview !== true && editor.isTemplate ? "gap-0" : "gap-1",
+                    )}>
                     <DndContext
                         modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
                         sensors={sensors}
@@ -121,17 +182,17 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         </SortableContext>
                     </DndContext>
                 </div>
-                <div className="d-grid bg-base-200 rounded-2 p-1" style={{ placeItems: "center" }}>
+                {editor.isPreview !== true && editor.isTemplate ? (
                     <button
                         type="button"
-                        className="btn btn-success btn-square p-0"
+                        className="btn btn-success p-1"
                         onClick={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(addTemplateCell(row.templateID));
                         }}>
                         <AdditionSign className="fill-current-color" />
                     </button>
-                </div>
+                ) : null}
             </div>
         </div>
     );

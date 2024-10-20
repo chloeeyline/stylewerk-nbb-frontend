@@ -5,12 +5,14 @@ import {
     removeTemplateCell,
     selectEditor,
     setSelected,
+    setTemplateCell,
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import cls from "~/utils/class-name-helper";
 import Cross from "../Icon/Cross";
 import Move from "../Icon/Move";
 import InputHelper from "./input-helper/InputHelper";
-import cls from "~/utils/class-name-helper";
+import InputField from "../forms/InputField";
 
 export default function EditorCell({
     cell,
@@ -32,9 +34,36 @@ export default function EditorCell({
         dispatch(
             setSelected({
                 entryRow: entryRowID,
-                entryCell: cell.id,
+                entryCell: editor.selectedEntryCell === cell.id ? "" : cell.id,
                 templateRow: templateRowID,
-                templateCell: cell.templateID,
+                templateCell:
+                    editor.selectedTemplateCell === cell.templateID ? "" : cell.templateID,
+            }),
+        );
+    };
+
+    const selectedCellSettings = () => {
+        if (
+            editor.selectedTemplateRow.length == 0 ||
+            editor.selectedTemplateCell.length == 0 ||
+            editor.data === null
+        )
+            return null;
+
+        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
+        if (!row) return null;
+        const cell = row?.items.find((cell) => cell.templateID === editor.selectedTemplateCell);
+        return cell ?? null;
+    };
+
+    const dispatchCellSettings = (
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+        value: boolean | number | string,
+    ) => {
+        dispatch(
+            setTemplateCell({
+                type: e.target.name,
+                value: value,
             }),
         );
     };
@@ -43,27 +72,27 @@ export default function EditorCell({
         <div
             ref={setNodeRef}
             className={cls(
-                "d-grid grid-template-columns gap-0 p-1 rounded-2",
-                editor.isPreview === false &&
+                "d-grid grid-template-rows rounded-2 bg-base-200",
+                /* editor.isPreview !== true && editor.isTemplate ? "gap-0" : "gap-none", */
+                /* editor.isPreview === false &&
                     editor.isTemplate === true &&
                     cell.templateID === editor.selectedTemplateCell
                     ? "bg-info-active"
-                    : "bg-base-200",
+                    : "bg-base-200", */
             )}
             title={cell.template?.description ?? ""}
-            onClick={select}
             style={{
                 "flex": 1,
-                "--grid-template-columns": "1fr auto",
+                "--grid-template-rows":
+                    editor.isPreview !== true && editor.isTemplate ? "auto 1fr" : "1fr",
                 "transform": CSS.Transform.toString(transform),
                 transition,
             }}
             {...attributes}>
-            <InputHelper cell={cell} />
-            {editor.isPreview !== true ? (
+            {editor.isPreview !== true && editor.isTemplate ? (
                 <div
-                    className="d-flex flex-direction-column gap-0"
-                    style={{ justifyContent: "flex-end" }}>
+                    className="d-flex flex-wrap gap-1 p-i-1 p-bs-1"
+                    style={{ justifyContent: "flex-start" }}>
                     <button
                         type="button"
                         className="btn btn-error btn-square p-0"
@@ -82,8 +111,43 @@ export default function EditorCell({
                     <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
                         <Move className="fill-current-color" />
                     </button>
+
+                    {editor.selectedTemplateCell === cell.templateID ? (
+                        <>
+                            <InputField
+                                type="checkbox"
+                                label="HideOnEmpty"
+                                name="hideOnEmpty"
+                                useNameAsIs={true}
+                                maxLength={100}
+                                checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
+                                onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                            />
+                            <InputField
+                                type="checkbox"
+                                label="IsRequired"
+                                name="isRequired"
+                                useNameAsIs={true}
+                                maxLength={100}
+                                checked={selectedCellSettings()?.template.isRequired ?? false}
+                                onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                            />
+                        </>
+                    ) : null}
                 </div>
             ) : null}
+            <div
+                className={cls(
+                    "p-1 rounded-2",
+                    editor.isPreview === false &&
+                        editor.isTemplate === true &&
+                        cell.templateID === editor.selectedTemplateCell
+                        ? "bg-info-active"
+                        : "bg-base-200",
+                )}
+                onClick={select}>
+                <InputHelper cell={cell} />
+            </div>
         </div>
     );
 }

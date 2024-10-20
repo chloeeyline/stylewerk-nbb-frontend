@@ -26,12 +26,12 @@ $types: (
 
     @each $spacer-name, $spacer-value in props.$spacing {
         .#{$type-name}-#{$spacer-name} {
-            #{$type-value}: #{$spacer-value}rem;
+            #{$type-value}: #{$spacer-value}em;
         }
 
         @each $logical-name, $logical-value in props.$logical {
             .#{$type-name}-#{$logical-name}-#{$spacer-name} {
-                #{$type-value}-#{$logical-value}: #{$spacer-value}rem;
+                #{$type-value}-#{$logical-value}: #{$spacer-value}em;
             }
         }
     }
@@ -54,7 +54,7 @@ $gap-types: (
 
     @each $spacer-name, $spacer-value in props.$spacing {
         .#{$type-name}-#{$spacer-name} {
-            #{$type-value}: #{$spacer-value}rem;
+            #{$type-value}: #{$spacer-value}em;
         }
     }
 }

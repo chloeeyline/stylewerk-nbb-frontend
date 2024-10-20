@@ -1,10 +1,14 @@
 import { useTranslation } from "react-i18next";
+import { NavLink } from "react-router-dom";
+
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-const TemplateSettings = () => {
+export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -24,7 +28,19 @@ const TemplateSettings = () => {
 
     return (
         <fieldset className="fieldset d-flex flex-wrap gap-1">
-            <legend className="legend d-flex gap-0 rounded-2">
+            <legend className="legend d-flex flex-wrap gap-0 rounded-2">
+                <NavLink
+                    className="btn btn-primary p-0"
+                    to={
+                        isNew === true
+                            ? Routes.Templates.List
+                            : Routes.Templates.View.replace(
+                                  RouteParams.TemplateId,
+                                  editor.data.templateID,
+                              ).replace(RouteParams.IsNew, "false")
+                    }>
+                    {t("common.back")}
+                </NavLink>
                 <button
                     type="button"
                     className="btn btn-primary p-0"
@@ -52,12 +68,6 @@ const TemplateSettings = () => {
                     }}>
                     {t("common.delete")}
                 </button>
-                {/* <button
-                    type="button"
-                    className="btn btn-primary p-0"
-                    onClick={() => dispatch(addTemplateRow())}>
-                    neue Zelle hinzufügen
-                </button> */}
             </legend>
             <InputField
                 label={t("common.name")}
@@ -86,6 +96,4 @@ const TemplateSettings = () => {
             />
         </fieldset>
     );
-};
-
-export default TemplateSettings;
+}
