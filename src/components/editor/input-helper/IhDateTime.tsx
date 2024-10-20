@@ -1,8 +1,9 @@
 import { useEffect } from "react";
 import { z } from "zod";
+import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -65,14 +66,14 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 var temp = {
                     ...data.data,
                     value: e.target.value,
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -84,12 +85,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(
-            setTemplateCell({
-                type: "metaData",
-                value: JSON.stringify(metadata.data),
-            }),
-        );
+        dispatch(setMetadata(JSON.stringify(metadata.data)));
     }, []);
 
     if (metadata.success === false) return null;
@@ -101,24 +97,22 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
             case "max":
             case "value":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: e.target.value,
                         }),
-                    }),
+                    ),
                 );
                 break;
             case "type":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: Number(e.target.value),
                         }),
-                    }),
+                    ),
                 );
                 break;
             default:
@@ -129,65 +123,62 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                label={"Minimalwert"}
-                useNameAsIs={true}
                 name="min"
+                label="Minimalwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Maximalwert"}
-                useNameAsIs={true}
                 name="max"
+                label="Maximalwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Standartwert"}
-                useNameAsIs={true}
                 name="value"
+                label="Standartwert"
                 type={getType(metadata.data.type)}
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <InputField
-                label={"Datum"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="0"
-                checked={metadata.data.type == 0}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Monat"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="1"
-                checked={metadata.data.type == 1}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Woche"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="2"
-                checked={metadata.data.type == 2}
-                onChange={dispatchCellSettings}
-            />
-            <InputField
-                label={"Zeit"}
-                useNameAsIs={true}
-                name="type"
-                type="radio"
-                value="3"
-                checked={metadata.data.type == 3}
-                onChange={dispatchCellSettings}
-            />
+            <div
+                className="d-grid grid-template-columns gap-1"
+                style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
+                <InputField
+                    name="type"
+                    label="Datum"
+                    type="radio"
+                    value="0"
+                    checked={metadata.data.type == 0}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Monat"
+                    type="radio"
+                    value="1"
+                    checked={metadata.data.type == 1}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Woche"
+                    type="radio"
+                    value="2"
+                    checked={metadata.data.type == 2}
+                    onChange={dispatchCellSettings}
+                />
+                <InputField
+                    name="type"
+                    label="Zeit"
+                    type="radio"
+                    value="3"
+                    checked={metadata.data.type == 3}
+                    onChange={dispatchCellSettings}
+                />
+            </div>
         </>
     );
 };

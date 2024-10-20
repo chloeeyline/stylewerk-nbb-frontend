@@ -158,72 +158,51 @@ export const updateEditor = createAsyncThunk<
 const editorSlice = createSlice({
     name: "editor",
     initialState,
-    // The `reducers` field lets us define reducers and generate associated actions
     reducers: {
         setEntry: (
             state,
             action: PayloadAction<{
                 type: string;
-                value: string | undefined;
+                value: boolean | string | number | null;
             }>,
         ) => {
+            if (state.data === null) return;
             switch (action.payload.type) {
                 case "name":
                 case "tags":
-                    const valueText = action.payload.value?.trim() ?? "";
-                    if (state.data && valueText.length > 0)
-                        state.data[action.payload.type] = valueText;
-
-                    break;
                 case "folderID":
-                    var valueID: string | null = action.payload.value?.trim() ?? "";
-                    if (valueID.length === 0) valueID = null;
-                    if (state.data) state.data[action.payload.type] = valueID;
+                    if (typeof action.payload.value == "string") {
+                        if (action.payload.value.trim().length === 0) action.payload.value = null;
+                        state.data[action.payload.type] = action.payload.value;
+                    }
                     break;
                 case "isEncrypted":
                 case "isPublic":
-                    if (state.data)
-                        state.data[action.payload.type] = action.payload.value === "true";
+                    if (typeof action.payload.value == "boolean")
+                        state.data[action.payload.type] = Boolean(action.payload.value);
                     break;
-            }
-        },
-        setEntryCell: (state, action: PayloadAction<string | null>) => {
-            if (state.data && state.data.items.length > 0) {
-                state.data.items = state.data.items.map((row) => {
-                    if (row.id === state.selectedEntryRow) {
-                        const tempCellList = row.items.map((cell) => {
-                            if (cell.id === state.selectedEntryCell) {
-                                return {
-                                    ...cell,
-                                    data: action.payload,
-                                };
-                            }
-                            return cell;
-                        });
-                        return {
-                            ...row,
-                            items: tempCellList,
-                        };
-                    }
-                    return row;
-                });
             }
         },
         setTemplate: (
             state,
             action: PayloadAction<{
                 type: string;
-                value: string | undefined;
+                value: boolean | string | number | null;
             }>,
         ) => {
+            if (state.data === null) return;
             switch (action.payload.type) {
                 case "name":
                 case "description":
                 case "tags":
-                    const value = action.payload.value?.trim() ?? null;
-                    if (state.data) {
-                        state.data.template[action.payload.type] = value;
+                    if (typeof action.payload.value == "string") {
+                        if (action.payload.value.trim().length === 0) action.payload.value = null;
+                        state.data.template[action.payload.type] = action.payload.value;
                     }
+                    break;
+                case "isPublic":
+                    if (typeof action.payload.value == "boolean")
+                        state.data.template[action.payload.type] = Boolean(action.payload.value);
                     break;
             }
         },
@@ -234,167 +213,176 @@ const editorSlice = createSlice({
                 value: boolean;
             }>,
         ) => {
+            if (state.data === null || state.data.items.length === 0) return;
             switch (action.payload.type) {
                 case "canWrapCells":
                 case "canRepeat":
                 case "hideOnNoInput":
-                    if (state.data && state.data.items.length > 0) {
-                        state.data.items = state.data.items.map((row) => {
-                            if (row.templateID === state.selectedTemplateRow) {
-                                const temp = { ...row };
-                                temp.template = {
-                                    ...temp.template,
+                    state.data.items = state.data.items.map((row) => {
+                        if (row.templateID === state.selectedTemplateRow) {
+                            return {
+                                ...row,
+                                template: {
+                                    ...row.template,
                                     [action.payload.type]: action.payload.value,
-                                };
-                                return {
-                                    ...temp,
-                                };
-                            }
-                            return row;
-                        });
-                    }
+                                },
+                            };
+                        }
+                        return row;
+                    });
                     break;
             }
         },
         setTemplateCell: (
             state,
-            action: PayloadAction<{
-                type: string;
-                value: boolean | number | string;
-            }>,
+            action: PayloadAction<{ type: string; value: boolean | number | string | null }>,
         ) => {
-            switch (action.payload.type) {
-                case "hideOnEmpty":
-                case "isRequired":
-                case "inputHelper":
-                case "text":
-                case "description":
-                case "metaData":
-                    if (state.data && state.data.items.length > 0) {
-                        state.data.items = state.data.items.map((row) => {
-                            if (row.templateID === state.selectedTemplateRow) {
-                                const tempCellList = row.items.map((cell) => {
-                                    if (cell.templateID === state.selectedTemplateCell) {
-                                        const tempCell = { ...cell };
-                                        var value: string | number | boolean | null = null;
-                                        switch (action.payload.type) {
-                                            case "hideOnEmpty":
-                                            case "isRequired":
-                                                if (typeof action.payload.value === "boolean")
-                                                    value = Boolean(action.payload.value);
-                                                else
-                                                    return {
-                                                        ...tempCell,
-                                                    };
-                                                break;
-                                            case "inputHelper":
-                                                if (typeof action.payload.value === "string")
-                                                    value = Number(action.payload.value);
-                                                else
-                                                    return {
-                                                        ...tempCell,
-                                                    };
-                                                break;
-                                            case "text":
-                                            case "description":
-                                            case "metaData":
-                                                if (typeof action.payload.value === "string")
-                                                    value = String(
-                                                        action.payload.value?.trim() ?? null,
-                                                    );
-                                                else
-                                                    return {
-                                                        ...tempCell,
-                                                    };
-                                                break;
-                                        }
+            if (state.data === null || state.data.items.length === 0) return;
+            var stop: boolean = false;
+            state.data.items = state.data.items.map((row) => {
+                if (row.templateID === state.selectedTemplateRow) {
+                    return {
+                        ...row,
+                        items: row.items.map((cell) => {
+                            if (cell.templateID === state.selectedTemplateCell) {
+                                let value: boolean | number | string | null = null;
 
-                                        tempCell.template = {
-                                            ...tempCell.template,
-                                            [action.payload.type]: value,
-                                        };
-                                        return {
-                                            ...tempCell,
-                                        };
-                                    }
-                                    return cell;
-                                });
+                                switch (action.payload.type) {
+                                    case "hideOnEmpty":
+                                    case "isRequired":
+                                        if (typeof action.payload.value === "boolean")
+                                            value = Boolean(action.payload.value);
+                                        else stop = true;
+                                        break;
+                                    case "inputHelper":
+                                        if (typeof action.payload.value === "string")
+                                            value = Number(action.payload.value);
+                                        else stop = true;
+                                        break;
+                                    case "text":
+                                    case "description":
+                                        if (typeof action.payload.value === "string")
+                                            value = String(action.payload.value);
+                                        else stop = true;
+                                        break;
+                                    default:
+                                        stop = true;
+                                        break;
+                                }
+                                if (stop) return cell;
+
                                 return {
-                                    ...row,
-                                    items: tempCellList,
+                                    ...cell,
+                                    template: {
+                                        ...cell.template,
+                                        [action.payload.type]: value,
+                                    },
                                 };
                             }
-                            return row;
-                        });
-                    }
-                    break;
-            }
+                            return cell;
+                        }),
+                    };
+                }
+                return row;
+            });
         },
         addTemplateRow: (state) => {
-            if (state.data) {
-                const templateRowID = crypto.randomUUID();
-                const templatecellID = crypto.randomUUID();
-                state.data.items = [
-                    ...state.data.items,
-                    CreateEntryRow(templateRowID, templatecellID),
-                ];
-            }
+            if (state.data === null) return;
+            state.data.items = [
+                ...state.data.items,
+                CreateEntryRow(crypto.randomUUID(), crypto.randomUUID()),
+            ];
         },
         addTemplateCell: (state, action: PayloadAction<string>) => {
-            if (state.data && state.data.items.length > 0) {
-                state.data.items = state.data.items.map((row) => {
-                    if (row.templateID === action.payload) {
-                        const temp = { ...row };
-
-                        const templateID = crypto.randomUUID();
-                        temp.items.push(CreateEntryCell(templateID));
-
-                        return {
-                            ...temp,
-                        };
-                    }
-                    return row;
-                });
-            }
+            if (state.data === null || state.data.items.length === 0) return;
+            state.data.items = state.data.items.map((row) => {
+                if (row.templateID === action.payload) {
+                    row.items.push(CreateEntryCell(crypto.randomUUID()));
+                    return {
+                        ...row,
+                    };
+                }
+                return row;
+            });
         },
         removeTemplateRow: (state, action: PayloadAction<string>) => {
-            if (state.data && state.data.items.length > 1) {
-                state.data.items = state.data.items.filter((row) => {
-                    if (row.templateID !== action.payload) return row;
-                });
-                state.selectedTemplateRow = "";
-                state.selectedTemplateCell = "";
-                state.selectedEntryRow = "";
-                state.selectedEntryCell = "";
-            }
+            if (state.data === null || state.data.items.length <= 1) return;
+            state.data.items = state.data.items.filter((row) => {
+                if (row.templateID !== action.payload) return row;
+            });
+            state.selectedTemplateRow = "";
+            state.selectedTemplateCell = "";
+            state.selectedEntryRow = "";
+            state.selectedEntryCell = "";
         },
         removeTemplateCell: (
             state,
             action: PayloadAction<{ templateRow: string; templateCell: string }>,
         ) => {
-            if (state.data && state.data.items.length > 1) {
-                let stop = false;
-                const tempRowList = state.data.items.map((row) => {
-                    if (row.templateID === action.payload.templateRow && row.items.length > 0) {
-                        if (row.items.length === 1) stop = true;
-                        const tempCellList = row.items.filter((cell) => {
+            if (state.data === null || state.data.items.length <= 1) return;
+            let stop = false;
+            const tempRowList = state.data.items.map((row) => {
+                if (row.templateID === action.payload.templateRow && row.items.length > 0) {
+                    if (row.items.length === 1) stop = true;
+                    return {
+                        ...row,
+                        items: row.items.filter((cell) => {
                             if (cell.templateID !== action.payload.templateCell) return cell;
-                        });
-                        return {
-                            ...row,
-                            items: tempCellList,
-                        };
-                    }
-                    return row;
-                });
+                        }),
+                    };
+                }
+                return row;
+            });
 
-                if (stop) return;
-                state.data.items = tempRowList;
-                state.selectedTemplateRow = "";
-                state.selectedTemplateCell = "";
-                state.selectedEntryRow = "";
-                state.selectedEntryCell = "";
-            }
+            if (stop) return;
+            state.data.items = tempRowList;
+            state.selectedTemplateRow = "";
+            state.selectedTemplateCell = "";
+            state.selectedEntryRow = "";
+            state.selectedEntryCell = "";
+        },
+        setMetadata: (state, action: PayloadAction<string | null>) => {
+            if (state.data === null || state.data.items.length === 0) return;
+            state.data.items = state.data.items.map((row) => {
+                if (row.templateID === state.selectedTemplateRow) {
+                    return {
+                        ...row,
+                        items: row.items.map((cell) => {
+                            if (cell.templateID === state.selectedTemplateCell) {
+                                return {
+                                    ...cell,
+                                    template: {
+                                        ...cell.template,
+                                        metaData: action.payload,
+                                    },
+                                };
+                            }
+                            return cell;
+                        }),
+                    };
+                }
+                return row;
+            });
+        },
+        setData: (state, action: PayloadAction<string | null>) => {
+            if (state.data === null || state.data.items.length === 0) return;
+            state.data.items = state.data.items.map((row) => {
+                if (row.id === state.selectedEntryRow) {
+                    return {
+                        ...row,
+                        items: row.items.map((cell) => {
+                            if (cell.id === state.selectedEntryCell) {
+                                return {
+                                    ...cell,
+                                    data: action.payload,
+                                };
+                            }
+                            return cell;
+                        }),
+                    };
+                }
+                return row;
+            });
         },
         setRows: (state, action: PayloadAction<EntryRow[]>) => {
             if (state.data) state.data.items = action.payload;
@@ -408,10 +396,22 @@ const editorSlice = createSlice({
                 templateCell: string;
             }>,
         ) => {
-            state.selectedEntryRow = action.payload.entryRow;
-            state.selectedEntryCell = action.payload.entryCell;
-            state.selectedTemplateRow = action.payload.templateRow;
-            state.selectedTemplateCell = action.payload.templateCell;
+            if (
+                state.selectedEntryRow !== action.payload.entryRow ||
+                state.selectedEntryCell !== action.payload.entryCell ||
+                state.selectedTemplateRow !== action.payload.templateRow ||
+                state.selectedTemplateCell !== action.payload.templateCell
+            ) {
+                state.selectedEntryRow = action.payload.entryRow;
+                state.selectedEntryCell = action.payload.entryCell;
+                state.selectedTemplateRow = action.payload.templateRow;
+                state.selectedTemplateCell = action.payload.templateCell;
+            } else {
+                state.selectedTemplateRow = "";
+                state.selectedTemplateCell = "";
+                state.selectedEntryRow = "";
+                state.selectedEntryCell = "";
+            }
         },
         reset: (state) => {
             state.status = "idle";
@@ -422,8 +422,6 @@ const editorSlice = createSlice({
             state.selectedEntryCell = "";
         },
     },
-    // The `extraReducers` field lets the slice handle actions defined elsewhere,
-    // including actions generated by createAsyncThunk or in other slices.
     extraReducers: (builder) => {
         builder
             .addCase(getEditor.pending, (state) => {
@@ -456,7 +454,6 @@ const editorSlice = createSlice({
 
 export const {
     setEntry,
-    setEntryCell,
     setTemplate,
     setTemplateRow,
     setTemplateCell,
@@ -464,6 +461,8 @@ export const {
     addTemplateCell,
     removeTemplateRow,
     removeTemplateCell,
+    setMetadata,
+    setData,
     setRows,
     setSelected,
     reset,

@@ -14,8 +14,6 @@ const ihMetaDataSchema = z
     .strip();
 
 export const IhStatic = ({ cell }: InputHelperProps) => {
-    // const editor = useAppSelector(selectEditor);
-    // const dispatch = useAppDispatch();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     if (metadata.success === false) return null;
 
@@ -75,19 +73,17 @@ export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                label={"Textfarbe"}
-                useNameAsIs={true}
-                name="color"
                 type="color"
+                label="Textfarbe"
+                name="color"
                 value={metadata.data.color ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Textgröße"}
-                useNameAsIs={true}
+                type="number"
+                label="Textgröße"
                 name="fontsize"
                 min={10}
-                type="number"
                 value={metadata.data.fontsize ?? ""}
                 onChange={dispatchCellSettings}
             />

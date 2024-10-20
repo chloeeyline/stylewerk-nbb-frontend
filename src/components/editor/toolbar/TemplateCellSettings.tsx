@@ -1,4 +1,3 @@
-import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import InlineScroller from "~/components/layout/InlineScroller";
@@ -75,8 +74,26 @@ export default function TemplateCellSettings() {
                     value={selectedCellSettings()?.template.description ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                 />
-            </InlineScroller>
-            <InlineScroller>
+                <div className="d-grid gap-1" style={{ placeItems: "center" }}>
+                    <InputField
+                        type="checkbox"
+                        label="HideOnEmpty"
+                        name="hideOnEmpty"
+                        useNameAsIs={true}
+                        maxLength={100}
+                        checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
+                        onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                    />
+                    <InputField
+                        type="checkbox"
+                        label="IsRequired"
+                        name="isRequired"
+                        useNameAsIs={true}
+                        maxLength={100}
+                        checked={selectedCellSettings()?.template.isRequired ?? false}
+                        onChange={(e) => dispatchCellSettings(e, e.target.checked)}
+                    />
+                </div>
                 <InputHelperSettings cell={selectedCellSettings()} />
             </InlineScroller>
         </fieldset>

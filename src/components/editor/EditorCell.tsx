@@ -104,29 +104,6 @@ export default function EditorCell({
                     <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
                         <Move className="fill-current-color" />
                     </button>
-
-                    {editor.selectedTemplateCell === cell.templateID ? (
-                        <>
-                            <InputField
-                                type="checkbox"
-                                label="HideOnEmpty"
-                                name="hideOnEmpty"
-                                useNameAsIs={true}
-                                maxLength={100}
-                                checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
-                                onChange={(e) => dispatchCellSettings(e, e.target.checked)}
-                            />
-                            <InputField
-                                type="checkbox"
-                                label="IsRequired"
-                                name="isRequired"
-                                useNameAsIs={true}
-                                maxLength={100}
-                                checked={selectedCellSettings()?.template.isRequired ?? false}
-                                onChange={(e) => dispatchCellSettings(e, e.target.checked)}
-                            />
-                        </>
-                    ) : null}
                 </div>
             ) : null}
             <div

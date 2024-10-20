@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -38,14 +38,14 @@ export const IhColor = ({ cell, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 var temp = {
                     ...data.data,
                     value: e.target.value,
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -88,10 +88,9 @@ export const IhColorSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="color"
+            label="Standartwert"
+            name="value"
             value={metadata.data.value ?? ""}
             onChange={dispatchCellSettings}
         />

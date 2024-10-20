@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -28,24 +28,24 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <InputField
+            type="checkbox"
+            label={cell.template.text ?? ""}
+            name="checkbox"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="checkbox"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type="checkbox"
             checked={data.data.value ?? metadata.data.value ?? false}
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 var temp = {
                     ...data.data,
                     value: e.target.checked,
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -88,10 +88,9 @@ export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="checkbox"
+            label="Standartwert"
+            name="value"
             checked={metadata.data.value ?? false}
             onChange={dispatchCellSettings}
         />

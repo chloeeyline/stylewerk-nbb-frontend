@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -40,12 +40,12 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <InputField
+            type="number"
+            label={cell.template.text ?? ""}
+            name="number"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="number"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type="number"
             value={data.data.value ?? ""}
             min={metadata.data?.min}
             max={metadata.data?.max}
@@ -53,7 +53,7 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 var temp = {
@@ -62,7 +62,7 @@ export const IhNumber = ({ cell, isReadOnly }: InputHelperProps) => {
                         ? Number.parseInt(e.target.value)
                         : Number.parseFloat(e.target.value),
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -119,34 +119,30 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                label={"Minimalwert"}
-                useNameAsIs={true}
-                name="min"
                 type="number"
+                label="Minimalwert"
+                name="min"
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Maximalwert"}
-                useNameAsIs={true}
-                name="max"
                 type="number"
+                label="Maximalwert"
+                name="max"
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Schrittgröße"}
-                useNameAsIs={true}
-                name="step"
                 type="number"
+                label="Schrittgröße"
+                name="step"
                 value={metadata.data.step ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                label={"Ganzzahlswert"}
-                useNameAsIs={true}
-                name="integer"
                 type="checkbox"
+                label="Ganzzahlswert"
+                name="integer"
                 checked={metadata.data.integer}
                 onChange={dispatchCellSettings}
             />

@@ -3,7 +3,7 @@ import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppSelector, useAppDispatch } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -47,14 +47,14 @@ export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 const temp = {
                     ...data.data,
                     value: e.target.value,
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -97,10 +97,9 @@ export const IhTextSettings = ({ cell }: { cell: EntryCell }) => {
 
     return (
         <InputField
-            label={"Standartwert"}
-            useNameAsIs={true}
-            name="value"
             type="checkbox"
+            label="Standartwert"
+            name="value"
             value={metadata.data.value ?? false}
             onChange={dispatchCellSettings}
         />
