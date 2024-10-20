@@ -22,9 +22,13 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
+import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
+import Equalizer from "~/components/Icon/Equalizer";
 import Move from "~/components/Icon/Move";
+import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
+import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import type { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
@@ -41,42 +45,208 @@ import {
     setSelectedFolderName,
     toggleDragMode,
     toggleHideFilters,
-    toggleHideList,
     updateFolder,
 } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 
-const EntryComponent = ({ item }: { item: EntryItem }) => {
+const EntriesList = () => {
+    const { t } = useTranslation();
+    const entry = useAppSelector(selectEntry);
+    const dispatch = useAppDispatch();
+
+    useEffect(() => {
+        if (entry.hideFilters) {
+            dispatch(listFolder());
+        } else {
+            dispatch(listEntry());
+        }
+    }, []);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    const dragFolder = (e: DragEndEvent) => {
+        if (entry.folders.length > 0) {
+            const { active, over } = e;
+
+            if (over && active.id !== over.id) {
+                const oldIndex = entry.folders.indexOf(
+                    entry.folders.filter((value) => value.id === active.id)[0],
+                );
+                const newIndex = entry.folders.indexOf(
+                    entry.folders.filter((value) => value.id === over.id)[0],
+                );
+                dispatch(setFolders(arrayMove(entry.folders, oldIndex, newIndex)));
+            }
+        }
+    };
+
+    const filterItems = entry.items;
+
+    const generalItems = entry.folders.filter(({ name }) => name === null);
+
+    const folderItems = entry.folders.filter(({ name }) => name !== null);
+
+    return (
+        <fieldset
+            className="fieldset grid-template-rows gap-1 size-block-100"
+            style={{ "--grid-template-rows": entry.hideFilters ? "auto 1fr" : "auto auto 1fr" }}>
+            <legend className="legend">{t("common.list")}</legend>
+            <div
+                className="d-grid grid-template-columns gap-1"
+                style={{ "--grid-template-columns": "1fr 1fr" }}>
+                <button
+                    type="button"
+                    className="btn p-1"
+                    onClick={() => {
+                        if (entry.hideFilters) {
+                            dispatch(listFolder());
+                        } else {
+                            dispatch(listEntry());
+                        }
+                    }}>
+                    <Refresh className="icon-inline" />
+                </button>
+                <button
+                    type="button"
+                    className={cls("btn p-1", entry.hideFilters !== true ? "active" : undefined)}
+                    onClick={() => dispatch(toggleHideFilters())}>
+                    <Equalizer className="icon-inline" />
+                </button>
+            </div>
+
+            {entry.hideFilters !== true ? <EntryFilters /> : null}
+
+            <ScrollContainer direction="vertical">
+                <div className="d-grid gap-1">
+                    {filterItems.map((item) => (
+                        <EntryComponent key={item.id} item={item} insideFolder={false} />
+                    ))}
+                    {generalItems.map((folder) =>
+                        folder.items.map((item) => (
+                            <EntryComponent key={item.id} item={item} insideFolder={false} />
+                        )),
+                    )}
+                    <DndContext
+                        modifiers={[restrictToVerticalAxis]}
+                        sensors={sensors}
+                        collisionDetection={closestCenter}
+                        onDragEnd={(e) => dragFolder(e)}>
+                        <SortableContext items={folderItems} strategy={verticalListSortingStrategy}>
+                            {folderItems.map((item) => (
+                                <EntryFolderComponent key={item.id} item={item} />
+                            ))}
+                        </SortableContext>
+                    </DndContext>
+                </div>
+            </ScrollContainer>
+        </fieldset>
+    );
+};
+
+const EntryFilters = () => {
+    const { t } = useTranslation();
+    const entry = useAppSelector(selectEntry);
+    const dispatch = useAppDispatch();
+
+    const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setFilter({
+                type: e.target.name,
+                value: e.target.value,
+            }),
+        );
+    };
+
+    const dispatchFilterCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
+        dispatch(
+            setFilter({
+                type: e.target.name,
+                value: e.target.checked ? "true" : "false",
+            }),
+        );
+    };
+
+    return (
+        <fieldset className="fieldset bg-base-300">
+            <legend className="legend bg-base-100">{t("list.filtering")}</legend>
+            <Columns>
+                <InputField
+                    type="text"
+                    label={t("common.name")}
+                    name="name"
+                    className="bg-base-200"
+                    value={entry.filter.name ?? ""}
+                    onChange={dispatchFilter}
+                />
+                <InputField
+                    type="text"
+                    label={t("formFields.templateName")}
+                    name="templateName"
+                    className="bg-base-200"
+                    value={entry.filter.templateName ?? ""}
+                    onChange={dispatchFilter}
+                />
+                <InputField
+                    type="text"
+                    label={t("formFields.tags")}
+                    name="tags"
+                    className="bg-base-200"
+                    value={entry.filter.tags ?? ""}
+                    onChange={dispatchFilter}
+                />
+                <InputField
+                    type="text"
+                    label={t("formFields.username")}
+                    name="username"
+                    className="bg-base-200"
+                    value={entry.filter.username ?? ""}
+                    onChange={dispatchFilter}
+                />
+            </Columns>
+            <InputField
+                type="checkbox"
+                label={t("formFields.public")}
+                name="includePublic"
+                checked={entry.filter.includePublic === "true"}
+                onChange={dispatchFilterCheckbox}
+            />
+        </fieldset>
+    );
+};
+
+const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder: boolean }) => {
+    const { id, name, username, tags } = item;
     return (
         <NavLink
-            to={Routes.Entries.View.replace(RouteParams.EntryId, item.id).replace(
+            className={cls(
+                "d-grid gap-0 no-link rounded-1 p-1",
+                insideFolder ? "bg-base-200" : "bg-base-300",
+            )}
+            to={Routes.Entries.View.replace(RouteParams.EntryId, id).replace(
                 RouteParams.IsNew,
                 "false",
-            )}
-            className="lcontainer m-be-1">
-            <div className="lrow">
-                {item.name && <div className="lcell">{item.name}</div>}
-                {item.username && (
-                    <div className="lcell" style={{ textAlign: "right" }}>
-                        {item.username}
-                    </div>
-                )}
+            )}>
+            <div
+                className="d-flex"
+                style={{ justifyContent: "space-between", alignItems: "baseline" }}>
+                <div className="no-line-height">{name}</div>
+                <div className="no-line-height fs-1">{username}</div>
             </div>
-            {item.templateName && (
-                <div className="lrow">
-                    <div className="lcell">{item.templateName}</div>
-                </div>
-            )}
-            {item.tags && (
-                <div className="lrow">
-                    {item.tags.split(",").map((tag) => (
-                        <div key={tag} className="lcell tag">
-                            {tag}
-                        </div>
+            {tags !== null && tags.trim().length > 0 ? (
+                <div className="d-flex gap-0">
+                    {tags.split(",").map((tag) => (
+                        <span key={tag} className="p-0 fs-1 rounded-0 bg-accent no-line-height">
+                            #{tag}
+                        </span>
                     ))}
                 </div>
-            )}
+            ) : null}
         </NavLink>
     );
 };
@@ -91,46 +261,46 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
         id: item.id,
     });
 
-    const style = {
-        transform: CSS.Transform.toString(transform),
-        transition,
-    };
-
     return (
         <div
             ref={setNodeRef}
-            className="lcontainer m-be-1"
-            style={style}
-            {...attributes}
-            onClick={() => dispatch(setSelectedFolder(item))}>
+            className={cls(
+                "d-grid p-1 rounded-1 bg-base-300",
+                visible && !entry.dragMode ? "gap-0" : "gap-none",
+            )}
+            style={{
+                transform: CSS.Transform.toString(transform),
+                transition,
+            }}
+            {...attributes}>
             <div
-                className="lrow"
+                className="d-flex flex-wrap gap-1"
                 onClick={() => {
+                    if (entry.dragMode) return;
+
                     setVisible(!visible);
-                    if (item.items.length == 0 && item.id) {
+
+                    if (item.items.length === 0 && item.id) {
                         dispatch(detailFolder({ id: item.id }));
                     }
+
+                    dispatch(setSelectedFolder(item));
                 }}>
-                <div
+                <button
+                    type="button"
                     className={cls(
-                        "lcell",
-                        item.name !== null && entry.dragMode ? undefined : "hidden",
-                    )}>
-                    <Move
-                        className={item.name !== null && entry.dragMode ? undefined : "hidden"}
-                        {...listeners}
-                    />
-                </div>
-                <div className="lcell">{item.name ?? t("list.generalFolder")}</div>
+                        "btn btn-accent btn-square p-0",
+                        item.name !== null && entry.dragMode ? undefined : "d-none",
+                    )}
+                    {...listeners}>
+                    <Move className="fill-current-color" />
+                </button>
+                {item.name ?? t("list.generalFolder")}
             </div>
-            <div
-                className={cls("lrow", visible && !entry.dragMode ? undefined : "hidden")}
-                style={{ marginLeft: "2rem" }}>
-                <div className="lcell">
-                    {item.items &&
-                        item.items.length > 0 &&
-                        item.items?.map((item) => <EntryComponent key={item.id} item={item} />)}
-                </div>
+            <div className={cls("gap-1", visible && !entry.dragMode ? "d-grid" : "d-none")}>
+                {(item.items ?? []).map((item) => (
+                    <EntryComponent key={item.id} item={item} insideFolder={true} />
+                ))}
             </div>
         </div>
     );
@@ -190,50 +360,12 @@ export default function EntriesLayout() {
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
-        if (entry.hideFilters) dispatch(listFolder());
-        else dispatch(listEntry());
-    }, []);
-
-    const sensors = useSensors(
-        useSensor(PointerSensor),
-        useSensor(KeyboardSensor, {
-            coordinateGetter: sortableKeyboardCoordinates,
-        }),
-    );
-
-    const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(
-            setFilter({
-                type: e.target.name,
-                value: e.target.value,
-            }),
-        );
-    };
-
-    const dispatchFilterCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(
-            setFilter({
-                type: e.target.name,
-                value: e.target.checked ? "true" : "false",
-            }),
-        );
-    };
-
-    const dragFolder = (e: DragEndEvent) => {
-        if (entry.folders.length > 0) {
-            const { active, over } = e;
-
-            if (over && active.id !== over.id) {
-                const oldIndex = entry.folders.indexOf(
-                    entry.folders.filter((value) => value.id === active.id)[0],
-                );
-                const newIndex = entry.folders.indexOf(
-                    entry.folders.filter((value) => value.id === over.id)[0],
-                );
-                dispatch(setFolders(arrayMove(entry.folders, oldIndex, newIndex)));
-            }
+        if (entry.hideFilters) {
+            dispatch(listFolder());
+        } else {
+            dispatch(listEntry());
         }
-    };
+    }, []);
 
     const closeModal = (success: boolean) => {
         setDialogIsOpen(false);
@@ -251,155 +383,67 @@ export default function EntriesLayout() {
     };
 
     return (
-        <Grid layout="header" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-            <form>
-                <fieldset className="d-flex gap-1">
-                    <legend>Actions</legend>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            if (entry.hideFilters) dispatch(listFolder());
-                            else dispatch(listEntry());
-                        }}>
-                        {entry.hideFilters ? t("list.refresh") : t("list.filter")}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            dispatch(toggleHideList());
-                        }}>
-                        {entry.hideList ? t("list.showList") : t("list.hideList")}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            dispatch(toggleHideFilters());
-                        }}>
-                        {entry.hideFilters ? t("list.showFilters") : t("list.hideFilters")}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            dispatch(toggleDragMode());
-                            if (entry.dragMode) dispatch(reorderFolder());
-                        }}>
-                        {entry.dragMode
-                            ? t("list.dragFolderModeDeactive")
-                            : t("list.dragFolderModeActive")}
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            entry.hideFilters === true && entry.dragMode === false
-                                ? undefined
-                                : "hidden",
-                        )}
-                        onClick={() => setDialogIsOpen(true)}>
-                        {entry.selectedFolder.isNew ? "Neuen Ordner anlegen" : "Ordner bearbeiten"}
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            entry.selectedFolder.isNew === true ? "hidden" : undefined,
-                        )}
-                        onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
-                        Ordner Löschen
-                    </button>
-                    <button
-                        type="button"
-                        className={cls(
-                            "btn p-0",
-                            typeof editor.data?.id === "string" ? undefined : "hidden",
-                        )}
-                        onClick={() =>
-                            navigate(
-                                Routes.Entries.Edit.replace(
-                                    RouteParams.EntryId,
-                                    editor.data?.id ?? "",
-                                ).replace(RouteParams.IsNew, "false"),
-                            )
-                        }>
-                        {t("common.edit")}
-                    </button>
-                </fieldset>
-                <fieldset className={entry.hideFilters || entry.dragMode ? "hidden" : undefined}>
-                    <legend>{t("list.filtering")}</legend>
-                    <InputField
-                        label={t("common.name")}
-                        name="name"
-                        useNameAsIs={true}
-                        type="text"
-                        value={entry.filter.name ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.templateName")}
-                        name="templateName"
-                        useNameAsIs={true}
-                        type="text"
-                        value={entry.filter.templateName ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.tags")}
-                        name="tags"
-                        useNameAsIs={true}
-                        type="text"
-                        value={entry.filter.tags ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.username")}
-                        name="username"
-                        useNameAsIs={true}
-                        type="text"
-                        value={entry.filter.username ?? ""}
-                        onChange={dispatchFilter}
-                    />
-                    <InputField
-                        label={t("formFields.public")}
-                        name="includePublic"
-                        useNameAsIs={true}
-                        type="checkbox"
-                        checked={entry.filter.includePublic === "true"}
-                        onChange={dispatchFilterCheckbox}
-                    />
-                </fieldset>
-            </form>
+        <Grid layout="header" className="gap-0 size-block-100">
+            <div className="fieldset p-1 d-flex flex-wrap gap-1">
+                <button
+                    type="button"
+                    className="btn p-0"
+                    onClick={() => {
+                        dispatch(toggleDragMode());
+                        if (entry.dragMode) {
+                            dispatch(reorderFolder());
+                        }
+                    }}>
+                    {entry.dragMode
+                        ? t("list.dragFolderModeDeactive")
+                        : t("list.dragFolderModeActive")}
+                </button>
+                <button
+                    type="button"
+                    className={cls(
+                        "btn p-0",
+                        entry.hideFilters === true && entry.dragMode === false
+                            ? undefined
+                            : "hidden",
+                    )}
+                    onClick={() => setDialogIsOpen(true)}>
+                    {entry.selectedFolder.isNew ? "Neuen Ordner anlegen" : "Ordner bearbeiten"}
+                </button>
+                <button
+                    type="button"
+                    className={cls(
+                        "btn p-0",
+                        entry.selectedFolder.isNew === true || entry.selectedFolder.name === null
+                            ? "d-none"
+                            : undefined,
+                    )}
+                    onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
+                    Ordner Löschen
+                </button>
+                <button
+                    type="button"
+                    className={cls(
+                        "btn p-0",
+                        typeof editor.data?.id === "string" ? undefined : "hidden",
+                    )}
+                    onClick={() =>
+                        navigate(
+                            Routes.Entries.Edit.replace(
+                                RouteParams.EntryId,
+                                editor.data?.id ?? "",
+                            ).replace(RouteParams.IsNew, "false"),
+                        )
+                    }>
+                    {t("common.edit")}
+                </button>
+            </div>
             <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
-            <Grid layout="sidebarStart" className="size-block-100 gap" style={{ "--gap": "1rem" }}>
-                <fieldset>
-                    <legend>Liste</legend>
-                    <ScrollContainer
-                        direction="vertical"
-                        className={cls("p-1", entry.hideList ? "hidden" : undefined)}>
-                        <DndContext
-                            modifiers={[restrictToVerticalAxis]}
-                            sensors={sensors}
-                            collisionDetection={closestCenter}
-                            onDragEnd={(e) => dragFolder(e)}>
-                            <SortableContext
-                                items={entry.folders}
-                                strategy={verticalListSortingStrategy}>
-                                {entry.folders.map((item) => (
-                                    <EntryFolderComponent key={item.id} item={item} />
-                                ))}
-                            </SortableContext>
-                        </DndContext>
-                        {entry.items.map((item) => (
-                            <EntryComponent key={item.id} item={item} />
-                        ))}
-                    </ScrollContainer>
-                    <div className={entry!.hideList ? "hidden" : undefined}></div>
-                </fieldset>
+            <ResponsiveSidebar
+                showSidebar={entry.hideList !== true}
+                className={cls("size-block-100", entry.hideList ? "gap-none" : "gap-2")}>
+                <EntriesList />
                 <Outlet />
-            </Grid>
+            </ResponsiveSidebar>
         </Grid>
     );
 }
