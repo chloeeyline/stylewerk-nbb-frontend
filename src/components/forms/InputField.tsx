@@ -20,37 +20,57 @@ export default forwardRef(function InputField(
 ) {
     const id = useId();
 
-    return (
-        <div className={props.type === "checkbox" ? "d-flex gap-0" : "d-grid"}>
-            <label htmlFor={id}>{label}</label>
-            {props.type === "color" ? (
-                <div
-                    className="d-grid grid-template-columns gap-0"
+    if (props.type === "color") {
+        return (
+            <div className="d-grid">
+                <label htmlFor={id}>{label}</label>
+                <label
+                    className={cls("input d-grid grid-template-columns", className)}
                     style={{ "--grid-template-columns": "auto 1fr", "alignItems": "center" }}>
                     <input
                         ref={ref}
                         id={id}
                         name={name}
                         placeholder={label}
-                        className={cls("input", className, "p-0")}
+                        className={cls("input p-0 size-block-100", className)}
                         {...props}
                     />
                     <span className="font-mono">({props.value})</span>
-                </div>
-            ) : (
+                </label>
+
+                {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+            </div>
+        );
+    }
+
+    if (props.type === "checkbox" || props.type === "radio") {
+        return (
+            <div className="d-flex gap-0" style={{ alignItems: "baseline" }}>
+                <label htmlFor={id}>{label}</label>
                 <input
                     ref={ref}
                     id={id}
                     name={name}
                     placeholder={label}
-                    className={cls(
-                        "input",
-                        className,
-                        props.type === "checkbox" ? "d-inline size-inline-auto" : undefined,
-                    )}
+                    className={cls("input d-inline size-inline-auto", className)}
                     {...props}
                 />
-            )}
+                {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+            </div>
+        );
+    }
+
+    return (
+        <div className="d-grid">
+            <label htmlFor={id}>{label}</label>
+            <input
+                ref={ref}
+                id={id}
+                name={name}
+                placeholder={label}
+                className={cls("input", className)}
+                {...props}
+            />
             {(error ?? null) !== null ? <span className="error">{error}</span> : null}
         </div>
     );
