@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import InputField from "~/components/forms/InputField";
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
 import type { EntryCell } from "~/redux/features/editor/editor-schemas";
@@ -9,7 +8,6 @@ import {
     removeTemplateCell,
     selectEditor,
     setSelected,
-    setTemplateCell,
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
@@ -43,36 +41,17 @@ export default function EditorCell({
         );
     };
 
-    const selectedCellSettings = () => {
-        if (
-            editor.selectedTemplateRow.length == 0 ||
-            editor.selectedTemplateCell.length == 0 ||
-            editor.data === null
-        )
-            return null;
-
-        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
-        if (!row) return null;
-        const cell = row?.items.find((cell) => cell.templateID === editor.selectedTemplateCell);
-        return cell ?? null;
-    };
-
-    const dispatchCellSettings = (
-        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
-        value: boolean | number | string,
-    ) => {
-        dispatch(
-            setTemplateCell({
-                type: e.target.name,
-                value: value,
-            }),
-        );
-    };
-
     return (
         <div
             ref={setNodeRef}
-            className="d-grid gap-1 grid-template-rows rounded-2 bg-base-200"
+            className={cls(
+                "d-grid gap-1 p-1 grid-template-rows rounded-2",
+                editor.isPreview === false &&
+                    editor.isTemplate === true &&
+                    cell.templateID === editor.selectedTemplateCell
+                    ? "bg-info-active"
+                    : "bg-base-200",
+            )}
             title={cell.template?.description ?? ""}
             style={{
                 "flex": 1,
@@ -81,11 +60,10 @@ export default function EditorCell({
                 "transform": CSS.Transform.toString(transform),
                 transition,
             }}
+            onClick={select}
             {...attributes}>
             {editor.isPreview !== true && editor.isTemplate ? (
-                <div
-                    className="d-flex flex-wrap gap-1 p-i-1 p-bs-1"
-                    style={{ justifyContent: "flex-start" }}>
+                <div className="d-flex flex-wrap gap-1" style={{ justifyContent: "flex-start" }}>
                     <button
                         type="button"
                         className="btn btn-error btn-square p-0"
@@ -106,18 +84,7 @@ export default function EditorCell({
                     </button>
                 </div>
             ) : null}
-            <div
-                className={cls(
-                    "p-1 rounded-2",
-                    editor.isPreview === false &&
-                        editor.isTemplate === true &&
-                        cell.templateID === editor.selectedTemplateCell
-                        ? "bg-info-active"
-                        : "bg-base-200",
-                )}
-                onClick={select}>
-                <InputHelper cell={cell} />
-            </div>
+            <InputHelper cell={cell} />
         </div>
     );
 }

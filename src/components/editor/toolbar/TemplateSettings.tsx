@@ -4,11 +4,10 @@ import { NavLink } from "react-router-dom";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
+import InlineScroller from "~/components/layout/InlineScroller";
 import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import Columns from "~/components/forms/Columns";
-import InlineScroller from "~/components/layout/InlineScroller";
 
 export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
@@ -102,15 +101,17 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     value={editor.data.template.description ?? ""}
                     onChange={(e) => dispatchGeneral(e, e.target.value)}
                 />
-                <InputField
-                    label={t("formFields.public")}
-                    name={"isPublic"}
-                    useNameAsIs={true}
-                    type="checkbox"
-                    maxLength={100}
-                    checked={editor.data.template.isPublic}
-                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
-                />
+                <div className="d-grid" style={{ placeItems: "center" }}>
+                    <InputField
+                        label={t("formFields.public")}
+                        name={"isPublic"}
+                        useNameAsIs={true}
+                        type="checkbox"
+                        maxLength={100}
+                        checked={editor.data.template.isPublic}
+                        onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    />
+                </div>
             </InlineScroller>
         </fieldset>
     );

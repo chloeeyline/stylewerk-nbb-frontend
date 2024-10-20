@@ -74,7 +74,7 @@ export default function TemplateCellSettings() {
                     value={selectedCellSettings()?.template.description ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                 />
-                <div className="d-grid gap-1" style={{ placeItems: "center" }}>
+                <div className="d-grid grid-template-columns gap-1" style={{ "--grid-template-columns": "1fr 1fr", placeItems: "center" }}>
                     <InputField
                         type="checkbox"
                         label="HideOnEmpty"
