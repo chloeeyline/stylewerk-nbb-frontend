@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setEntryCell, setTemplateCell } from "~/redux/features/editor/editor-slice";
+import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -65,14 +65,14 @@ export const IhDateTime = ({ cell, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 if (editor.isPreview) return;
                 if (e.target.value.length === 0) {
-                    dispatch(setEntryCell(null));
+                    dispatch(setData(null));
                     return;
                 }
                 var temp = {
                     ...data.data,
                     value: e.target.value,
                 };
-                dispatch(setEntryCell(JSON.stringify(temp)));
+                dispatch(setData(JSON.stringify(temp)));
             }}
         />
     );
@@ -84,12 +84,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(
-            setTemplateCell({
-                type: "metaData",
-                value: JSON.stringify(metadata.data),
-            }),
-        );
+        dispatch(setMetadata(JSON.stringify(metadata.data)));
     }, []);
 
     if (metadata.success === false) return null;
@@ -101,24 +96,22 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
             case "max":
             case "value":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: e.target.value,
                         }),
-                    }),
+                    ),
                 );
                 break;
             case "type":
                 dispatch(
-                    setTemplateCell({
-                        type: "metaData",
-                        value: JSON.stringify({
+                    setMetadata(
+                        JSON.stringify({
                             ...metadata.data,
                             [e.target.name]: Number(e.target.value),
                         }),
-                    }),
+                    ),
                 );
                 break;
             default:

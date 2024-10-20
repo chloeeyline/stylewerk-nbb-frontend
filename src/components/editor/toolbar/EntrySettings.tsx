@@ -28,20 +28,14 @@ const EntrySettings = () => {
         });
     }, []);
 
-    const dispatchGeneral = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const dispatchGeneral = (
+        e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
+        value: boolean | number | string,
+    ) => {
         dispatch(
             setEntry({
                 type: e.target.name,
-                value: e.target.value,
-            }),
-        );
-    };
-
-    const dispatchGeneralCheckbox = (e: React.ChangeEvent<HTMLInputElement>) => {
-        dispatch(
-            setEntry({
-                type: e.target.name,
-                value: e.target.checked ? "true" : "false",
+                value: value,
             }),
         );
     };
@@ -69,7 +63,7 @@ const EntrySettings = () => {
                 type="text"
                 maxLength={100}
                 value={editor.data.name ?? ""}
-                onChange={dispatchGeneral}
+                onChange={(e) => dispatchGeneral(e, e.target.value)}
             />
             <InputField
                 label={t("formFields.tags")}
@@ -78,14 +72,14 @@ const EntrySettings = () => {
                 type="text"
                 maxLength={100}
                 value={editor.data.tags ?? ""}
-                onChange={dispatchGeneral}
+                onChange={(e) => dispatchGeneral(e, e.target.value)}
             />
             <SelectField
                 name="folderID"
                 label={"Folder"}
                 useNameAsIs={true}
                 value={editor.data.folderID ?? 1}
-                onChange={dispatchGeneral}
+                onChange={(e) => dispatchGeneral(e, e.target.value)}
                 options={folders ?? []}
             />
             <div>
@@ -96,7 +90,7 @@ const EntrySettings = () => {
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isPublic}
-                    onChange={dispatchGeneralCheckbox}
+                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
                 />
                 <InputField
                     label={"Encrypted"}
@@ -105,7 +99,7 @@ const EntrySettings = () => {
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isEncrypted}
-                    onChange={dispatchGeneralCheckbox}
+                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
                 />
             </div>
         </fieldset>
