@@ -7,6 +7,7 @@ import { IhDateTime } from "./IhDateTime";
 import { IhNumber } from "./IhNumber";
 import { IhStatic } from "./IhStatic";
 import { IhText } from "./IhText";
+import { IhList } from "./IhList";
 
 const InputHelper = ({ cell }: { cell: EntryCell }) => {
     const editor = useAppSelector(selectEditor);
@@ -28,6 +29,8 @@ const InputHelper = ({ cell }: { cell: EntryCell }) => {
             return <IhDateTime {...props} />;
         case 7:
             return <IhColor {...props} />;
+        case 8:
+            return <IhList {...props} />;
         default:
             return (
                 <pre>

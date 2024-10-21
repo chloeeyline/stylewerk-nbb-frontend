@@ -5,6 +5,7 @@ import { IhNumberSettings } from "~/components/editor/input-helper/IhNumber";
 import { IhStaticSettings } from "~/components/editor/input-helper/IhStatic";
 import { IhTextSettings } from "~/components/editor/input-helper/IhText";
 import type { EntryCell } from "~/redux/features/editor/editor-schemas";
+import { IhListSettings } from "../input-helper/IhList";
 
 export default function InputHelperSettings({ cell }: { cell: EntryCell | null }) {
     if (!cell) return null;
@@ -21,6 +22,8 @@ export default function InputHelperSettings({ cell }: { cell: EntryCell | null }
             return <IhDateTimeSettings cell={cell} />;
         case 7:
             return <IhColorSettings cell={cell} />;
+        case 8:
+            return <IhListSettings cell={cell} />;
         default:
             return null;
     }
