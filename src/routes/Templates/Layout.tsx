@@ -50,8 +50,10 @@ const TemplatesList = () => {
                     <Equalizer className="icon-inline" />
                 </button>
             </div>
+
             {template.hideFilters !== true ? <TemplateFilters /> : null}
-            <ScrollContainer direction="vertical" className="">
+
+            <ScrollContainer direction="vertical">
                 <div className="d-grid gap-1">
                     {(template.items ?? []).map(({ id, name, username, description, tags }) => (
                         <NavLink
@@ -129,7 +131,7 @@ const TemplateFilters = () => {
                     type="text"
                     label={t("common.name")}
                     name="name"
-                    className="input bg-base-200"
+                    className="bg-base-200"
                     value={template.filter.name ?? ""}
                     onChange={dispatchFilter}
                 />
@@ -137,17 +139,15 @@ const TemplateFilters = () => {
                     type="text"
                     label={t("formFields.description")}
                     name="description"
-                    className="input bg-base-200"
+                    className="bg-base-200"
                     value={template.filter.description ?? ""}
                     onChange={dispatchFilter}
                 />
-            </Columns>
-            <Columns>
                 <InputField
                     type="text"
                     label={t("formFields.tags")}
                     name="tags"
-                    className="input bg-base-200"
+                    className="bg-base-200"
                     value={template.filter.tags ?? ""}
                     onChange={dispatchFilter}
                 />
@@ -155,7 +155,7 @@ const TemplateFilters = () => {
                     type="text"
                     label={t("formFields.username")}
                     name="username"
-                    className="input bg-base-200"
+                    className="bg-base-200"
                     value={template.filter.username ?? ""}
                     onChange={dispatchFilter}
                 />
@@ -164,7 +164,6 @@ const TemplateFilters = () => {
                 type="checkbox"
                 label={t("formFields.public")}
                 name="includePublic"
-                className="input"
                 checked={template.filter.includePublic === "true"}
                 onChange={dispatchFilterCheckbox}
             />
