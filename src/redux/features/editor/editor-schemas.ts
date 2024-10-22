@@ -47,6 +47,7 @@ const editorSchema = z.object({
     isEncrypted: z.boolean(),
     isPublic: z.boolean(),
     template: templateSchema,
+    owned: z.boolean(),
     items: z.array(entryRowSchema),
 });
 
