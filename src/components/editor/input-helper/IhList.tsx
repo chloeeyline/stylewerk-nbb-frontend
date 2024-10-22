@@ -1,7 +1,28 @@
-import { useEffect } from "react";
+import {
+    DndContext,
+    DragEndEvent,
+    KeyboardSensor,
+    PointerSensor,
+    closestCenter,
+    useSensor,
+    useSensors,
+} from "@dnd-kit/core";
+import { restrictToParentElement, restrictToVerticalAxis } from "@dnd-kit/modifiers";
+import {
+    SortableContext,
+    arrayMove,
+    sortableKeyboardCoordinates,
+    useSortable,
+    verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
+import { useEffect, useRef, useState } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import AdditionSign from "~/components/Icon/AdditionSign";
+import Cross from "~/components/Icon/Cross";
+import Move from "~/components/Icon/Move";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -11,22 +32,14 @@ const ihMetaDataSchema = z
     .object({
         list: z
             .array(z.tuple([z.string(), z.string()]))
-            .catch([
-                ["1", "Lang"],
-                ["2", "Mittel"],
-                ["3", "Kurz"],
-            ])
-            .default([
-                ["1", "Lang"],
-                ["2", "Mittel"],
-                ["3", "Kurz"],
-            ]),
+            .catch([[crypto.randomUUID.toString(), ""]])
+            .default([[crypto.randomUUID.toString(), ""]]),
         value: z.string().optional().catch(undefined).default(undefined),
         radiobuttons: z.boolean().catch(false).default(false),
     })
     .strip();
 
-// type IhListMetaData = z.infer<typeof ihMetaDataSchema>;
+type IhListMetaData = z.infer<typeof ihMetaDataSchema>;
 
 const ihDataSchema = z
     .object({
@@ -55,11 +68,24 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
                         onChange={(e) => {
                             CallSetData(dispatch, editor, cell, row, {
                                 ...data.data,
-                                value: e.target.value,
+                                value: e.target.checked ? key : "",
                             });
                         }}
                     />
                 ))}
+            </div>
+        );
+    }
+
+    const getValue = (value: string) => {
+        return metadata.data.list.filter(([key]) => key === value)[0][1];
+    };
+
+    if (editor.isPreview) {
+        return (
+            <div>
+                <p>{cell.template.text ?? ""}</p>
+                {getValue(data.data.value) ?? getValue(metadata.data.value) ?? ""}
             </div>
         );
     }
@@ -85,6 +111,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
 export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
         if (metadata.success === false) return;
@@ -146,26 +173,164 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                 checked={metadata.data.radiobuttons ?? false}
                 onChange={dispatchCellSettings2}
             />
+            <div className="d-grid rounded-1 p-0" style={{ placeItems: "center" }}>
+                <button
+                    type="button"
+                    className="btn btn-success no-line-height d-flex gap-0 p-0"
+                    style={{ alignItems: "center" }}
+                    onClick={() => setDialogIsOpen(true)}>
+                    {"Liste bearbeiten"}
+                    <AdditionSign className="icon-inline" />
+                </button>
+            </div>
+            <Dialog
+                metadata={metadata.data}
+                isOpen={dialogIsOpen}
+                onClose={() => setDialogIsOpen(false)}
+            />
         </>
     );
 };
 
-// const Dialog = ({ metadata }: { metadata: IhListMetaData }) => {
-//     return (
-//         <dialog>
-//             <DndContext
-//                 modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
-//                 sensors={sensors}
-//                 collisionDetection={closestCenter}
-//                 onDragEnd={(e) => dragFolder(e)}>
-//                 <SortableContext
-//                     items={metadata.list.items}
-//                     strategy={horizontalListSortingStrategy}>
-//                     {metadata.list.map(({ key, value }) => (
-//                         <div key={key}></div>
-//                     ))}
-//                 </SortableContext>
-//             </DndContext>
-//         </dialog>
-//     );
-// };
+const Dialog = ({
+    isOpen,
+    onClose,
+    metadata,
+}: {
+    isOpen: boolean;
+    onClose: () => void;
+    metadata: IhListMetaData;
+}) => {
+    const dispatch = useAppDispatch();
+    const dialogRef = useRef<HTMLDialogElement>(null);
+
+    useEffect(() => {
+        if (!dialogRef.current) return;
+        if (isOpen) dialogRef.current.showModal();
+        else dialogRef.current.close();
+    }, [isOpen]);
+
+    const sensors = useSensors(
+        useSensor(PointerSensor),
+        useSensor(KeyboardSensor, {
+            coordinateGetter: sortableKeyboardCoordinates,
+        }),
+    );
+
+    const setList = (value: [string, string][]) => {
+        dispatch(
+            setMetadata(
+                JSON.stringify({
+                    ...metadata,
+                    list: value,
+                }),
+            ),
+        );
+    };
+
+    const dragItem = (e: DragEndEvent) => {
+        if (metadata.list.length <= 1) return;
+        const { active, over } = e;
+
+        if (over === null || active.id === over.id) return;
+        const oldIndex = metadata.list.indexOf(
+            metadata.list.filter(([key]) => key === active.id)[0],
+        );
+        const newIndex = metadata.list.indexOf(metadata.list.filter(([key]) => key === over.id)[0]);
+        setList(arrayMove(metadata.list, oldIndex, newIndex));
+    };
+
+    return (
+        <dialog
+            ref={dialogRef}
+            onClick={(e) => {
+                if (e.target === dialogRef.current) onClose();
+            }}
+            style={{
+                position: "fixed", // Use fixed positioning to allow centering relative to the viewport
+                top: "50%", // Move the dialog to the center vertically
+                left: "50%", // Move the dialog to the center horizontally
+                transform: "translate(-50%, -50%)", // Shift back by 50% of its own width and height to center it
+                border: "none",
+                backgroundColor: "rgba(0, 0, 0, 1)", // Optional: semi-transparent background
+                zIndex: 1000, // Ensure it's on top of other elements
+            }}>
+            <div>Optionen bearbeiten</div>
+            <DndContext
+                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                sensors={sensors}
+                collisionDetection={closestCenter}
+                onDragEnd={(e) => dragItem(e)}>
+                <SortableContext
+                    items={metadata.list.map(([key]) => key)}
+                    strategy={verticalListSortingStrategy}>
+                    {metadata.list.map(([key, value]) => (
+                        <DialogItem
+                            key={key}
+                            id={key}
+                            value={value}
+                            metadata={metadata}
+                            setList={setList}></DialogItem>
+                    ))}
+                </SortableContext>
+            </DndContext>
+            <div className="d-grid gap-1 p-0" style={{ placeItems: "center" }}>
+                <button
+                    type="button"
+                    className="btn btn-success p-1 no-line-height d-flex gap-1"
+                    style={{ alignItems: "center" }}
+                    onClick={() => {
+                        const temp = metadata.list;
+                        temp.push([crypto.randomUUID(), ""]);
+                        setList(temp);
+                    }}>
+                    {"Neues Element"}
+                    <AdditionSign className="icon-inline" />
+                </button>
+            </div>
+        </dialog>
+    );
+};
+
+const DialogItem = ({
+    id,
+    value,
+    metadata,
+    setList,
+}: {
+    id: string;
+    value: string;
+    metadata: IhListMetaData;
+    setList: (value: [string, string][]) => void;
+}) => {
+    const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
+        id,
+    });
+
+    return (
+        <div
+            ref={setNodeRef}
+            className="d-flex gap-1 p-0"
+            style={{ transform: CSS.Transform.toString(transform), transition }}
+            {...attributes}>
+            <button
+                type="button"
+                className="btn btn-error btn-square p-0"
+                onClick={() => setList(metadata.list.filter(([k]) => k !== id))}>
+                <Cross className="fill-current-color" />
+            </button>
+
+            <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+                <Move className="fill-current-color" />
+            </button>
+            <input
+                value={value}
+                onChange={(e) =>
+                    setList(
+                        metadata.list.map(([k, v]) => (k === id ? [k, e.target.value] : [k, v])),
+                    )
+                }
+            />
+        </div>
+    );
+};
