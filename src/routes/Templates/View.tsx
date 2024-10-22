@@ -32,34 +32,40 @@ export default function TemplateView() {
                         }}>
                         {t("common.copy")}
                     </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            if (typeof editor.data?.templateID !== "string") return;
-                            navigate(
-                                Routes.Templates.Edit.replace(
-                                    RouteParams.TemplateId,
-                                    editor.data?.templateID,
-                                ).replace(RouteParams.IsNew, "false"),
-                            );
-                        }}>
-                        {t("common.edit")}
-                    </button>
-                    <button
-                        type="button"
-                        className="btn p-0"
-                        onClick={() => {
-                            if (typeof editor.data?.templateID !== "string") return;
-                            navigate(
-                                Routes.Entries.Edit.replace(
-                                    RouteParams.EntryId,
-                                    editor.data.templateID,
-                                ).replace(RouteParams.IsNew, "true"),
-                            );
-                        }}>
-                        {t("common.createNewEntryFromTemplate")}
-                    </button>
+                    {editor.data !== null &&
+                    editor.data.templateID !== "string" &&
+                    editor.data.owned ? (
+                        <>
+                            <button
+                                type="button"
+                                className="btn p-0"
+                                onClick={() => {
+                                    if (typeof editor.data?.templateID !== "string") return;
+                                    navigate(
+                                        Routes.Templates.Edit.replace(
+                                            RouteParams.TemplateId,
+                                            editor.data?.templateID,
+                                        ).replace(RouteParams.IsNew, "false"),
+                                    );
+                                }}>
+                                {t("common.edit")}
+                            </button>
+                            <button
+                                type="button"
+                                className="btn p-0"
+                                onClick={() => {
+                                    if (typeof editor.data?.templateID !== "string") return;
+                                    navigate(
+                                        Routes.Entries.Edit.replace(
+                                            RouteParams.EntryId,
+                                            editor.data.templateID,
+                                        ).replace(RouteParams.IsNew, "true"),
+                                    );
+                                }}>
+                                {t("common.createNewEntryFromTemplate")}
+                            </button>
+                        </>
+                    ) : null}
                 </div>
             </fieldset>
             <ScrollContainer direction="both">
