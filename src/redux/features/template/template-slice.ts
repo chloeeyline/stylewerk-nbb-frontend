@@ -230,6 +230,10 @@ const templateSlice = createSlice({
                     break;
             }
         },
+        clearFilters: (state) => {
+            state.items = [];
+            state.filter = {};
+        },
         setHideFilters: (state) => {
             state.hideFilters = !state.hideFilters;
         },
@@ -280,7 +284,7 @@ const templateSlice = createSlice({
     },
 });
 
-export const { setFilter, setHideFilters, setHideList } = templateSlice.actions;
+export const { setFilter, clearFilters, setHideFilters, setHideList } = templateSlice.actions;
 
 export const selectTemplate = (state: RootState) => state.template;
 export default templateSlice.reducer;

@@ -1,5 +1,5 @@
 (async () => {
-    const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9zaWQiOiJkOTc0YzZlMC0wNjFiLTRlMTEtYmM2Yy1iNDU1YTA3ZDI3ZTUiLCJleHAiOjE3Mjk0MjIwMDYsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6NTA1MCJ9.7KoctjJWLi6w6boIoeacOUtjOiQGUhmSwlYrpM0pEHs";
+    const token = "";
 
     if (token === "") {
         alert("no token given!");
@@ -78,7 +78,14 @@
             error: ["Fehler beim Laden der Benutzerdaten!", "Error loading the user data!"],
         },
         editor: {
-            addNewRow: ["Neue Zeile einfügen", "Add new row"]
+            addNewRow: ["Neue Zeile einfügen", "Add new row"],
+            defaultValue: ["Standardwert", "Default value"],
+            responsiveRow: ["Dynamischer Zeilenumbruch", "Dynamic row wrapping"],
+            repeatableRow: ["Wiederholbare Zeile", "Repeatable Row"],
+            hideEmptyRow: ["Zeile verstecken wenn leer", "Hide row when empty"],
+            hideEmptyCell: ["Zelle verstecken wenn leer", "Hide cell when empty"],
+            isRequired: ["Muss befüllt werden", "Needs to filled out"],
+            public: ["Öffentlich", "Public"]
         },
         common: {
             createNewTemplate: ["Neue Vorlage erstellen", "Create new template"],
@@ -87,6 +94,8 @@
             hideList: ["Liste verstecken", "Hide list"],
             showList: ["Liste anzeigen", "Show list"],
             filters: ["Filter", "Filters"],
+            filter: ["Filter", "Filter"],
+            reset: ["Zurücksetzen", "Reset"],
             actions: ["Aktionen", "Actions"],
             editor: ["Editor", "Editor"],
             preview: ["Vorschau", "Preview"],
