@@ -22,7 +22,7 @@ import { z } from "zod";
 
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import AdditionSign from "~/components/Icon/AdditionSign";
+import Plus from "~/components/Icon/Plus";
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
@@ -183,7 +183,7 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                     style={{ alignItems: "center" }}
                     onClick={() => setDialogIsOpen(true)}>
                     Liste bearbeiten
-                    <AdditionSign className="icon-inline" />
+                    <Plus className="icon-inline" />
                 </button>
             </div>
             <Dialog
@@ -288,7 +288,7 @@ const Dialog = ({
                         setList(temp);
                     }}>
                     {"Neues Element"}
-                    <AdditionSign className="icon-inline" />
+                    <Plus className="icon-inline" />
                 </button>
             </div>
         </dialog>

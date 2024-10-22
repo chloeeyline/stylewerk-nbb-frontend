@@ -17,6 +17,10 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
+import InputField from "~/components/forms/InputField";
+import Cross from "~/components/Icon/Cross";
+import Move from "~/components/Icon/Move";
+import Plus from "~/components/Icon/Plus";
 import type { EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
     addTemplateCell,
@@ -27,11 +31,7 @@ import {
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import AdditionSign from "~/components/Icon/AdditionSign";
-import Cross from "~/components/Icon/Cross";
-import Move from "~/components/Icon/Move";
 import EditorCell from "./EditorCell";
-import InputField from "~/components/forms/InputField";
 
 export default function EditorRow({ row }: { row: EntryRow }) {
     const editor = useAppSelector(selectEditor);
@@ -178,7 +178,7 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(addTemplateCell(row.templateID));
                         }}>
-                        <AdditionSign className="fill-current-color" />
+                        <Plus className="fill-current-color" />
                     </button>
                 ) : null}
             </div>

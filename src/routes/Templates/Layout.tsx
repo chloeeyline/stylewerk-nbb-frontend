@@ -8,7 +8,7 @@ import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
-import Equalizer from "~/components/Icon/Equalizer";
+import Filter from "~/components/Icon/Filter";
 import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
@@ -48,7 +48,7 @@ const TemplatesList = () => {
                     type="button"
                     className={cls("btn p-1", template.hideFilters !== true ? "active" : undefined)}
                     onClick={() => dispatch(setHideFilters())}>
-                    <Equalizer className="icon-inline" />
+                    <Filter className="icon-inline" />
                 </button>
             </div>
 
