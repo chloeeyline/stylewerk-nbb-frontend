@@ -14,6 +14,10 @@ $types: (
         #{$type-value}: 0;
     }
 
+    .#{$type-name}-auto {
+        #{$type-value}: auto;
+    }
+
     @each $logical-name, $logical-value in props.$logical {
         .#{$type-name}-#{$logical-name} {
             #{$type-value}-#{$logical-value}: var(--#{$type-name}-#{$logical-name});
@@ -21,6 +25,10 @@ $types: (
 
         .#{$type-name}-#{$logical-name}-none {
             #{$type-value}-#{$logical-value}: 0;
+        }
+
+        .#{$type-name}-#{$logical-name}-auto {
+            #{$type-value}-#{$logical-value}: auto;
         }
     }
 
