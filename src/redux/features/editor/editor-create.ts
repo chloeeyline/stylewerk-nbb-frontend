@@ -40,7 +40,6 @@ const CreateTemplateRow = (templateRowID: string): TemplateRow => {
     return {
         id: templateRowID,
         canRepeat: false,
-        canWrapCells: false,
         hideOnNoInput: false,
     };
 };

@@ -4,10 +4,12 @@ import InlineScroller from "~/components/layout/InlineScroller";
 import { selectEditor, setTemplateCell } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import InputHelperSettings from "./InputHelperSettings";
+import { useTranslation } from "react-i18next";
 
 export default function TemplateCellSettings() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     const selectedCellSettings = () => {
         if (
@@ -41,57 +43,52 @@ export default function TemplateCellSettings() {
             <legend className="legend">Zelle</legend>
             <InlineScroller>
                 <SelectField
-                    style={{ minInlineSize: "10ch" }}
+                    label={t("editor.inputHelper")}
                     name="inputHelper"
-                    label="InputHelper"
                     value={selectedCellSettings()?.template.inputHelper ?? 1}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                     options={[
                         ["0", "Test"],
-                        ["1", "Fix Text"],
-                        ["3", "Texteingabe"],
-                        ["4", "Zahleneingabe"],
-                        ["5", "Checkbox"],
-                        ["6", "Datetime"],
-                        ["7", "Farbe"],
-                        ["8", "Liste"],
+                        ["1", t("editor.inputHelperStatic")],
+                        ["3", t("editor.inputHelperText")],
+                        ["4", t("editor.inputHelperNumber")],
+                        ["5", t("editor.inputHelperCheckbox")],
+                        ["6", t("editor.inputHelperDatetime")],
+                        ["7", t("editor.inputHelperColor")],
+                        ["8", t("editor.inputHelperList")],
                     ]}
+                    style={{ minInlineSize: "15ch" }}
                 />
                 <InputField
-                    style={{ minInlineSize: "10ch" }}
                     type="text"
-                    label="Text"
+                    label={t("editor.ihOptionText")}
                     name="text"
                     maxLength={100}
                     value={selectedCellSettings()?.template.text ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
+                    style={{ minInlineSize: "15ch" }}
                 />
                 <InputField
-                    style={{ minInlineSize: "30ch" }}
                     type="text"
-                    label="Description"
+                    label={t("editor.ihOptionDescription")}
                     name="description"
                     maxLength={100}
                     value={selectedCellSettings()?.template.description ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
+                    style={{ minInlineSize: "25ch" }}
                 />
-                <div
-                    className="d-grid grid-template-columns gap-1"
-                    style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
+                <div className="d-grid gap-1" style={{ alignItems: "center" }}>
                     <InputField
                         type="checkbox"
-                        label="HideOnEmpty"
+                        label={t("editor.ihOptionHideEmptyCell")}
                         name="hideOnEmpty"
-                        useNameAsIs={true}
-                        maxLength={100}
                         checked={selectedCellSettings()?.template.hideOnEmpty ?? false}
                         onChange={(e) => dispatchCellSettings(e, e.target.checked)}
                     />
                     <InputField
                         type="checkbox"
-                        label="IsRequired"
+                        label={t("editor.ihOptionIsRequired")}
                         name="isRequired"
-                        useNameAsIs={true}
                         maxLength={100}
                         checked={selectedCellSettings()?.template.isRequired ?? false}
                         onChange={(e) => dispatchCellSettings(e, e.target.checked)}

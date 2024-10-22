@@ -128,14 +128,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         .includes(editor.selectedTemplateCell) ? (
                         <>
                             <InputField
-                                label="CanWrapCells"
-                                name="canWrapCells"
-                                useNameAsIs={true}
-                                type="checkbox"
-                                checked={selectedRowSettings()?.canWrapCells ?? false}
-                                onChange={dispatchRowSettings}
-                            />
-                            <InputField
                                 label="CanRepeat"
                                 name="canRepeat"
                                 useNameAsIs={true}

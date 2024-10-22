@@ -16,8 +16,12 @@
     }
 
     @media (min-width: 35rem) {
-        grid-template-columns: auto 1fr;
+        grid-template-columns: 1fr;
         grid-template-rows: unset;
+
+        &.showSidebar {
+            grid-template-columns: auto 1fr;
+        }
 
         > * {
             grid-column: unset;

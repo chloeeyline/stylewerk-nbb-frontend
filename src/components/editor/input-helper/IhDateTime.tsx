@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
@@ -44,21 +45,21 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
-            <div>
-                <p>{cell.template.text ?? ""}</p>
-                {data.data.value}
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                {cell.template.text !== null ? <h4>{cell.template.text}:&nbsp;</h4> : null}
+                <span>{data.data.value}</span>
             </div>
         );
     }
 
     return (
         <InputField
+            type={getType(metadata.data.type)}
+            label={cell.template.text ?? ""}
+            name="dateTime"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="dateTime"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type={getType(metadata.data.type)}
             value={data.data.value ?? metadata.data.value ?? ""}
             min={metadata.data?.min}
             max={metadata.data?.max}
@@ -74,6 +75,7 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
 export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
@@ -116,57 +118,57 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <InputField
-                name="min"
-                label="Minimalwert"
                 type={getType(metadata.data.type)}
+                label={t("editor.ihOptionMinValue")}
+                name="min"
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                name="max"
-                label="Maximalwert"
                 type={getType(metadata.data.type)}
+                label={t("editor.ihOptionMaxValue")}
+                name="max"
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
-                name="value"
-                label="Standartwert"
                 type={getType(metadata.data.type)}
+                label={t("editor.ihOptionDefaultValue")}
+                name="value"
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
             <div
                 className="d-grid grid-template-columns gap-1"
-                style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
+                style={{ "--grid-template-columns": "1fr 1fr", "alignItems": "center" }}>
                 <InputField
-                    name="type"
-                    label="Datum"
                     type="radio"
+                    label={t("editor.ihOptionDatetimeDate")}
+                    name="type"
                     value="0"
                     checked={metadata.data.type == 0}
                     onChange={dispatchCellSettings}
                 />
                 <InputField
-                    name="type"
-                    label="Monat"
                     type="radio"
+                    label={t("editor.ihOptionDatetimeMonth")}
+                    name="type"
                     value="1"
                     checked={metadata.data.type == 1}
                     onChange={dispatchCellSettings}
                 />
                 <InputField
-                    name="type"
-                    label="Woche"
                     type="radio"
+                    label={t("editor.ihOptionDatetimeWeek")}
+                    name="type"
                     value="2"
                     checked={metadata.data.type == 2}
                     onChange={dispatchCellSettings}
                 />
                 <InputField
-                    name="type"
-                    label="Zeit"
                     type="radio"
+                    label={t("editor.ihOptionDatetimeTime")}
+                    name="type"
                     value="3"
                     checked={metadata.data.type == 3}
                     onChange={dispatchCellSettings}
