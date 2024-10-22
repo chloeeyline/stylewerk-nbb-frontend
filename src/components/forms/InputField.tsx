@@ -26,7 +26,7 @@ export default forwardRef(function InputField(
                 <label htmlFor={id}>{label}</label>
                 <label
                     className={cls("input d-grid grid-template-columns", className)}
-                    style={{ "--grid-template-columns": "auto 1fr", alignItems: "center" }}>
+                    style={{ "--grid-template-columns": "auto 1fr", "alignItems": "center" }}>
                     <input
                         ref={ref}
                         id={id}

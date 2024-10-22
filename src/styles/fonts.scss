@@ -44,6 +44,22 @@ body {
     font-weight: normal;
 }
 
+.font-no-bold {
+    font-weight: normal;
+}
+
+.font-bold {
+    font-weight: bold;
+}
+
+.font-no-italic {
+    font-style: normal;
+}
+
+.font-italic {
+    font-style: italic;
+}
+
 .fill-current-color {
     fill: currentColor;
 }

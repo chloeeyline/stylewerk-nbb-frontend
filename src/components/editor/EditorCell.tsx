@@ -46,7 +46,9 @@ export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryR
             )}
             title={cell.template?.description ?? ""}
             style={{
-                "flex": 1,
+                "flexGrow": 1,
+                "flexShrink": 1,
+                "flexBasis": "0%",
                 "--grid-template-rows":
                     editor.isPreview !== true && editor.isTemplate ? "auto 1fr" : "1fr",
                 "transform": CSS.Transform.toString(transform),

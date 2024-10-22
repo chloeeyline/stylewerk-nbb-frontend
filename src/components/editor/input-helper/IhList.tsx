@@ -17,7 +17,9 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
+
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import AdditionSign from "~/components/Icon/AdditionSign";
@@ -32,8 +34,8 @@ const ihMetaDataSchema = z
     .object({
         list: z
             .array(z.tuple([z.string(), z.string()]))
-            .catch([[crypto.randomUUID.toString(), ""]])
-            .default([[crypto.randomUUID.toString(), ""]]),
+            .catch([[crypto.randomUUID(), ""]])
+            .default([[crypto.randomUUID(), ""]]),
         value: z.string().optional().catch(undefined).default(undefined),
         radiobuttons: z.boolean().catch(false).default(false),
     })
@@ -54,6 +56,25 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
+
+    const getValue = (value: string) => {
+        const filtered = metadata.data.list.filter(([key]) => key === value);
+
+        if (filtered.length !== 1) {
+            return undefined;
+        }
+
+        return filtered[0][1];
+    };
+
+    if (editor.isPreview) {
+        return (
+            <div className="d-flex" style={{ alignItems: "baseline" }}>
+                {cell.template.text !== null ? <h4>{cell.template.text}:&nbsp;</h4> : null}
+                {getValue(data.data?.value ?? metadata.data?.value ?? "")}
+            </div>
+        );
+    }
 
     if (metadata.data.radiobuttons === true) {
         return (
@@ -77,25 +98,12 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
         );
     }
 
-    const getValue = (value: string) => {
-        return metadata.data.list.filter(([key]) => key === value)[0][1];
-    };
-
-    if (editor.isPreview) {
-        return (
-            <div>
-                <p>{cell.template.text ?? ""}</p>
-                {getValue(data.data.value) ?? getValue(metadata.data.value) ?? ""}
-            </div>
-        );
-    }
-
     return (
         <SelectField
+            label={cell.template.text ?? ""}
+            name="list"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="list"
-            label={cell.template.text ?? ""}
             options={metadata.data.list}
             value={data.data.value ?? metadata.data.value ?? ""}
             onChange={(e) => {
@@ -110,6 +118,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
 export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
@@ -120,7 +129,7 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
 
     if (metadata.success === false) return null;
 
-    const dispatchCellSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const dispatchCellSettings = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
         if (!e.target.value) return;
         switch (e.target.name) {
             case "value":
@@ -133,23 +142,17 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                     ),
                 );
                 break;
-            default:
-                return;
-        }
-    };
-
-    const dispatchCellSettings2 = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
-        switch (e.target.name) {
             case "radiobuttons":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.checked,
-                        }),
-                    ),
-                );
+                if ("checked" in e.target) {
+                    dispatch(
+                        setMetadata(
+                            JSON.stringify({
+                                ...metadata.data,
+                                [e.target.name]: e.target.checked,
+                            }),
+                        ),
+                    );
+                }
                 break;
             default:
                 return;
@@ -159,9 +162,9 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
     return (
         <>
             <SelectField
-                required={cell.template.isRequired}
+                label={t("editor.ihOptionDefaultValue")}
                 name="value"
-                label={"Standartwert"}
+                required={cell.template.isRequired}
                 options={metadata.data.list}
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
@@ -171,7 +174,7 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                 label="Radiobuttons verwenden"
                 name="radiobuttons"
                 checked={metadata.data.radiobuttons ?? false}
-                onChange={dispatchCellSettings2}
+                onChange={dispatchCellSettings}
             />
             <div className="d-grid rounded-1 p-0" style={{ placeItems: "center" }}>
                 <button
@@ -179,7 +182,7 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                     className="btn btn-success no-line-height d-flex gap-0 p-0"
                     style={{ alignItems: "center" }}
                     onClick={() => setDialogIsOpen(true)}>
-                    {"Liste bearbeiten"}
+                    Liste bearbeiten
                     <AdditionSign className="icon-inline" />
                 </button>
             </div>

@@ -45,21 +45,21 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
-            <div>
-                <p>{cell.template.text ?? ""}</p>
-                {data.data.value}
+            <div className="d-flex" style={{alignItems: "baseline"}}>
+                {cell.template.text !== null ? <h4>{cell.template.text}:&nbsp;</h4> : null}
+                <span>{data.data.value}</span>
             </div>
         );
     }
 
     return (
         <InputField
+            type={getType(metadata.data.type)}
+            label={cell.template.text ?? ""}
+            name="dateTime"
             required={cell.template.isRequired}
             disabled={isReadOnly}
-            name="dateTime"
-            label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
-            type={getType(metadata.data.type)}
             value={data.data.value ?? metadata.data.value ?? ""}
             min={metadata.data?.min}
             max={metadata.data?.max}
