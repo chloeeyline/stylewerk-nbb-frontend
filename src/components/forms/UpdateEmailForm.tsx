@@ -5,9 +5,8 @@ import { updateEmail, validateEmail, verifyUpdateEmail } from "~/redux/features/
 import { getUserData } from "~/redux/features/user/user-slice";
 import { useAppDispatch } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
-import TextareaField from "./TextareaField";
+import InputField from "./InputField";
 
 export default function UpdateEmailForm({ email }: { email: string }) {
     const { t } = useTranslation();
