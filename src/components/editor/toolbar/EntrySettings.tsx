@@ -8,12 +8,16 @@ import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/ed
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
+import { removeEntry } from "~/redux/features/entry/entry-slice";
+import { useNavigate } from "react-router-dom";
+import Routes from "~/constants/routes";
 
 export default function EntrySettings() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
     const [folders, setFolders] = useState<[string, string][]>();
+    const navigate = useNavigate();
 
     useEffect(() => {
         Ajax.get(Backend.Entry.Folder.List, {
@@ -55,6 +59,15 @@ export default function EntrySettings() {
                         dispatch(updateEditor());
                     }}>
                     {t("common.save")}
+                </button>
+                <button
+                    className="btn btn-primary p-0"
+                    onClick={() => {
+                        if (editor.data === null || typeof editor.data.id !== "string") return;
+                        dispatch(removeEntry({ id: editor.data.id }));
+                        navigate(Routes.Entries.List);
+                    }}>
+                    {t("common.delete")}
                 </button>
             </legend>
             <InputField

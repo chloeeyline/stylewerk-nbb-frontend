@@ -13,6 +13,7 @@ const CreateEditor = () => {
         isEncrypted: false,
         isPublic: false,
         template: CreateTemplate(templateID),
+        owned: true,
         items: [CreateEntryRow(templateRowID, templateCellID)],
     };
     return newEditor;

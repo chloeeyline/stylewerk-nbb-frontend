@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
@@ -13,6 +13,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
+    const navigate = useNavigate();
 
     const dispatchGeneral = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
@@ -67,8 +68,10 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     type="button"
                     className="btn btn-primary p-0"
                     onClick={() => {
-                        if (typeof editor.data?.templateID !== "string") return;
+                        if (editor.data === null || typeof editor.data.templateID !== "string")
+                            return;
                         dispatch(removeTemplates({ id: editor.data?.templateID }));
+                        navigate(Routes.Templates.List);
                     }}>
                     {t("common.delete")}
                 </button>

@@ -248,9 +248,12 @@ export const removeFolder = createAsyncThunk<
             return thunkApi.rejectWithValue(response.error);
         }
 
+        const items = entry.folders.filter((item) => item.id !== id);
+
         return {
             ...entry,
             status: "succeeded",
+            folders: items,
         };
     },
     {
@@ -273,7 +276,7 @@ export const removeEntry = createAsyncThunk<
     async ({ id }, thunkApi) => {
         const entry = selectEntry(thunkApi.getState());
 
-        const response = await Ajax.get(Backend.Entry.Remove, {
+        const response = await Ajax.post(Backend.Entry.Remove, {
             search: { id },
             auth: true,
         });
@@ -410,6 +413,7 @@ const entrySlice = createSlice({
             .addCase(removeFolder.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                state.folders = action.payload.folders;
             })
             .addCase(removeFolder.rejected, (state) => {
                 state.status = "failed";
