@@ -36,7 +36,6 @@ import type { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schema
 import {
     clearFilters,
     detailFolder,
-    listEntry,
     listFolder,
     removeFolder,
     reorderFolder,
@@ -56,14 +55,6 @@ const EntriesList = () => {
     const { t } = useTranslation();
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
-
-    useEffect(() => {
-        if (entry.hideFilters) {
-            dispatch(listFolder());
-        } else {
-            dispatch(listEntry());
-        }
-    }, []);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -106,11 +97,7 @@ const EntriesList = () => {
                     type="button"
                     className="btn p-1"
                     onClick={() => {
-                        if (entry.hideFilters) {
-                            dispatch(listFolder());
-                        } else {
-                            dispatch(listEntry());
-                        }
+                        dispatch(listFolder());
                     }}>
                     <Refresh className="icon-inline" />
                 </button>
@@ -178,7 +165,7 @@ const EntryFilters = () => {
         if (typeof e !== "undefined") {
             e.preventDefault();
         }
-        dispatch(listEntry());
+        dispatch(listFolder());
     };
 
     const dispatchClearFilters = () => {
@@ -387,11 +374,7 @@ export default function EntriesLayout() {
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
-        if (entry.hideFilters) {
-            dispatch(listFolder());
-        } else {
-            dispatch(listEntry());
-        }
+        dispatch(listFolder());
     }, []);
 
     const closeModal = (success: boolean) => {
