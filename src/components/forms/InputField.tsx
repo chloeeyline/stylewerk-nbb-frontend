@@ -22,11 +22,11 @@ export default forwardRef(function InputField(
 
     if (props.type === "color") {
         return (
-            <div className="d-grid">
+            <div className="d-grid min-size-inline-fit">
                 <label htmlFor={id}>{label}</label>
                 <label
                     className={cls("input d-grid grid-template-columns", className)}
-                    style={{ "--grid-template-columns": "auto 1fr", "alignItems": "center" }}>
+                    style={{ "--grid-template-columns": "auto 1fr", alignItems: "center" }}>
                     <input
                         ref={ref}
                         id={id}
@@ -45,8 +45,12 @@ export default forwardRef(function InputField(
 
     if (props.type === "checkbox" || props.type === "radio") {
         return (
-            <div className="d-flex min-size-inline-max bg-base-300 p-1 rounded-1 gap-0 m-bs-auto m-be-none" style={{ alignItems: "baseline" }}>
-                <label htmlFor={id} className="no-line-height">{label}</label>
+            <div
+                className="d-flex min-size-inline-max bg-base-300 p-1 rounded-1 gap-0 m-bs-auto m-be-none"
+                style={{ alignItems: "baseline" }}>
+                <label htmlFor={id} className="no-line-height">
+                    {label}
+                </label>
                 <input
                     ref={ref}
                     id={id}
@@ -68,7 +72,13 @@ export default forwardRef(function InputField(
                 id={id}
                 name={name}
                 placeholder={label}
-                className={cls("input", className)}
+                className={cls(
+                    "input",
+                    ["date", "month", "week", "time"].includes(props?.type ?? "")
+                        ? "min-size-inline-fit"
+                        : undefined,
+                    className,
+                )}
                 {...props}
             />
             {(error ?? null) !== null ? <span className="error">{error}</span> : null}

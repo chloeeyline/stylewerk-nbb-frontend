@@ -77,7 +77,7 @@ export default function TemplateCellSettings() {
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                     style={{ minInlineSize: "25ch" }}
                 />
-                <div className="d-grid gap-1">
+                <div className="d-grid gap-1" style={{ alignItems: "center" }}>
                     <InputField
                         type="checkbox"
                         label={t("editor.ihOptionHideEmptyCell")}

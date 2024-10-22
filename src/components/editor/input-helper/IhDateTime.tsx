@@ -140,7 +140,7 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
             />
             <div
                 className="d-grid grid-template-columns gap-1"
-                style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
+                style={{ "--grid-template-columns": "1fr 1fr", "alignItems": "center" }}>
                 <InputField
                     type="radio"
                     label={t("editor.ihOptionDatetimeDate")}
