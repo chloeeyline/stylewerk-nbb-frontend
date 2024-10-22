@@ -14,14 +14,6 @@ import { Admin } from "#/routes";
  */
 export const adminRoutes: RouteObject[] = [
     {
-        path: Admin.Index,
-        lazy: async () => {
-            const { default: Component } = await import("~/routes/Admin");
-
-            return { Component };
-        },
-    },
-    {
         path: Admin.Themes.List,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Themes");
@@ -49,22 +41,6 @@ export const adminRoutes: RouteObject[] = [
         path: Admin.Translations.Manage,
         lazy: async () => {
             const { default: Component } = await import("~/routes/Admin/Translations/Manage");
-
-            return { Component };
-        },
-    },
-    {
-        path: Admin.Users.List,
-        lazy: async () => {
-            const { default: Component } = await import("~/routes/Admin/Users");
-
-            return { Component };
-        },
-    },
-    {
-        path: Admin.Users.Manage,
-        lazy: async () => {
-            const { default: Component } = await import("~/routes/Admin/Users/Manage");
 
             return { Component };
         },

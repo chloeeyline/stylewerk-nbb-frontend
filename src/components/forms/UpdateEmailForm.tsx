@@ -130,8 +130,6 @@ export default function UpdateEmailForm({ email }: { email: string }) {
                     error={state.error}
                 />
 
-                <TextareaField label="Field" name="field" />
-
                 {state.askForCode === true ? (
                     <InputField label="Token" name="token" ref={tokenRef} />
                 ) : null}
