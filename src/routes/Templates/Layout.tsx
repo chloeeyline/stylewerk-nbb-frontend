@@ -184,7 +184,10 @@ const TemplateFilters = () => {
                     onChange={dispatchFilterCheckbox}
                 />
                 <Columns>
-                    <button type="button" className="btn btn-accent p-1" onClick={dispatchClearFilters}>
+                    <button
+                        type="button"
+                        className="btn btn-accent p-1"
+                        onClick={dispatchClearFilters}>
                         {t("common.reset")}
                     </button>
                     <button type="submit" className="btn btn-primary p-1">

@@ -16,7 +16,8 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import React, { useEffect, useRef, useState } from "react";
+import type React from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
@@ -231,7 +232,10 @@ const EntryFilters = () => {
                     onChange={dispatchFilterCheckbox}
                 />
                 <Columns>
-                    <button type="button" className="btn btn-accent p-1" onClick={dispatchClearFilters}>
+                    <button
+                        type="button"
+                        className="btn btn-accent p-1"
+                        onClick={dispatchClearFilters}>
                         {t("common.reset")}
                     </button>
                     <button type="submit" className="btn btn-primary p-1">
