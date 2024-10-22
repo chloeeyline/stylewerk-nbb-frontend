@@ -72,8 +72,7 @@ export default function EntrySettings() {
             </legend>
             <InputField
                 label={t("common.name")}
-                name={"name"}
-                useNameAsIs={true}
+                name="name"
                 type="text"
                 maxLength={100}
                 value={editor.data.name ?? ""}
@@ -81,8 +80,7 @@ export default function EntrySettings() {
             />
             <InputField
                 label={t("formFields.tags")}
-                name={"tags"}
-                useNameAsIs={true}
+                name="tags"
                 type="text"
                 maxLength={100}
                 value={editor.data.tags ?? ""}
@@ -90,8 +88,7 @@ export default function EntrySettings() {
             />
             <SelectField
                 name="folderID"
-                label={"Folder"}
-                useNameAsIs={true}
+                label="Folder"
                 value={editor.data.folderID ?? 1}
                 onChange={(e) => dispatchGeneral(e, e.target.value)}
                 options={folders ?? []}
@@ -99,8 +96,7 @@ export default function EntrySettings() {
             <div>
                 <InputField
                     label={t("formFields.public")}
-                    name={"isPublic"}
-                    useNameAsIs={true}
+                    name="isPublic"
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isPublic}
@@ -108,8 +104,7 @@ export default function EntrySettings() {
                 />
                 <InputField
                     label={"Encrypted"}
-                    name={"isEncrypted"}
-                    useNameAsIs={true}
+                    name="isEncrypted"
                     type="checkbox"
                     maxLength={100}
                     checked={editor.data.isEncrypted}

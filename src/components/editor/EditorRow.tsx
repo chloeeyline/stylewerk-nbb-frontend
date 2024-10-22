@@ -130,7 +130,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                             <InputField
                                 label="CanRepeat"
                                 name="canRepeat"
-                                useNameAsIs={true}
                                 type="checkbox"
                                 checked={selectedRowSettings()?.canRepeat ?? false}
                                 onChange={dispatchRowSettings}
@@ -138,7 +137,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                             <InputField
                                 label="HideOnNoInput"
                                 name="hideOnNoInput"
-                                useNameAsIs={true}
                                 type="checkbox"
                                 checked={selectedRowSettings()?.hideOnNoInput ?? false}
                                 onChange={dispatchRowSettings}

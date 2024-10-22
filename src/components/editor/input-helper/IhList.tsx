@@ -78,22 +78,25 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
     if (metadata.data.radiobuttons === true) {
         return (
-            <div className="d-flex gap-2">
-                {metadata.data.list.map(([key, value]) => (
-                    <InputField
-                        key={key}
-                        type="radio"
-                        label={value}
-                        name={cell.id}
-                        checked={data.data.value === key}
-                        onChange={(e) => {
-                            CallSetData(dispatch, editor, cell, row, {
-                                ...data.data,
-                                value: e.target.checked ? key : "",
-                            });
-                        }}
-                    />
-                ))}
+            <div className="d-grid">
+                <span>{cell.template.text ?? ""}</span>
+                <div className="d-flex gap-2">
+                    {metadata.data.list.map(([key, value]) => (
+                        <InputField
+                            key={key}
+                            type="radio"
+                            label={value}
+                            name={cell.id}
+                            checked={data.data.value === key}
+                            onChange={(e) => {
+                                CallSetData(dispatch, editor, cell, row, {
+                                    ...data.data,
+                                    value: e.target.checked ? key : "",
+                                });
+                            }}
+                        />
+                    ))}
+                </div>
             </div>
         );
     }

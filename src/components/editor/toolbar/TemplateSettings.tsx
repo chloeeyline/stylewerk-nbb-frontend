@@ -107,8 +107,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                 <div className="d-grid" style={{ placeItems: "center" }}>
                     <InputField
                         label={t("formFields.public")}
-                        name={"isPublic"}
-                        useNameAsIs={true}
+                        name="isPublic"
                         type="checkbox"
                         maxLength={100}
                         checked={editor.data.template.isPublic}

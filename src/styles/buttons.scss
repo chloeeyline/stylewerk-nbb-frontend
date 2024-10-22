@@ -129,12 +129,6 @@
         --clr-btn-content: var(--clr-error-content);
         --clr-btn-active: var(--clr-error-active);
     }
-
-    &-square {
-        display: inline-grid;
-        place-items: center;
-        aspect-ratio: 1;
-    }
 }
 
 a.btn {
@@ -145,6 +139,13 @@ a.btn {
     &-disabled {
         pointer-events: none;
     }
+}
+
+a.btn.btn-square,
+button.btn.btn-square {
+    display: inline-grid;
+    place-items: center;
+    aspect-ratio: 1;
 }
 
 @keyframes button-spinner {

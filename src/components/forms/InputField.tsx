@@ -7,14 +7,12 @@ export default forwardRef(function InputField(
         name,
         label,
         error,
-        useNameAsIs,
         className,
         ...props
     }: React.InputHTMLAttributes<HTMLInputElement> & {
         name: string;
         label: string;
         error?: string | null;
-        useNameAsIs?: boolean;
     },
     ref: React.ForwardedRef<HTMLInputElement>,
 ) {

@@ -26,6 +26,41 @@ export const IhColor = ({ cell, row, isReadOnly }: InputHelperProps) => {
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
+    const getValue = () => {
+        const value = data.data?.value ?? metadata.data?.value ?? "";
+
+        if (value.length !== 7 || value.startsWith("#") === false) {
+            return undefined;
+        }
+
+        return value;
+    };
+
+    const value = getValue();
+
+    if (editor.isPreview === true) {
+        return (
+            <div
+                className="d-grid grid-template-columns rounded-0"
+                style={{
+                    "--grid-template-columns": "auto auto",
+                    "alignItems": "center",
+                    "justifyContent": "center",
+                    "backgroundColor": value,
+                }}>
+                <div className="bg-base-100 rounded-0 p-i-1">
+                    {cell.template.text !== null ? (
+                        <h4 className="d-inline">
+                            {cell.template.text}
+                            {typeof value !== "undefined" ? <>:&nbsp;</> : null}
+                        </h4>
+                    ) : null}
+                    {typeof value !== "undefined" ? <span>{value}</span> : null}
+                </div>
+            </div>
+        );
+    }
+
     return (
         <InputField
             required={cell.template.isRequired}
@@ -34,7 +69,7 @@ export const IhColor = ({ cell, row, isReadOnly }: InputHelperProps) => {
             label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
             type="color"
-            value={data.data.value ?? metadata.data.value ?? ""}
+            value={value}
             onChange={(e) => {
                 CallSetData(dispatch, editor, cell, row, {
                     ...data.data,

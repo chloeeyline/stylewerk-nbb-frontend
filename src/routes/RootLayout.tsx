@@ -9,6 +9,8 @@ import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import User from "~/components/Icon/User";
+import Home from "~/components/Icon/Home";
 
 const RootNavBar = () => {
     const { t } = useTranslation();
@@ -24,6 +26,11 @@ const RootNavBar = () => {
             type: "link",
             url: Routes.Home,
             name: t("nav.homepage"),
+            style: {
+                flexGrow: 0,
+            },
+            className: "btn-square size-block-100",
+            children: <Home className="icon-inline" />
         },
         loggedIn
             ? {
@@ -55,18 +62,23 @@ const RootNavBar = () => {
             : undefined,
         loggedIn
             ? {
-                  type: "link",
-                  url: Routes.User.Index,
-                  name: t("nav.user"),
-              }
-            : undefined,
-        loggedIn
-            ? {
                   type: "button",
                   onClick: () => {
                       dispatch(logoutUser());
                   },
                   name: t("common.logout"),
+              }
+            : undefined,
+        loggedIn
+            ? {
+                  type: "link",
+                  url: Routes.User.Index,
+                  name: t("nav.user"),
+                  style: {
+                      flexGrow: 0,
+                  },
+                  className: "btn-square size-block-100",
+                  children: <User className="icon-inline" />,
               }
             : undefined,
         !loggedIn

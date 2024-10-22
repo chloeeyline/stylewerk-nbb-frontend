@@ -17,12 +17,18 @@ import { getSupportedLanguages } from "~/utils/i18n";
 type NavBarLinkProps = {
     type: "link";
     name: string;
+    children?: React.ReactNode;
+    style?: React.CSSProperties;
+    className?: string;
     url: string;
 };
 
 type NavBarButtonProps = {
     type: "button";
     name: string;
+    children?: React.ReactNode;
+    style?: React.CSSProperties;
+    className?: string;
     onClick: () => Promise<void> | void;
 };
 
@@ -35,31 +41,38 @@ type NavbarProps = React.PropsWithChildren<{
     menuProps?: React.MenuHTMLAttributes<HTMLMenuElement>;
 }>;
 
-const NavBarLink = ({ name, url }: NavBarLinkProps) => {
+const NavBarLink = ({ name, url, children, style, className }: NavBarLinkProps) => {
     return (
         <li className="d-contents">
-            <NavLink style={{ flexGrow: 1, flexShrink: 0 }} className="btn btn-loader p-1" to={url}>
-                {name}
+            <NavLink
+                to={url}
+                className={cls("btn btn-loader p-1", className)}
+                style={{ flexGrow: 1, flexShrink: 0, ...style }}>
+                {children ?? name}
             </NavLink>
         </li>
     );
 };
 
-const NavBarButton = ({ name, onClick }: NavBarButtonProps) => {
+const NavBarButton = ({ name, onClick, children, style, className }: NavBarButtonProps) => {
     const [isPending, startTransition] = useTransition();
 
     return (
         <li className="d-contents">
             <button
                 type="button"
-                style={{ flexGrow: 1, flexShrink: 0 }}
-                className={cls("btn", "btn-loader", "p-1", isPending ? "pending" : undefined)}
                 onClick={() => {
                     startTransition(() => {
                         onClick();
                     });
-                }}>
-                {name}
+                }}
+                style={{
+                    flexGrow: 1,
+                    flexShrink: 0,
+                    ...style,
+                }}
+                className={cls("btn btn-loader p-1", isPending ? "pending" : undefined, className)}>
+                {children ?? name}
             </button>
         </li>
     );
