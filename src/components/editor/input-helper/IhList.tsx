@@ -2,7 +2,6 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import TextareaField from "~/components/forms/TextareaField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
@@ -26,6 +25,8 @@ const ihMetaDataSchema = z
         radiobuttons: z.boolean().catch(false).default(false),
     })
     .strip();
+
+// type IhListMetaData = z.infer<typeof ihMetaDataSchema>;
 
 const ihDataSchema = z
     .object({
@@ -160,3 +161,23 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
         </>
     );
 };
+
+// const Dialog = ({ metadata }: { metadata: IhListMetaData }) => {
+//     return (
+//         <dialog>
+//             <DndContext
+//                 modifiers={[restrictToHorizontalAxis, restrictToParentElement]}
+//                 sensors={sensors}
+//                 collisionDetection={closestCenter}
+//                 onDragEnd={(e) => dragFolder(e)}>
+//                 <SortableContext
+//                     items={metadata.list.items}
+//                     strategy={horizontalListSortingStrategy}>
+//                     {metadata.list.map(({ key, value }) => (
+//                         <div key={key}></div>
+//                     ))}
+//                 </SortableContext>
+//             </DndContext>
+//         </dialog>
+//     );
+// };

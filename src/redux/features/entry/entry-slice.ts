@@ -331,18 +331,20 @@ const entrySlice = createSlice({
                 case "username":
                 case "templateName":
                 case "tags":
-                    action.payload.value = action.payload.value?.trim();
-                    if (action.payload.value && action.payload.value.length > 0) {
+                    if (
+                        typeof action.payload.value === "string" &&
+                        action.payload.value.trim().length > 0
+                    ) {
                         state.filter[action.payload.type] = action.payload.value;
                     } else {
-                        state.filter[action.payload.type] = undefined;
+                        delete state.filter[action.payload.type];
                     }
                     break;
                 case "includePublic":
                     if (action.payload.value === "true" || action.payload.value === "false") {
                         state.filter[action.payload.type] = action.payload.value;
                     } else {
-                        state.filter[action.payload.type] = undefined;
+                        delete state.filter[action.payload.type];
                     }
                     break;
             }
