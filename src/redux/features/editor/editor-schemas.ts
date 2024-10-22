@@ -12,7 +12,6 @@ const templateCellSchema = z.object({
 
 const templateRowSchema = z.object({
     id: z.string().uuid(),
-    canWrapCells: z.boolean(),
     canRepeat: z.boolean(),
     hideOnNoInput: z.boolean(),
 });

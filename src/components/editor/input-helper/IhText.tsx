@@ -30,8 +30,8 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
             <div>
-                <p>{cell.template.text ?? ""}</p>
-                {data.data.value}
+                {cell.template.text !== null ? <h4>{cell.template.text}</h4> : null}
+                <p>{data.data.value}</p>
             </div>
         );
     }

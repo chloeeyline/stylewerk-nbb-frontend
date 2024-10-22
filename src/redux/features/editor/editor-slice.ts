@@ -217,7 +217,6 @@ const editorSlice = createSlice({
         ) => {
             if (state.data === null || state.data.items.length === 0) return;
             switch (action.payload.type) {
-                case "canWrapCells":
                 case "canRepeat":
                 case "hideOnNoInput":
                     state.data.items = state.data.items.map((row) => {

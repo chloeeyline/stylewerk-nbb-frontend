@@ -1,5 +1,7 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { z } from "zod";
+
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
@@ -24,6 +26,7 @@ const ihDataSchema = z
 export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
@@ -31,9 +34,9 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
-            <div>
-                <p>{cell.template.text ?? ""}</p>
-                {data.data.value}
+            <div className="d-flex" style={{ alignItems: "baseline" }}>
+                {cell.template.text !== null ? <h4>{cell.template.text}:&nbsp;</h4> : null}
+                <span>{data.data.value}</span>
             </div>
         );
     }
@@ -64,6 +67,8 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
 
 export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
+
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
@@ -107,14 +112,14 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
         <>
             <InputField
                 type="number"
-                label="Minimalwert"
+                label={t("editor.ihOptionMinValue")}
                 name="min"
                 value={metadata.data.min ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
                 type="number"
-                label="Maximalwert"
+                label={t("editor.ihOptionMaxValue")}
                 name="max"
                 value={metadata.data.max ?? ""}
                 onChange={dispatchCellSettings}
