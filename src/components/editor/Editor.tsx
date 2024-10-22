@@ -31,7 +31,7 @@ import EditorRow from "./EditorRow";
 import EntrySettings from "./toolbar/EntrySettings";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateSettings from "./toolbar/TemplateSettings";
-import AdditionSign from "../Icon/AdditionSign";
+import Plus from "~/components/Icon/Plus";
 
 export default function Editor({
     id,
@@ -160,7 +160,7 @@ export default function Editor({
                                     style={{ alignItems: "center" }}
                                     onClick={() => dispatch(addTemplateRow())}>
                                     {t("editor.addNewRow")}
-                                    <AdditionSign className="icon-inline" />
+                                    <Plus className="icon-inline" />
                                 </button>
                             </div>
                         ) : null}
