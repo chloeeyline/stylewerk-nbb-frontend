@@ -4,8 +4,9 @@ import Backend from "#/backend-routes";
 import { DEFAULT_UUID } from "#/general";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
+import { safeStringify } from "~/utils/safe-json";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
-import type { Editor, EntryRow } from "./editor-schemas";
+import type { Editor, EntryCell, EntryRow } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
 
 export type EditorState = {
@@ -365,17 +366,20 @@ const editorSlice = createSlice({
                 return row;
             });
         },
-        setData: (state, action: PayloadAction<string | null>) => {
+        setData: (
+            state,
+            action: PayloadAction<{ rowID: string; cellID: string; data: string | null }>,
+        ) => {
             if (state.data === null || state.data.items.length === 0) return;
             state.data.items = state.data.items.map((row) => {
-                if (row.id === state.selectedEntryRow) {
+                if (row.id === action.payload.rowID) {
                     return {
                         ...row,
                         items: row.items.map((cell) => {
-                            if (cell.id === state.selectedEntryCell) {
+                            if (cell.id === action.payload.cellID) {
                                 return {
                                     ...cell,
-                                    data: action.payload,
+                                    data: action.payload.data,
                                 };
                             }
                             return cell;
@@ -452,6 +456,27 @@ const editorSlice = createSlice({
             });
     },
 });
+
+export const CallSetData = (
+    dispatch: AppDispatch,
+    editor: EditorState,
+    cell: EntryCell,
+    row: EntryRow,
+    value: unknown,
+) => {
+    if (editor.isPreview) return;
+    if (typeof value === "undefined" || value === null) {
+        dispatch(setData({ cellID: cell.id, rowID: row.id, data: null }));
+        return;
+    }
+    dispatch(
+        setData({
+            cellID: cell.id,
+            rowID: row.id,
+            data: safeStringify(value)?.data ?? null,
+        }),
+    );
+};
 
 export const {
     setEntry,

@@ -3,7 +3,7 @@ import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
+import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -19,7 +19,7 @@ const ihDataSchema = z
     })
     .strip();
 
-export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
+export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
@@ -30,8 +30,8 @@ export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
             <div>
-                {data.data.value}
                 <p>{cell.template.text ?? ""}</p>
+                {data.data.value}
             </div>
         );
     }
@@ -45,16 +45,10 @@ export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
             placeholder={cell.template.text ?? ""}
             value={data.data.value ?? metadata.data.value ?? ""}
             onChange={(e) => {
-                if (editor.isPreview) return;
-                if (e.target.value.length === 0) {
-                    dispatch(setData(null));
-                    return;
-                }
-                const temp = {
+                CallSetData(dispatch, editor, cell, row, {
                     ...data.data,
                     value: e.target.value,
-                };
-                dispatch(setData(JSON.stringify(temp)));
+                });
             }}
         />
     );

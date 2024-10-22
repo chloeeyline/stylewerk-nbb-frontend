@@ -1,4 +1,4 @@
-import type { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import type { EntryCell, EntryRow, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppSelector } from "~/redux/hooks";
 import { IhCheckbox } from "./IhCheckbox";
@@ -9,10 +9,11 @@ import { IhStatic } from "./IhStatic";
 import { IhText } from "./IhText";
 import { IhList } from "./IhList";
 
-const InputHelper = ({ cell }: { cell: EntryCell }) => {
+const InputHelper = ({ cell, row }: { cell: EntryCell; row: EntryRow }) => {
     const editor = useAppSelector(selectEditor);
     const props: InputHelperProps = {
         cell,
+        row,
         isReadOnly: editor.isPreview === true || editor.isTemplate === true,
     };
 

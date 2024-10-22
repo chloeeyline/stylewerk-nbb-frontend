@@ -3,7 +3,7 @@ import { CSS } from "@dnd-kit/utilities";
 
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
-import type { EntryCell } from "~/redux/features/editor/editor-schemas";
+import type { EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
     removeTemplateCell,
     selectEditor,
@@ -13,15 +13,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import InputHelper from "./input-helper/InputHelper";
 
-export default function EditorCell({
-    cell,
-    entryRowID,
-    templateRowID,
-}: {
-    cell: EntryCell;
-    entryRowID: string;
-    templateRowID: string;
-}) {
+export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryRow }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
@@ -32,9 +24,9 @@ export default function EditorCell({
     const select = () => {
         dispatch(
             setSelected({
-                entryRow: entryRowID,
+                entryRow: row.id,
                 entryCell: editor.selectedEntryCell === cell.id ? "" : cell.id,
-                templateRow: templateRowID,
+                templateRow: row.templateID,
                 templateCell:
                     editor.selectedTemplateCell === cell.templateID ? "" : cell.templateID,
             }),
@@ -71,7 +63,7 @@ export default function EditorCell({
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(
                                 removeTemplateCell({
-                                    templateRow: templateRowID,
+                                    templateRow: row.templateID,
                                     templateCell: cell.templateID,
                                 }),
                             );
@@ -84,7 +76,7 @@ export default function EditorCell({
                     </button>
                 </div>
             ) : null}
-            <InputHelper cell={cell} />
+            <InputHelper cell={cell} row={row} />
         </div>
     );
 }

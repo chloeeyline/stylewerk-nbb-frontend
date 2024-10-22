@@ -173,12 +173,7 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         onDragEnd={(e) => dragFolder(e)}>
                         <SortableContext items={row.items} strategy={horizontalListSortingStrategy}>
                             {row.items.map((cell) => (
-                                <EditorCell
-                                    key={cell.templateID}
-                                    cell={cell}
-                                    entryRowID={row.id}
-                                    templateRowID={row.templateID}
-                                />
+                                <EditorCell key={cell.templateID} cell={cell} row={row} />
                             ))}
                         </SortableContext>
                     </DndContext>

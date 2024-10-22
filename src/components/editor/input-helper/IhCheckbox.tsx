@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { selectEditor, setData, setMetadata } from "~/redux/features/editor/editor-slice";
+import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
@@ -18,7 +18,7 @@ const ihDataSchema = z
     })
     .strip();
 
-export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
+export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
@@ -36,16 +36,10 @@ export const IhCheckbox = ({ cell, isReadOnly }: InputHelperProps) => {
             placeholder={cell.template.text ?? ""}
             checked={data.data.value ?? metadata.data.value ?? false}
             onChange={(e) => {
-                if (editor.isPreview) return;
-                if (e.target.value.length === 0) {
-                    dispatch(setData(null));
-                    return;
-                }
-                var temp = {
+                CallSetData(dispatch, editor, cell, row, {
                     ...data.data,
                     value: e.target.checked,
-                };
-                dispatch(setData(JSON.stringify(temp)));
+                });
             }}
         />
     );
