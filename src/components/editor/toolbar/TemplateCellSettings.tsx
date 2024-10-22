@@ -54,6 +54,7 @@ export default function TemplateCellSettings() {
                         ["5", "Checkbox"],
                         ["6", "Datetime"],
                         ["7", "Farbe"],
+                        ["8", "Liste"],
                     ]}
                 />
                 <InputField
@@ -74,7 +75,9 @@ export default function TemplateCellSettings() {
                     value={selectedCellSettings()?.template.description ?? ""}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                 />
-                <div className="d-grid grid-template-columns gap-1" style={{ "--grid-template-columns": "1fr 1fr", placeItems: "center" }}>
+                <div
+                    className="d-grid grid-template-columns gap-1"
+                    style={{ "--grid-template-columns": "1fr 1fr", "placeItems": "center" }}>
                     <InputField
                         type="checkbox"
                         label="HideOnEmpty"
