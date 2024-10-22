@@ -16,6 +16,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
+import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
@@ -33,6 +34,7 @@ import ScrollContainer from "~/components/layout/ScrollContainer";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import type { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
+    clearFilters,
     detailFolder,
     listEntry,
     listFolder,
@@ -172,51 +174,76 @@ const EntryFilters = () => {
         );
     };
 
+    const dispatchApplyFilters = (e?: React.FormEvent<HTMLFormElement>) => {
+        if (typeof e !== "undefined") {
+            e.preventDefault();
+        }
+        dispatch(listEntry());
+    };
+
+    const dispatchClearFilters = () => {
+        dispatch(clearFilters());
+        dispatchApplyFilters();
+    };
+
     return (
-        <fieldset className="fieldset bg-base-300">
-            <legend className="legend bg-base-100">{t("list.filtering")}</legend>
-            <Columns>
+        <form onSubmit={dispatchApplyFilters}>
+            <fieldset className="fieldset bg-base-300">
+                <legend className="legend bg-base-100">{t("list.filtering")}</legend>
+                <Columns>
+                    <InputField
+                        type="text"
+                        label={t("common.name")}
+                        name="name"
+                        className="bg-base-200"
+                        value={entry.filter.name ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        type="text"
+                        label={t("formFields.templateName")}
+                        name="templateName"
+                        className="bg-base-200"
+                        value={entry.filter.templateName ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        type="text"
+                        label={t("formFields.tags")}
+                        name="tags"
+                        className="bg-base-200"
+                        value={entry.filter.tags ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                    <InputField
+                        type="text"
+                        label={t("formFields.username")}
+                        name="username"
+                        className="bg-base-200"
+                        value={entry.filter.username ?? ""}
+                        onChange={dispatchFilter}
+                    />
+                </Columns>
                 <InputField
-                    type="text"
-                    label={t("common.name")}
-                    name="name"
-                    className="bg-base-200"
-                    value={entry.filter.name ?? ""}
-                    onChange={dispatchFilter}
+                    type="checkbox"
+                    label={t("formFields.public")}
+                    name="includePublic"
+                    checked={entry.filter.includePublic === "true"}
+                    onChange={dispatchFilterCheckbox}
                 />
-                <InputField
-                    type="text"
-                    label={t("formFields.templateName")}
-                    name="templateName"
-                    className="bg-base-200"
-                    value={entry.filter.templateName ?? ""}
-                    onChange={dispatchFilter}
-                />
-                <InputField
-                    type="text"
-                    label={t("formFields.tags")}
-                    name="tags"
-                    className="bg-base-200"
-                    value={entry.filter.tags ?? ""}
-                    onChange={dispatchFilter}
-                />
-                <InputField
-                    type="text"
-                    label={t("formFields.username")}
-                    name="username"
-                    className="bg-base-200"
-                    value={entry.filter.username ?? ""}
-                    onChange={dispatchFilter}
-                />
-            </Columns>
-            <InputField
-                type="checkbox"
-                label={t("formFields.public")}
-                name="includePublic"
-                checked={entry.filter.includePublic === "true"}
-                onChange={dispatchFilterCheckbox}
-            />
-        </fieldset>
+                <Columns>
+                    <button
+                        type="button"
+                        className="btn btn-accent p-1"
+                        onClick={dispatchClearFilters}>
+                        {t("common.reset")}
+                    </button>
+                    <button type="submit" className="btn btn-primary p-1">
+                        {t("common.filter")}
+                    </button>
+                </Columns>
+            </fieldset>
+        </form>
     );
 };
 

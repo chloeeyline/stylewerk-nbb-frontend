@@ -358,7 +358,7 @@ const entrySlice = createSlice({
         toggleDragMode: (state) => {
             state.dragMode = !state.dragMode;
         },
-        resetFilter: (state) => {
+        clearFilters: (state) => {
             state.items = [];
             state.filter = {};
         },
@@ -463,7 +463,7 @@ export const {
     setFilter,
     toggleHideFilters,
     toggleHideList,
-    resetFilter,
+    clearFilters,
     toggleDragMode,
     setFolders,
     setSelectedFolder,

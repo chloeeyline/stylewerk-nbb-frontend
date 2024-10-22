@@ -1,9 +1,10 @@
 import { Outlet, ScrollRestoration } from "react-router-dom";
 
-import Frontend from "#/routes";
+import Routes from "#/routes";
 import { useTranslation } from "react-i18next";
 import Grid from "~/components/layout/Grid";
-import { MemoNavbar, NavbarRoute } from "~/components/layout/NavBar";
+import type { NavbarRoute } from "~/components/layout/NavBar";
+import { MemoNavbar } from "~/components/layout/NavBar";
 import RouteAnnouncer from "~/components/layout/RouteAnnouncer";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import { logoutUser, selectUser } from "~/redux/features/user/user-slice";
@@ -19,38 +20,43 @@ const RootNavBar = () => {
     const dispatch = useAppDispatch();
 
     const routes: (NavbarRoute | undefined)[] = [
-        loggedIn === false
-            ? {
-                  type: "link",
-                  url: Frontend.Home,
-                  name: t("nav.homepage"),
-              }
-            : undefined,
+        {
+            type: "link",
+            url: Routes.Home,
+            name: t("nav.homepage"),
+        },
         loggedIn
             ? {
                   type: "link",
-                  url: Frontend.Entries.List,
+                  url: Routes.Entries.List,
                   name: t("nav.entries"),
               }
             : undefined,
         loggedIn
             ? {
                   type: "link",
-                  url: Frontend.Templates.List,
+                  url: Routes.Templates.List,
                   name: t("nav.templates"),
               }
             : undefined,
         isAdmin
             ? {
                   type: "link",
-                  url: Frontend.Admin.Index,
-                  name: t("nav.admin"),
+                  url: Routes.Admin.Translations.List,
+                  name: t("nav.adminTranslations"),
+              }
+            : undefined,
+        isAdmin
+            ? {
+                  type: "link",
+                  url: Routes.Admin.Themes.List,
+                  name: t("nav.adminThemes"),
               }
             : undefined,
         loggedIn
             ? {
                   type: "link",
-                  url: Frontend.User.Index,
+                  url: Routes.User.Index,
                   name: t("nav.user"),
               }
             : undefined,
@@ -66,14 +72,14 @@ const RootNavBar = () => {
         !loggedIn
             ? {
                   type: "link",
-                  url: Frontend.Login,
+                  url: Routes.Login,
                   name: t("nav.login"),
               }
             : undefined,
         !loggedIn
             ? {
                   type: "link",
-                  url: Frontend.Registration,
+                  url: Routes.Registration,
                   name: t("nav.registration"),
               }
             : undefined,
@@ -86,9 +92,7 @@ export default function RootLayout() {
     return (
         <>
             <Grid layout="header" className="size-block-100 gap-1 p-1">
-                <div>
-                    <RootNavBar />
-                </div>
+                <RootNavBar />
                 <ScrollContainer direction="vertical">
                     <Outlet />
                 </ScrollContainer>

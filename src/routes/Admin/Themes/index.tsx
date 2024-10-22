@@ -124,10 +124,7 @@ export default function AdminThemesList() {
 
     return (
         <Grid layout="header" className="gap-1">
-            <div>
-                <Link to={Routes.Admin.Index}>{t("common.back")}</Link>
-                <h1>{t("nav.adminThemes")}</h1>
-            </div>
+            <h1>{t("nav.adminThemes")}</h1>
             <Themes />
         </Grid>
     );
