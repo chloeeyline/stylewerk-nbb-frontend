@@ -38,7 +38,7 @@ export const IhText = ({ cell, isReadOnly }: InputHelperProps) => {
 
     return (
         <TextareaField
-            label="Text"
+            label={cell.template.text ?? ""}
             name="text"
             required={cell.template.isRequired}
             disabled={isReadOnly}
