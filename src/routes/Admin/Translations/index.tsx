@@ -145,10 +145,7 @@ export default function AdminTranslationsList() {
 
     return (
         <Grid layout="header" className="gap-1">
-            <div>
-                <Link to={Routes.Admin.Index}>{t("common.back")}</Link>
-                <h1>{t("nav.adminTranslations")}</h1>
-            </div>
+            <h1>{t("nav.adminTranslations")}</h1>
             <Translations />
         </Grid>
     );

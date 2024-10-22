@@ -7,7 +7,6 @@ import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Download from "~/components/Icon/Download";
 import Grid from "~/components/layout/Grid";
 import ScrollContainer from "~/components/layout/ScrollContainer";
 import type { Theme } from "~/schemas/themes";
@@ -30,7 +29,6 @@ type ThemeState = {
     name: string;
     base: "light" | "dark";
     theme: Theme;
-    blob: string | null;
 };
 
 const getNameParameter = (): string =>
@@ -40,9 +38,6 @@ const getFromParameter = (): "light" | "dark" =>
     (new URLSearchParams(document.location.search).get("from") ?? "light") === "dark"
         ? "dark"
         : "light";
-
-const createBlobString = (input: Theme) =>
-    URL.createObjectURL(new Blob([JSON.stringify(input)], { type: "octet/stream" }));
 
 const ThemeEditor = ({
     themeState,
@@ -85,8 +80,6 @@ const ThemeEditor = ({
 
                         newThemeState.theme[key] = e.target.value;
 
-                        newThemeState.blob = createBlobString(newThemeState.theme);
-
                         setThemeState(newThemeState);
                     }}
                 />
@@ -108,7 +101,6 @@ export default function AdminThemesManage() {
         name: "",
         base: "light",
         theme: {},
-        blob: null,
     });
 
     const fetchThemeContent = async () => {
@@ -142,7 +134,6 @@ export default function AdminThemesManage() {
                 name,
                 base: from,
                 theme: baseTheme,
-                blob: createBlobString(baseTheme),
             });
             return;
         }
@@ -154,7 +145,6 @@ export default function AdminThemesManage() {
             name: theme.name,
             base: theme.base !== "system" ? theme.base : "light",
             theme: theme.data,
-            blob: createBlobString(theme.data),
         });
     };
 
@@ -166,8 +156,6 @@ export default function AdminThemesManage() {
 
         fetchThemeContent();
     }, [themeId]);
-
-    console.log(themeState);
 
     return (
         <Grid layout="header" className="size-block-100">
@@ -296,13 +284,6 @@ export default function AdminThemesManage() {
                                 {t("adminThemes.deleteTheme")}
                             </button>
                         )}
-                        <a
-                            className="btn btn-accent p-1"
-                            href={themeState.blob ?? "#"}
-                            download={themeState.name + ".json"}>
-                            {t("common.download")}
-                            <Download className="icon-inline m-is-1" fill="currentColor" />
-                        </a>
                     </div>
                 </Grid>
             </ScrollContainer>
