@@ -53,7 +53,9 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
             onChange={(e) => {
                 CallSetData(dispatch, editor, cell, row, {
                     ...data.data,
-                    value: e.target.value,
+                    value: metadata.data.integer
+                        ? Number.parseInt(e.target.value)
+                        : Number.parseFloat(e.target.value),
                 });
             }}
         />
