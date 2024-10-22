@@ -8,6 +8,8 @@ import { safeStringify } from "~/utils/safe-json";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
 import type { Editor, EntryCell, EntryRow } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
+import Routes from "~/constants/routes";
+import RouteParams from "~/constants/route-params";
 
 export type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -449,7 +451,28 @@ const editorSlice = createSlice({
             .addCase(updateEditor.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                const hasChanged = state.data?.id !== action.payload.data?.id;
                 state.data = action.payload.data;
+                if (action.payload.data === null || hasChanged === false) return;
+                if (state.isTemplate) {
+                    window.history.pushState(
+                        {},
+                        "",
+                        Routes.Templates.Edit.replace(
+                            RouteParams.TemplateId,
+                            action.payload.data.templateID,
+                        ).replace(RouteParams.IsNew, "false"),
+                    );
+                } else {
+                    window.history.pushState(
+                        {},
+                        "",
+                        Routes.Entries.Edit.replace(
+                            RouteParams.EntryId,
+                            action.payload.data.id,
+                        ).replace(RouteParams.IsNew, "false"),
+                    );
+                }
             })
             .addCase(updateEditor.rejected, (state) => {
                 state.status = "failed";
