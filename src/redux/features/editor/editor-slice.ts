@@ -2,14 +2,13 @@ import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import Backend from "#/backend-routes";
 import { DEFAULT_UUID } from "#/general";
+import RouteParams from "~/constants/route-params";
+import Routes from "~/constants/routes";
 import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
-import { safeStringify } from "~/utils/safe-json";
 import { CreateEditor, CreateEntryCell, CreateEntryRow } from "./editor-create";
-import type { Editor, EntryCell, EntryRow } from "./editor-schemas";
+import type { Editor, EntryRow } from "./editor-schemas";
 import { editorSchema } from "./editor-schemas";
-import Routes from "~/constants/routes";
-import RouteParams from "~/constants/route-params";
 
 export type EditorState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -322,7 +321,7 @@ const editorSlice = createSlice({
             state,
             action: PayloadAction<{ templateRow: string; templateCell: string }>,
         ) => {
-            if (state.data === null || state.data.items.length <= 1) return;
+            if (state.data === null) return;
             let stop = false;
             const tempRowList = state.data.items.map((row) => {
                 if (row.templateID === action.payload.templateRow && row.items.length > 0) {
@@ -478,27 +477,6 @@ const editorSlice = createSlice({
             });
     },
 });
-
-export const CallSetData = (
-    dispatch: AppDispatch,
-    editor: EditorState,
-    cell: EntryCell,
-    row: EntryRow,
-    value: unknown,
-) => {
-    if (editor.isPreview) return;
-    if (typeof value === "undefined" || value === null) {
-        dispatch(setData({ cellID: cell.id, rowID: row.id, data: null }));
-        return;
-    }
-    dispatch(
-        setData({
-            cellID: cell.id,
-            rowID: row.id,
-            data: safeStringify(value)?.data ?? null,
-        }),
-    );
-};
 
 export const {
     setEntry,

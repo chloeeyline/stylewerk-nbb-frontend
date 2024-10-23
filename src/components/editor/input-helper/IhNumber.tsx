@@ -2,15 +2,16 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import { ihDataNumberSchema } from "~/redux/features/editor/editor-data-schema";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataNumberSchema } from "~/redux/features/editor/editor-metadata-schema";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+    const { setData } = useInputHelper(cell, row);
 
     const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataNumberSchema.safeParse(saveParseEmptyObject(cell.data));
@@ -39,7 +40,7 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
             max={metadata.data?.max}
             step={metadata.data?.step}
             onChange={(e) => {
-                CallSetData(dispatch, editor, cell, row, {
+                setData({
                     ...data.data,
                     value: metadata.data.integer
                         ? Number.parseInt(e.target.value)
@@ -50,15 +51,15 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhNumberSettings = ({ cell, row }: InputHelperProps) => {
     const { t } = useTranslation();
+    const { setMetaData } = useInputHelper(cell, row);
 
     const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
 
     if (metadata.success === false) return null;
@@ -69,24 +70,16 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
             case "min":
             case "max":
             case "step":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: Number(e.target.value),
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: Number(e.target.value),
+                });
                 break;
             case "integer":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.checked,
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: e.target.checked,
+                });
                 break;
             default:
                 return;

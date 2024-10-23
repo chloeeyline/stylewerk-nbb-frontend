@@ -4,26 +4,41 @@ import { IhDateTimeSettings } from "~/components/editor/input-helper/IhDateTime"
 import { IhNumberSettings } from "~/components/editor/input-helper/IhNumber";
 import { IhStaticSettings } from "~/components/editor/input-helper/IhStatic";
 import { IhTextSettings } from "~/components/editor/input-helper/IhText";
-import type { EntryCell } from "~/redux/features/editor/editor-schemas";
+import type { EntryCell, EntryRow, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { IhListSettings } from "../input-helper/IhList";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
 
-export default function InputHelperSettings({ cell }: { cell: EntryCell | null }) {
-    if (!cell) return null;
+export default function InputHelperSettings({
+    cell,
+    row,
+}: {
+    cell: EntryCell | null;
+    row: EntryRow | null;
+}) {
+    const editor = useAppSelector(selectEditor);
+    if (row === null || cell === null) return null;
+    const props: InputHelperProps = {
+        cell,
+        row,
+        isReadOnly: editor.isPreview === true || editor.isTemplate === true,
+    };
+
     switch (cell.template.inputHelper) {
         case 1:
-            return <IhStaticSettings cell={cell} />;
+            return <IhStaticSettings {...props} />;
         case 3:
-            return <IhTextSettings cell={cell} />;
+            return <IhTextSettings {...props} />;
         case 4:
-            return <IhNumberSettings cell={cell} />;
+            return <IhNumberSettings {...props} />;
         case 5:
-            return <IhCheckboxSettings cell={cell} />;
+            return <IhCheckboxSettings {...props} />;
         case 6:
-            return <IhDateTimeSettings cell={cell} />;
+            return <IhDateTimeSettings {...props} />;
         case 7:
-            return <IhColorSettings cell={cell} />;
+            return <IhColorSettings {...props} />;
         case 8:
-            return <IhListSettings cell={cell} />;
+            return <IhListSettings {...props} />;
         default:
             return null;
     }

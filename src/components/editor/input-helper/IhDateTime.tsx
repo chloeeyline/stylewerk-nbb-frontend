@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import { ihDataDateTimeSchema } from "~/redux/features/editor/editor-data-schema";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataDateTimeSchema } from "~/redux/features/editor/editor-metadata-schema";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 const getType = (type: number) => {
@@ -23,7 +24,7 @@ const getType = (type: number) => {
 
 export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+    const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataDateTimeSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
     );
@@ -52,7 +53,7 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
             min={metadata.data?.min}
             max={metadata.data?.max}
             onChange={(e) => {
-                CallSetData(dispatch, editor, cell, row, {
+                setData({
                     ...data.data,
                     value: e.target.value,
                 });
@@ -61,16 +62,16 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhDateTimeSettings = ({ cell, row }: InputHelperProps) => {
     const { t } = useTranslation();
+    const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataDateTimeSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
     );
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
 
     if (metadata.success === false) return null;
@@ -81,24 +82,16 @@ export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
             case "min":
             case "max":
             case "value":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: e.target.value,
+                });
                 break;
             case "type":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: Number(e.target.value),
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: Number(e.target.value),
+                });
                 break;
             default:
                 return;

@@ -26,6 +26,12 @@ export default function TemplateCellSettings() {
         return cell ?? null;
     };
 
+    const selectedRowSettings = () => {
+        if (editor.selectedTemplateRow.length == 0 || editor.data === null) return null;
+        const row = editor.data.items.find((row) => row.templateID === editor.selectedTemplateRow);
+        return row ?? null;
+    };
+
     const dispatchCellSettings = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
         value: boolean | number | string,
@@ -94,7 +100,7 @@ export default function TemplateCellSettings() {
                         onChange={(e) => dispatchCellSettings(e, e.target.checked)}
                     />
                 </div>
-                <InputHelperSettings cell={selectedCellSettings()} />
+                <InputHelperSettings cell={selectedCellSettings()} row={selectedRowSettings()} />
             </InlineScroller>
         </fieldset>
     );

@@ -21,21 +21,22 @@ import { useTranslation } from "react-i18next";
 import { z } from "zod";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Plus from "~/components/Icon/Plus";
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
-import { saveParseEmptyObject } from "~/utils/safe-json";
+import Plus from "~/components/Icon/Plus";
 import { ihDataListSchema } from "~/redux/features/editor/editor-data-schema";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataListSchema } from "~/redux/features/editor/editor-metadata-schema";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
+import { saveParseEmptyObject } from "~/utils/safe-json";
 
 type IhListMetaData = z.infer<typeof ihMetaDataListSchema>;
 
 export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+    const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataListSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
@@ -73,7 +74,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
                             name={cell.id}
                             checked={data.data.value === key}
                             onChange={(e) => {
-                                CallSetData(dispatch, editor, cell, row, {
+                                setData({
                                     ...data.data,
                                     value: e.target.checked ? key : "",
                                 });
@@ -94,7 +95,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
             options={metadata.data.list}
             value={data.data.value ?? metadata.data.value ?? ""}
             onChange={(e) => {
-                CallSetData(dispatch, editor, cell, row, {
+                setData({
                     ...data.data,
                     value: e.target.value,
                 });
@@ -103,15 +104,15 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhListSettings = ({ cell, row }: InputHelperProps) => {
     const { t } = useTranslation();
+    const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
 
     if (metadata.success === false) return null;
@@ -120,25 +121,17 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
         if (!e.target.value) return;
         switch (e.target.name) {
             case "value":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: e.target.value,
+                });
                 break;
             case "radiobuttons":
                 if ("checked" in e.target) {
-                    dispatch(
-                        setMetadata(
-                            JSON.stringify({
-                                ...metadata.data,
-                                [e.target.name]: e.target.checked,
-                            }),
-                        ),
-                    );
+                    setMetaData({
+                        ...metadata.data,
+                        [e.target.name]: e.target.checked,
+                    });
                 }
                 break;
             default:
@@ -177,6 +170,7 @@ export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
                 metadata={metadata.data}
                 isOpen={dialogIsOpen}
                 onClose={() => setDialogIsOpen(false)}
+                setMetaData={setMetaData}
             />
         </>
     );
@@ -186,12 +180,13 @@ const Dialog = ({
     isOpen,
     onClose,
     metadata,
+    setMetaData,
 }: {
     isOpen: boolean;
     onClose: () => void;
     metadata: IhListMetaData;
+    setMetaData: (value: unknown) => void;
 }) => {
-    const dispatch = useAppDispatch();
     const dialogRef = useRef<HTMLDialogElement>(null);
 
     useEffect(() => {
@@ -208,14 +203,10 @@ const Dialog = ({
     );
 
     const setList = (value: [string, string][]) => {
-        dispatch(
-            setMetadata(
-                JSON.stringify({
-                    ...metadata,
-                    list: value,
-                }),
-            ),
-        );
+        setMetaData({
+            ...metadata,
+            list: value,
+        });
     };
 
     const dragItem = (e: DragEndEvent) => {

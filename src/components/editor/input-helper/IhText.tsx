@@ -2,15 +2,16 @@ import { useEffect } from "react";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { ihDataTextSchema } from "~/redux/features/editor/editor-data-schema";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataTextSchema } from "~/redux/features/editor/editor-metadata-schema";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
+    const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataTextSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataTextSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
@@ -34,7 +35,7 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
             placeholder={cell.template.text ?? ""}
             value={data.data.value ?? metadata.data.value ?? ""}
             onChange={(e) => {
-                CallSetData(dispatch, editor, cell, row, {
+                setData({
                     ...data.data,
                     value: e.target.value,
                 });
@@ -43,13 +44,12 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhTextSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
+    const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataTextSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
-
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
 
     if (metadata.success === false) return null;
@@ -58,14 +58,10 @@ export const IhTextSettings = ({ cell }: { cell: EntryCell }) => {
         if (!e.target.value) return;
         switch (e.target.name) {
             case "value":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: e.target.value,
+                });
                 break;
             default:
                 return;

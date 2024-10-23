@@ -1,9 +1,8 @@
 import { useEffect } from "react";
 import InputField from "~/components/forms/InputField";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataStaticSchema } from "~/redux/features/editor/editor-metadata-schema";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch } from "~/redux/hooks";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 export const IhStatic = ({ cell }: InputHelperProps) => {
@@ -17,13 +16,13 @@ export const IhStatic = ({ cell }: InputHelperProps) => {
     );
 };
 
-export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhStaticSettings = ({ cell, row }: InputHelperProps) => {
+    const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataStaticSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
 
     if (metadata.success === false) return null;
@@ -32,24 +31,16 @@ export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
         if (!e.target.value) return;
         switch (e.target.name) {
             case "color":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: e.target.value,
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: e.target.value,
+                });
                 break;
             case "fontsize":
-                dispatch(
-                    setMetadata(
-                        JSON.stringify({
-                            ...metadata.data,
-                            [e.target.name]: Number(e.target.value),
-                        }),
-                    ),
-                );
+                setMetaData({
+                    ...metadata.data,
+                    [e.target.name]: Number(e.target.value),
+                });
                 break;
             default:
                 return;

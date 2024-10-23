@@ -2,16 +2,13 @@ import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import { ihDataCheckboxSchema } from "~/redux/features/editor/editor-data-schema";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataCheckboxSchema } from "~/redux/features/editor/editor-metadata-schema";
-import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
-import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
-import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
-    const editor = useAppSelector(selectEditor);
-    const dispatch = useAppDispatch();
-
+    const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataCheckboxSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
     );
@@ -31,7 +28,7 @@ export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
                 placeholder={cell.template.text ?? ""}
                 checked={data.data?.value ?? metadata.data.value ?? false}
                 onChange={(e) => {
-                    CallSetData(dispatch, editor, cell, row, {
+                    setData({
                         ...data.data,
                         value: e.target.checked,
                     });
@@ -41,30 +38,25 @@ export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
     );
 };
 
-export const IhCheckboxSettings = ({ cell }: { cell: EntryCell }) => {
-    const dispatch = useAppDispatch();
+export const IhCheckboxSettings = ({ cell, row }: InputHelperProps) => {
     const { t } = useTranslation();
+    const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataCheckboxSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
     );
 
     useEffect(() => {
         if (metadata.success === false) return;
-        dispatch(setMetadata(JSON.stringify(metadata.data)));
+        setMetaData(metadata.data);
     }, []);
-
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.value) return;
-        dispatch(
-            setMetadata(
-                JSON.stringify({
-                    ...metadata.data,
-                    [e.target.name]: e.target.checked,
-                }),
-            ),
-        );
+        setMetaData({
+            ...metadata.data,
+            [e.target.name]: e.target.checked,
+        });
     };
 
     return (
