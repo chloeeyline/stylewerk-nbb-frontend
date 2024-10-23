@@ -1,26 +1,12 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
 import InputField from "~/components/forms/InputField";
+import { ihDataDateTimeSchema } from "~/redux/features/editor/editor-data-schema";
+import { ihMetaDataDateTimeSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
-
-const ihMetaDataSchema = z
-    .object({
-        min: z.string().optional().catch(undefined).default(undefined),
-        max: z.string().optional().catch(undefined).default(undefined),
-        value: z.string().optional().catch(undefined).default(undefined),
-        type: z.number().int().safe().nonnegative().catch(0).default(0),
-    })
-    .strip();
-
-const ihDataSchema = z
-    .object({
-        value: z.string().optional().catch(undefined).default(undefined),
-    })
-    .strip();
 
 const getType = (type: number) => {
     switch (type) {
@@ -38,14 +24,16 @@ const getType = (type: number) => {
 export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
-    const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
+    const metadata = ihMetaDataDateTimeSchema.safeParse(
+        saveParseEmptyObject(cell.template.metaData),
+    );
+    const data = ihDataDateTimeSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
     if (editor.isPreview === true && editor.isTemplate === false) {
         return (
-            <div className="d-flex" style={{alignItems: "baseline"}}>
+            <div className="d-flex" style={{ alignItems: "baseline" }}>
                 {cell.template.text !== null ? <h4>{cell.template.text}:&nbsp;</h4> : null}
                 <span>{data.data.value}</span>
             </div>
@@ -76,7 +64,9 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
 export const IhDateTimeSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataDateTimeSchema.safeParse(
+        saveParseEmptyObject(cell.template.metaData),
+    );
 
     useEffect(() => {
         if (metadata.success === false) return;

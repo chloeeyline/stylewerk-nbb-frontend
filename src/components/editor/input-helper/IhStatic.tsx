@@ -1,20 +1,13 @@
 import { useEffect } from "react";
-import { z } from "zod";
 import InputField from "~/components/forms/InputField";
+import { ihMetaDataStaticSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-const ihMetaDataSchema = z
-    .object({
-        color: z.string().optional().catch(undefined).default(undefined),
-        fontsize: z.number().safe().optional().catch(undefined).default(undefined),
-    })
-    .strip();
-
 export const IhStatic = ({ cell }: InputHelperProps) => {
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataStaticSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     if (metadata.success === false) return null;
 
     return (
@@ -26,7 +19,7 @@ export const IhStatic = ({ cell }: InputHelperProps) => {
 
 export const IhStaticSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataStaticSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
         if (metadata.success === false) return;

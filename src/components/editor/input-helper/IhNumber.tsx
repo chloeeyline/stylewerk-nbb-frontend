@@ -1,34 +1,19 @@
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { z } from "zod";
-
 import InputField from "~/components/forms/InputField";
+import { ihDataNumberSchema } from "~/redux/features/editor/editor-data-schema";
+import { ihMetaDataNumberSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-const ihMetaDataSchema = z
-    .object({
-        min: z.number().safe().optional().catch(undefined).default(undefined),
-        max: z.number().safe().optional().catch(undefined).default(undefined),
-        step: z.number().safe().optional().catch(undefined).default(undefined),
-        integer: z.boolean().catch(false).default(false),
-    })
-    .strip();
-
-const ihDataSchema = z
-    .object({
-        value: z.number().safe().optional().catch(undefined).default(undefined),
-    })
-    .strip();
-
 export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
-    const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
+    const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const data = ihDataNumberSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -69,7 +54,7 @@ export const IhNumberSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
 
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
 
     useEffect(() => {
         if (metadata.success === false) return;

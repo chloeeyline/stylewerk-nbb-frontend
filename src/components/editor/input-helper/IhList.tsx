@@ -19,7 +19,6 @@ import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
-
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import Plus from "~/components/Icon/Plus";
@@ -29,31 +28,16 @@ import { EntryCell, InputHelperProps } from "~/redux/features/editor/editor-sche
 import { CallSetData, selectEditor, setMetadata } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
+import { ihDataListSchema } from "~/redux/features/editor/editor-data-schema";
+import { ihMetaDataListSchema } from "~/redux/features/editor/editor-metadata-schema";
 
-const ihMetaDataSchema = z
-    .object({
-        list: z
-            .array(z.tuple([z.string(), z.string()]))
-            .catch([[crypto.randomUUID(), ""]])
-            .default([[crypto.randomUUID(), ""]]),
-        value: z.string().optional().catch(undefined).default(undefined),
-        radiobuttons: z.boolean().catch(false).default(false),
-    })
-    .strip();
-
-type IhListMetaData = z.infer<typeof ihMetaDataSchema>;
-
-const ihDataSchema = z
-    .object({
-        value: z.string().optional().catch(undefined).default(undefined),
-    })
-    .strip();
+type IhListMetaData = z.infer<typeof ihMetaDataListSchema>;
 
 export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
-    const data = ihDataSchema.safeParse(saveParseEmptyObject(cell.data));
+    const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const data = ihDataListSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -122,7 +106,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
 export const IhListSettings = ({ cell }: { cell: EntryCell }) => {
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
-    const metadata = ihMetaDataSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
