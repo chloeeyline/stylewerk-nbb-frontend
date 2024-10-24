@@ -29,7 +29,7 @@ const RootNavBar = () => {
             style: {
                 flexGrow: 0,
             },
-            className: "btn-square size-block-100",
+            className: "btn-square",
             children: <Home className="icon-inline" />
         },
         loggedIn
@@ -77,7 +77,7 @@ const RootNavBar = () => {
                   style: {
                       flexGrow: 0,
                   },
-                  className: "btn-square size-block-100",
+                  className: "btn-square",
                   children: <User className="icon-inline" />,
               }
             : undefined,
