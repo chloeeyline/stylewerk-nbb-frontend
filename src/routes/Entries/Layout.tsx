@@ -50,6 +50,7 @@ import {
 } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import UserGuard from "~/components/general/UserGuard";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -365,7 +366,7 @@ const CreateFolderDialog = ({
     );
 };
 
-export default function EntriesLayout() {
+const EntriesLayout = () => {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -455,5 +456,13 @@ export default function EntriesLayout() {
                 <Outlet />
             </ResponsiveSidebar>
         </Grid>
+    );
+};
+
+export default function EntriesLayoutGuarded() {
+    return (
+        <UserGuard>
+            <EntriesLayout />
+        </UserGuard>
     );
 }

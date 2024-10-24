@@ -9,7 +9,7 @@ import { removeSessions } from "~/redux/features/user/user-api";
 import { getUserData, selectUser } from "~/redux/features/user/user-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 
-const UserPage = () => {
+const User = () => {
     const { t } = useTranslation();
     const user = useAppSelector(selectUser);
 
@@ -90,10 +90,10 @@ const UserPage = () => {
     );
 };
 
-export default function User() {
+export default function UserGuarded() {
     return (
         <UserGuard>
-            <UserPage />
+            <User />
         </UserGuard>
     );
 }

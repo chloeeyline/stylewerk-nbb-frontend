@@ -13,6 +13,7 @@ import type { Translation } from "~/schemas/translations";
 import { translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
 import translateError from "~/utils/translate-error-helper";
+import UserGuard from "~/components/general/UserGuard";
 
 const Translations = () => {
     const { t } = useTranslation();
@@ -140,7 +141,7 @@ const Translations = () => {
     );
 };
 
-export default function AdminTranslationsList() {
+const AdminTranslationsList = () => {
     const { t } = useTranslation();
 
     return (
@@ -148,5 +149,13 @@ export default function AdminTranslationsList() {
             <h1>{t("nav.adminTranslations")}</h1>
             <Translations />
         </Grid>
+    );
+};
+
+export default function AdminTranslationsListGuarded() {
+    return (
+        <UserGuard>
+            <AdminTranslationsList />
+        </UserGuard>
     );
 }

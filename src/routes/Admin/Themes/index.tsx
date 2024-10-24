@@ -10,6 +10,7 @@ import SelectField from "~/components/forms/SelectField";
 import Grid from "~/components/layout/Grid";
 import type { ThemeApi } from "~/schemas/themes";
 import { getRemoteThemes } from "./api";
+import UserGuard from "~/components/general/UserGuard";
 
 const Themes = () => {
     const { t } = useTranslation();
@@ -119,7 +120,7 @@ const Themes = () => {
     );
 };
 
-export default function AdminThemesList() {
+const AdminThemesList = () => {
     const { t } = useTranslation();
 
     return (
@@ -127,5 +128,13 @@ export default function AdminThemesList() {
             <h1>{t("nav.adminThemes")}</h1>
             <Themes />
         </Grid>
+    );
+};
+
+export default function AdminThemesListGuarded() {
+    return (
+        <UserGuard>
+            <AdminThemesList />
+        </UserGuard>
     );
 }
