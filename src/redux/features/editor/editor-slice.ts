@@ -288,6 +288,31 @@ const editorSlice = createSlice({
                 return row;
             });
         },
+        addEntryRow: (state, action: PayloadAction<string>) => {
+            if (state.data === null) return;
+            const row = state.data.items.find((row) => row.id === action.payload);
+            if (typeof row === "undefined") return;
+            const index = state.data.items.indexOf(row);
+            let newRow = {
+                id: crypto.randomUUID(),
+                templateID: row.templateID,
+                template: { ...row.template },
+                items: row.items.map((cell) => {
+                    return {
+                        id: crypto.randomUUID(),
+                        templateID: cell.templateID,
+                        template: { ...cell.template },
+                        data: null,
+                    };
+                }),
+            };
+
+            state.data.items = [
+                ...state.data.items.slice(0, index + 1),
+                newRow,
+                ...state.data.items.slice(index + 1),
+            ];
+        },
         addTemplateRow: (state) => {
             if (state.data === null) return;
             state.data.items = [
@@ -306,6 +331,18 @@ const editorSlice = createSlice({
                 }
                 return row;
             });
+        },
+        removeEntryRow: (state, action: PayloadAction<string>) => {
+            if (state.data === null) return;
+            const row = state.data.items.find((row) => row.id === action.payload);
+            if (
+                typeof row === "undefined" ||
+                (!row.template.canRepeat &&
+                    state.data.items.filter((item) => item.templateID === row.templateID).length <=
+                        1)
+            )
+                return;
+            state.data.items = [...state.data.items.filter((item) => item.id !== action.payload)];
         },
         removeTemplateRow: (state, action: PayloadAction<string>) => {
             if (state.data === null || state.data.items.length <= 1) return;
@@ -483,8 +520,10 @@ export const {
     setTemplate,
     setTemplateRow,
     setTemplateCell,
+    addEntryRow,
     addTemplateRow,
     addTemplateCell,
+    removeEntryRow,
     removeTemplateRow,
     removeTemplateCell,
     setMetadata,

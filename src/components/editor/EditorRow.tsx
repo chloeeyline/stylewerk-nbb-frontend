@@ -23,7 +23,9 @@ import Move from "~/components/Icon/Move";
 import Plus from "~/components/Icon/Plus";
 import type { EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
+    addEntryRow,
     addTemplateCell,
+    removeEntryRow,
     removeTemplateRow,
     selectEditor,
     setRows,
@@ -178,6 +180,33 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         }}>
                         <Plus className="fill-current-color" />
                     </button>
+                ) : null}
+                {editor.isPreview !== true &&
+                editor.isTemplate === false &&
+                row.template.canRepeat ? (
+                    <div
+                        className="d-flex flex-direction-column gap-1"
+                        style={{ justifyContent: "space-between" }}>
+                        <button
+                            type="button"
+                            className="btn btn-error btn-square p-0"
+                            onClick={() => {
+                                if (typeof editor.data?.templateID !== "string") return;
+                                dispatch(removeEntryRow(row.id));
+                            }}>
+                            <Cross className="fill-current-color" />
+                        </button>
+                        <button
+                            type="button"
+                            className="btn btn-success btn-square p-0"
+                            onClick={() => {
+                                if (typeof editor.data?.templateID !== "string") return;
+                                if (editor.isTemplate) dispatch(addTemplateCell(row.templateID));
+                                else dispatch(addEntryRow(row.id));
+                            }}>
+                            <Plus className="fill-current-color" />
+                        </button>
+                    </div>
                 ) : null}
             </div>
         </div>
