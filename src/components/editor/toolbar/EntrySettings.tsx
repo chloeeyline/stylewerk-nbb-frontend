@@ -1,16 +1,17 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import Backend from "#/backend-routes";
+import { DEFAULT_UUID } from "#/general";
+import { useNavigate } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Backend from "#/backend-routes";
+import Routes from "~/constants/routes";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
+import { removeEntry } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
-import { removeEntry } from "~/redux/features/entry/entry-slice";
-import { useNavigate } from "react-router-dom";
-import Routes from "~/constants/routes";
 
 export default function EntrySettings() {
     const editor = useAppSelector(selectEditor);
@@ -24,11 +25,13 @@ export default function EntrySettings() {
             auth: true,
         }).then((response) => {
             if (response.ok === false) return;
-            var result = entryFoldersSchema.safeParse(response.result);
+            const result = entryFoldersSchema.safeParse(response.result);
             if (result.success === false) return;
-            const list: [string, string][] = result.data.map(
-                (f) => [f.id, f.name ?? ""] as [string, string],
-            );
+            console.log(result);
+            const list: [string, string][] = result.data.map((f) => [
+                f.id,
+                f.id === DEFAULT_UUID ? t("editor.notInFolder") : f.name ?? "",
+            ]);
             setFolders(list);
         });
     }, []);

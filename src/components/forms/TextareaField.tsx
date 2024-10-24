@@ -14,15 +14,19 @@ export default forwardRef(function TextareaField(
         name: string;
         label: string;
         error?: string | null;
-        resize?: "block" | "inline" | "both" |"none";
+        resize?: "block" | "inline" | "both" | "none";
     },
     ref: React.ForwardedRef<HTMLTextAreaElement>,
 ) {
     const id = useId();
 
     return (
-        <div className="d-grid">
-            <label htmlFor={id}>{label}</label>
+        <div
+            className="d-grid">
+            <label htmlFor={id}>
+                {label}
+                {props.required === true ? <span className="clr-error">*</span> : null}
+            </label>
             <textarea
                 ref={ref}
                 id={id}
@@ -32,7 +36,7 @@ export default forwardRef(function TextareaField(
                 style={{ resize: resize ?? "none" }}
                 {...props}
             />
-            {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+            {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
         </div>
     );
 });

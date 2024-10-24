@@ -51,6 +51,8 @@ import {
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import UserGuard from "~/components/general/UserGuard";
+import Folder from "~/components/Icon/Folder";
+import Globe from "~/components/Icon/Globe";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -236,7 +238,8 @@ const EntryFilters = () => {
 };
 
 const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder: boolean }) => {
-    const { id, name, username, tags } = item;
+    const { id, name, username, tags, owned } = item;
+    console.log(item);
     return (
         <NavLink
             className={cls(
@@ -250,7 +253,10 @@ const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder:
             <div
                 className="d-flex"
                 style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-                <div className="no-line-height">{name}</div>
+                <div className="no-line-height">
+                    {owned === false ? <Globe className="icon-inline m-ie-0" /> : null}
+                    {name}
+                </div>
                 <div className="no-line-height fs-1">{username}</div>
             </div>
             {tags !== null && tags.trim().length > 0 ? (
@@ -268,20 +274,26 @@ const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder:
 
 const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
     const entry = useAppSelector(selectEntry);
+    const { selectedFolder } = entry;
     const dispatch = useAppDispatch();
-    const [visible, setVisible] = useState(item.items.length == 0 ? false : true);
+    const [visible, setVisible] = useState(
+        selectedFolder.id !== item.id && item.items.length == 0 ? false : true,
+    );
     const { t } = useTranslation();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: item.id,
     });
 
+    const showOpen = visible && !entry.dragMode && item.items.length !== 0;
+
     return (
         <div
             ref={setNodeRef}
             className={cls(
-                "d-grid p-1 rounded-1 bg-base-300",
-                visible && !entry.dragMode ? "gap-0" : "gap-none",
+                "d-grid p-1 rounded-1",
+                selectedFolder.id === item.id ? "bg-info-active" : "bg-base-300",
+                showOpen ? "gap-0" : "gap-none",
             )}
             style={{
                 transform: CSS.Transform.toString(transform),
@@ -290,6 +302,9 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
             {...attributes}>
             <div
                 className="d-flex flex-wrap gap-1"
+                style={{
+                    alignItems: "center",
+                }}
                 onClick={() => {
                     if (entry.dragMode) return;
 
@@ -301,22 +316,23 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
 
                     dispatch(setSelectedFolder(item));
                 }}>
-                <button
-                    type="button"
-                    className={cls(
-                        "btn btn-accent btn-square p-0",
-                        item.name !== null && entry.dragMode ? undefined : "d-none",
-                    )}
-                    {...listeners}>
-                    <Move className="fill-current-color" />
-                </button>
-                {item.name ?? t("list.generalFolder")}
+                {entry.dragMode ? (
+                    <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+                        <Move className="fill-current-color" />
+                    </button>
+                ) : null}
+                <span className="no-line-height">
+                    <Folder className="icon-inline m-ie-1" />
+                    {item.name ?? t("list.generalFolder")}
+                </span>
             </div>
-            <div className={cls("gap-1", visible && !entry.dragMode ? "d-grid" : "d-none")}>
-                {(item.items ?? []).map((item) => (
-                    <EntryComponent key={item.id} item={item} insideFolder={true} />
-                ))}
-            </div>
+            {showOpen ? (
+                <div className="d-grid gap-1">
+                    {(item.items ?? []).map((item) => (
+                        <EntryComponent key={item.id} item={item} insideFolder={true} />
+                    ))}
+                </div>
+            ) : null}
         </div>
     );
 };

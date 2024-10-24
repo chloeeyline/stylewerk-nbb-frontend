@@ -21,7 +21,10 @@ export default forwardRef(function InputField(
     if (props.type === "color") {
         return (
             <div className="d-grid min-size-inline-fit">
-                <label htmlFor={id}>{label}</label>
+                <label htmlFor={id}>
+                    {label}
+                    {props.required === true ? <span className="clr-error">*</span> : null}
+                </label>
                 <label
                     className={cls("input d-grid grid-template-columns", className)}
                     style={{ "--grid-template-columns": "auto 1fr", "alignItems": "center" }}>
@@ -48,6 +51,7 @@ export default forwardRef(function InputField(
                 style={{ alignItems: "baseline" }}>
                 <label htmlFor={id} className="no-line-height">
                     {label}
+                    {props.required === true ? <span className="clr-error">*</span> : null}
                 </label>
                 <input
                     ref={ref}
@@ -64,7 +68,10 @@ export default forwardRef(function InputField(
 
     return (
         <div className="d-grid">
-            <label htmlFor={id}>{label}</label>
+            <label htmlFor={id}>
+                {label}
+                {props.required === true ? <span className="clr-error">*</span> : null}
+            </label>
             <input
                 ref={ref}
                 id={id}

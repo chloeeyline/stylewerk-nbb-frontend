@@ -96,23 +96,27 @@ a.no-link {
     }
 }
 
-span {
-    &.info,
-    &.success,
-    &.warning,
-    &.error {
-        max-inline-size: fit-content;
+span.info,
+span.success,
+span.warning,
+span.error {
+    max-inline-size: fit-content;
 
-        padding-block: #{map.get(props.$spacing, 0)}em;
-        padding-inline: #{map.get(props.$spacing, 1)}em;
-        border-radius: #{map.get(props.$spacing, 1)}em;
+    padding-block: #{map.get(props.$spacing, 0)}em;
+    padding-inline: #{map.get(props.$spacing, 1)}em;
+    border-radius: #{map.get(props.$spacing, 1)}em;
+}
+
+@each $type in "info", "success", "warning", "error" {
+    .#{$type} {
+        color: var(--clr-#{$type}-content);
+        background-color: var(--clr-#{$type});
     }
 
-    @each $type in "info", "success", "warning", "error" {
-        &.#{$type} {
-            color: var(--clr-#{$type}-content);
-            background-color: var(--clr-#{$type});
-        }
+    .has-#{$type}:has(.#{$type}) {
+        outline-style: solid;
+        outline-width: medium;
+        outline-color: var(--clr-#{$type});
     }
 }
 

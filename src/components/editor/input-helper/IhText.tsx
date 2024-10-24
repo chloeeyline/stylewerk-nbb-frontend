@@ -1,8 +1,9 @@
+import { t } from "i18next";
 import { useEffect } from "react";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { ihDataTextSchema } from "~/redux/features/editor/editor-data-schema";
-import { useInputHelper } from "~/redux/features/editor/editor-hook";
+import { IsRequiredFillfiled, useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataTextSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
@@ -26,6 +27,13 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
         );
     }
 
+    const error =
+        editor.isPreview === false &&
+        cell.template.isRequired &&
+        IsRequiredFillfiled(cell) === false
+            ? t("formErrors.pleaseEnter", { what: cell.template.text ?? t("formFields.data") })
+            : null;
+
     return (
         <TextareaField
             label={cell.template.text ?? ""}
@@ -34,6 +42,7 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
             disabled={isReadOnly}
             placeholder={cell.template.text ?? ""}
             value={data.data.value ?? metadata.data.value ?? ""}
+            error={error}
             onChange={(e) => {
                 setData({
                     ...data.data,

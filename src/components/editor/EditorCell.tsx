@@ -37,7 +37,7 @@ export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryR
         <div
             ref={setNodeRef}
             className={cls(
-                "d-grid gap-1 p-1 grid-template-rows rounded-2",
+                "d-grid gap-1 p-1 grid-template-rows rounded-2 has-error",
                 editor.isPreview === false &&
                     editor.isTemplate === true &&
                     cell.templateID === editor.selectedTemplateCell

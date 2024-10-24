@@ -8,7 +8,15 @@
     }
 
     .clr-#{$type} {
-        color: var(--clr-#{type}-content);
+        color: var(--clr-#{$type});
+
+        &-content {
+            color: var(--clr-#{$type}-content);
+        }
+
+        &-active {
+            color: var(--clr-#{$type}-active);
+        }
     }
 }
 

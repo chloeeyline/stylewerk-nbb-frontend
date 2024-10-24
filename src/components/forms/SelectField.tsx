@@ -22,7 +22,10 @@ export default forwardRef(function SelectField(
 
     return (
         <div className="d-grid">
-            <label htmlFor={id}>{label}</label>
+            <label htmlFor={id}>
+                {label}
+                {props.required === true ? <span className="clr-error">*</span> : null}
+            </label>
             <select
                 ref={ref}
                 id={id}

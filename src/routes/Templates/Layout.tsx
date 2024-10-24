@@ -24,6 +24,7 @@ import {
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import UserGuard from "~/components/general/UserGuard";
+import Globe from "~/components/Icon/Globe";
 
 const TemplatesList = () => {
     const { t } = useTranslation();
@@ -57,45 +58,55 @@ const TemplatesList = () => {
 
             <ScrollContainer direction="vertical">
                 <div className="d-grid gap-1">
-                    {(template.items ?? []).map(({ id, name, username, description, tags }) => (
-                        <NavLink
-                            className="d-grid gap-0 no-link rounded-1 bg-base-300 p-1"
-                            key={id}
-                            to={Routes.Templates.View.replace(RouteParams.TemplateId, id).replace(
-                                RouteParams.IsNew,
-                                "false",
-                            )}>
-                            <div
-                                className="d-flex"
-                                style={{ justifyContent: "space-between", alignItems: "baseline" }}>
-                                <span className="no-line-height">{name}</span>
-                                <span className="no-line-height fs-1">{username}</span>
-                            </div>
-                            {description !== null ? (
-                                <p
-                                    className="fs-2 no-line-height"
+                    {(template.items ?? []).map(
+                        ({ id, name, username, description, tags, owned }) => (
+                            <NavLink
+                                className="d-grid gap-0 no-link rounded-1 bg-base-300 p-1"
+                                key={id}
+                                to={Routes.Templates.View.replace(
+                                    RouteParams.TemplateId,
+                                    id,
+                                ).replace(RouteParams.IsNew, "false")}>
+                                <div
+                                    className="d-flex"
                                     style={{
-                                        maxInlineSize: "15ch",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                        overflow: "hidden",
+                                        justifyContent: "space-between",
+                                        alignItems: "baseline",
                                     }}>
-                                    {description}
-                                </p>
-                            ) : null}
-                            {tags !== null && tags.trim().length > 0 ? (
-                                <div className="d-flex gap-0">
-                                    {tags.split(",").map((tag) => (
-                                        <span
-                                            key={tag}
-                                            className="p-0 fs-1 rounded-0 bg-accent no-line-height">
-                                            #{tag}
-                                        </span>
-                                    ))}
+                                    <span className="no-line-height">
+                                        {owned === false ? (
+                                            <Globe className="icon-inline m-ie-0" />
+                                        ) : null}
+                                        {name}
+                                    </span>
+                                    <span className="no-line-height fs-1">{username}</span>
                                 </div>
-                            ) : null}
-                        </NavLink>
-                    ))}
+                                {description !== null ? (
+                                    <p
+                                        className="fs-2 no-line-height"
+                                        style={{
+                                            maxInlineSize: "15ch",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                            overflow: "hidden",
+                                        }}>
+                                        {description}
+                                    </p>
+                                ) : null}
+                                {tags !== null && tags.trim().length > 0 ? (
+                                    <div className="d-flex gap-0">
+                                        {tags.split(",").map((tag) => (
+                                            <span
+                                                key={tag}
+                                                className="p-0 fs-1 rounded-0 bg-accent no-line-height">
+                                                #{tag}
+                                            </span>
+                                        ))}
+                                    </div>
+                                ) : null}
+                            </NavLink>
+                        ),
+                    )}
                 </div>
             </ScrollContainer>
         </fieldset>

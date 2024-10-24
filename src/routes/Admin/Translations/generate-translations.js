@@ -101,7 +101,8 @@
             responsiveRow: ["Dynamischer Zeilenumbruch", "Dynamic row wrapping"],
             repeatableRow: ["Wiederholbare Zeile", "Repeatable Row"],
             hideEmptyRow: ["Zeile verstecken wenn leer", "Hide row when empty"],
-            public: ["Öffentlich", "Public"]
+            public: ["Öffentlich", "Public"],
+            notInFolder: ["Ordnerlos", "Folderless"]
         },
         common: {
             createNewTemplate: ["Neue Vorlage erstellen", "Create new template"],
