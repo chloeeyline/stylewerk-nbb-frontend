@@ -32,7 +32,7 @@ video,
 canvas,
 svg {
     display: block;
-    max-block-size: 100%;
+    max-inline-size: 100%;
 }
 
 /* 6. Remove built-in form typography styles */
