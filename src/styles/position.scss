@@ -19,3 +19,29 @@
         }
     }
 }
+
+@each $type in "auto", "0" {
+    .inset {
+        &-#{$type} {
+            inset-inline-start: #{$type};
+            inset-inline-end: #{$type};
+            inset-block-start: #{$type};
+            inset-block-end: #{$type};
+        }
+
+        @each $dir in "inline", "block" {
+            &-#{$dir} {
+                &-#{$type} {
+                    inset-#{$dir}-start: #{$type};
+                    inset-#{$dir}-end: #{$type};
+                }
+
+                @each $align in "start", "end" {
+                    &-#{$align}-#{$type} {
+                        inset-#{$dir}-#{$align}: #{$type};
+                    }
+                }
+            }
+        }
+    }
+}

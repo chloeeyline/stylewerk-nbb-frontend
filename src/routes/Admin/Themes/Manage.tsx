@@ -20,6 +20,7 @@ import {
     loadTheme,
     updateTheme,
 } from "./api";
+import UserGuard from "~/components/general/UserGuard";
 
 type ThemeState = {
     loading: boolean;
@@ -88,7 +89,7 @@ const ThemeEditor = ({
     );
 };
 
-export default function AdminThemesManage() {
+const AdminThemesManage = () => {
     const { t } = useTranslation();
     const { themeId } = useParams();
     const navigate = useNavigate();
@@ -288,5 +289,13 @@ export default function AdminThemesManage() {
                 </Grid>
             </ScrollContainer>
         </Grid>
+    );
+};
+
+export default function AdminThemesManageGuarded() {
+    return (
+        <UserGuard>
+            <AdminThemesManage />
+        </UserGuard>
     );
 }

@@ -23,6 +23,7 @@ import {
 } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import UserGuard from "~/components/general/UserGuard";
 
 const TemplatesList = () => {
     const { t } = useTranslation();
@@ -199,7 +200,7 @@ const TemplateFilters = () => {
     );
 };
 
-export default function TemplatesLayout() {
+const TemplatesLayout = () => {
     const template = useAppSelector(selectTemplate);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -241,5 +242,13 @@ export default function TemplatesLayout() {
                 <Outlet />
             </ResponsiveSidebar>
         </Grid>
+    );
+};
+
+export default function TemplatesLayoutGuarded() {
+    return (
+        <UserGuard>
+            <TemplatesLayout />
+        </UserGuard>
     );
 }

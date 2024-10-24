@@ -15,6 +15,7 @@ import { translationContentSchema, translationSchema } from "~/schemas/translati
 import Ajax from "~/utils/ajax";
 import cls from "~/utils/class-name-helper";
 import { deleteLanguage, updateLanguage } from "./api";
+import UserGuard from "~/components/general/UserGuard";
 
 type TranslationState = {
     loading: boolean;
@@ -128,7 +129,7 @@ const LanguageEditor = ({
     );
 };
 
-export default function AdminTranslationsManage() {
+const AdminTranslationsManage = () => {
     const { t } = useTranslation();
     const { translationId } = useParams();
     const navigate = useNavigate();
@@ -353,5 +354,13 @@ export default function AdminTranslationsManage() {
                 </a>
             </div>
         </Grid>
+    );
+};
+
+export default function AdminTranslationsManageGuarded() {
+    return (
+        <UserGuard>
+            <AdminTranslationsManage />
+        </UserGuard>
     );
 }

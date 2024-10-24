@@ -290,8 +290,13 @@ const Switchers = () => {
                     <Paintbrush className="icon-inline" />
                 </button>
                 <dialog
-                    className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
-                    style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
+                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    style={{
+                        insetBlockStart: "calc(100% + 0.5rem)",
+                        insetBlockEnd: "auto",
+                        insetInlineStart: "auto",
+                        insetInlineEnd: 0,
+                    }}
                     ref={themeDialogRef}>
                     <div
                         className="d-grid grid-template-columns"
@@ -359,8 +364,13 @@ const Switchers = () => {
                     <Globe className="icon-inline" />
                 </button>
                 <dialog
-                    className="p-absolute inset d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
-                    style={{ "--inset": "calc(100% + 0.5rem) 0 auto auto" }}
+                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    style={{
+                        insetBlockStart: "calc(100% + 0.5rem)",
+                        insetBlockEnd: "auto",
+                        insetInlineStart: "auto",
+                        insetInlineEnd: 0,
+                    }}
                     ref={langDialogRef}>
                     <div
                         className="d-grid grid-template-columns"
