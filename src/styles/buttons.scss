@@ -83,15 +83,23 @@
             border-color: var(--clr-btn-content);
             border-top-color: transparent;
 
-            animation: button-spinner 1s linear infinite;
+            animation-duration: 1s;
+            animation-timing-function: linear;
+            animation-delay: 0s;
+            animation-iteration-count: infinite;
+            animation-direction: normal;
+            animation-fill-mode: none;
         }
     }
 
     &.pending::after,
-    &.pending::after,
-    &-loading::after,
     &-loading::before {
         opacity: 1;
+    }
+
+    &.pending::after,
+    &-loading::after {
+        animation-name: button-spinner;
     }
 
     &-primary {
