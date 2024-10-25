@@ -76,11 +76,12 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
         );
     }
 
-    if (metadata.data.display !== 0) {
+    if (metadata.data.display !== "0") {
         return (
             <RadioGroup
                 label={cell.template.text ?? ""}
                 name={cell.id}
+                direction={metadata.data.display === "2" ? "vertical" : "horizontal"}
                 options={metadata.data.list}
                 value={data.data.value ?? metadata.data.value ?? ""}
                 required={cell.template.isRequired}
@@ -159,7 +160,7 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
                     ["1", "H Radiobuttons"],
                     ["2", "V Radiobuttons"],
                 ]}
-                value={metadata.data.display ?? ""}
+                value={metadata.data.display ?? "0"}
                 onChange={dispatchCellSettings}
             />
             <button

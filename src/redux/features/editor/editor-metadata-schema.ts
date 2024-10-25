@@ -28,7 +28,7 @@ const ihMetaDataListSchema = z
             .catch([[crypto.randomUUID(), ""]])
             .default([[crypto.randomUUID(), ""]]),
         value: z.string().optional().catch(undefined).default(undefined),
-        display: z.number().safe().nonnegative().catch(0).default(0),
+        display: z.string().optional().catch(undefined).default(undefined),
     })
     .strip();
 
