@@ -239,7 +239,6 @@ const EntryFilters = () => {
 
 const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder: boolean }) => {
     const { id, name, username, tags, owned } = item;
-    console.log(item);
     return (
         <NavLink
             className={cls(

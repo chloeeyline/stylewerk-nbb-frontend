@@ -244,8 +244,7 @@ export const logout = async (): Promise<UserIsGuest> => {
     const result = await Ajax.post(Auth.Logout, { auth: true });
 
     if (result.ok === false) {
-        console.error("Error logging out!", result.error);
-        console.log("Simply discarding local tokens!");
+        console.error("Error logging out! Simply discarding local tokens!", result.error);
     }
 
     clear();

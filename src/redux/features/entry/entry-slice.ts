@@ -72,7 +72,6 @@ export const listFolder = createAsyncThunk<
             if (response.ok === false) {
                 return thunkApi.rejectWithValue(response.error);
             }
-            console.log(response.result);
             const result = entryItemsSchema.safeParse(response.result);
 
             if (result.success === false) {

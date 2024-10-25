@@ -207,7 +207,6 @@ const Switchers = () => {
     };
 
     const closeDialog = (type: "theme" | "lang") => {
-        console.log("closing: " + type);
         switch (type) {
             case "theme":
                 if (themeDialogRef.current instanceof HTMLDialogElement) {

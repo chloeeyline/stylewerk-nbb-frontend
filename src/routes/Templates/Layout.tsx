@@ -118,8 +118,6 @@ const TemplateFilters = () => {
     const template = useAppSelector(selectTemplate);
     const dispatch = useAppDispatch();
 
-    console.log(template);
-
     const dispatchFilter = (e: React.ChangeEvent<HTMLInputElement>) => {
         dispatch(
             setFilter({
