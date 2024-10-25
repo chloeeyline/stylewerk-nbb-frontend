@@ -22,6 +22,7 @@ export default function InputHelperSettings({
         cell,
         row,
         isReadOnly: editor.isPreview === true || editor.isTemplate === true,
+        error: null,
     };
 
     switch (cell.template.inputHelper) {
