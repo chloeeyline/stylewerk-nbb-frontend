@@ -20,7 +20,6 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
-import InputField from "~/components/forms/InputField";
 import RadioGroup from "~/components/forms/RadioGroup";
 import SelectField from "~/components/forms/SelectField";
 import Cross from "~/components/Icon/Cross";
