@@ -1,16 +1,16 @@
 import type React from "react";
 import { useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+
 import { updateUserData, validatePassword } from "~/redux/features/user/user-api";
 import { genders, UserData } from "~/redux/features/user/user-schemas";
 import { getUserData } from "~/redux/features/user/user-slice";
 import { useAppDispatch } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import Columns from "./Columns";
+import styles from "./form-fields.module.scss";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
-import styles from "./form-fields.module.scss";
-import RadioGroup from "./RadioGroup";
 
 type FormErrors = {
     firstName: string | null;
