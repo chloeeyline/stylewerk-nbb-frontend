@@ -57,7 +57,12 @@ type TemplateRow = z.infer<typeof templateRowSchema>;
 type EntryCell = z.infer<typeof entryCellSchema>;
 type EntryRow = z.infer<typeof entryRowSchema>;
 type Editor = z.infer<typeof editorSchema>;
-type InputHelperProps = { cell: EntryCell; row: EntryRow; isReadOnly?: boolean };
+type InputHelperProps = {
+    cell: EntryCell;
+    row: EntryRow;
+    isReadOnly?: boolean;
+    error: string | null;
+};
 
 export {
     templateCellSchema,

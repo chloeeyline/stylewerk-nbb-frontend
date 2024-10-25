@@ -9,10 +9,9 @@ import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhNumber = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
-
     const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataNumberSchema.safeParse(saveParseEmptyObject(cell.data));
     if (metadata.success === false) return null;
@@ -36,6 +35,7 @@ export const IhNumber = ({ cell, row, isReadOnly }: InputHelperProps) => {
             disabled={isReadOnly}
             placeholder={cell.template.text ?? ""}
             value={data.data.value ?? ""}
+            error={error}
             min={metadata.data?.min}
             max={metadata.data?.max}
             step={metadata.data?.step}

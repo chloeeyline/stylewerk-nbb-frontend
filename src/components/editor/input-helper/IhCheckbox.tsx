@@ -7,7 +7,7 @@ import { ihMetaDataCheckboxSchema } from "~/redux/features/editor/editor-metadat
 import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhCheckbox = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataCheckboxSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
@@ -25,6 +25,7 @@ export const IhCheckbox = ({ cell, row, isReadOnly }: InputHelperProps) => {
                 name="checkbox"
                 required={cell.template.isRequired}
                 disabled={isReadOnly}
+                error={error}
                 placeholder={cell.template.text ?? ""}
                 checked={data.data?.value ?? metadata.data.value ?? false}
                 onChange={(e) => {

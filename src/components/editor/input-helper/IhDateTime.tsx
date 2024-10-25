@@ -22,7 +22,7 @@ const getType = (type: number) => {
     }
 };
 
-export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhDateTime = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataDateTimeSchema.safeParse(
@@ -48,6 +48,7 @@ export const IhDateTime = ({ cell, row, isReadOnly }: InputHelperProps) => {
             name="dateTime"
             required={cell.template.isRequired}
             disabled={isReadOnly}
+            error={error}
             placeholder={cell.template.text ?? ""}
             value={data.data.value ?? metadata.data.value ?? ""}
             min={metadata.data?.min}

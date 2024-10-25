@@ -8,13 +8,20 @@ import { IhNumber } from "./IhNumber";
 import { IhStatic } from "./IhStatic";
 import { IhText } from "./IhText";
 import { IhList } from "./IhList";
+import { IsRequiredFillfiled } from "~/redux/features/editor/editor-hook";
+import { useTranslation } from "react-i18next";
 
 const InputHelper = ({ cell, row }: { cell: EntryCell; row: EntryRow }) => {
+    const { t } = useTranslation();
     const editor = useAppSelector(selectEditor);
     const props: InputHelperProps = {
         cell,
         row,
         isReadOnly: editor.isPreview === true || editor.isTemplate === true,
+        error:
+            IsRequiredFillfiled(cell, editor.isPreview, editor.isTemplate) === false
+                ? t("formErrors.pleaseEnter", { what: cell.template.text ?? t("formFields.data") })
+                : null,
     };
 
     switch (cell.template.inputHelper) {

@@ -34,7 +34,7 @@ import { saveParseEmptyObject } from "~/utils/safe-json";
 
 type IhListMetaData = z.infer<typeof ihMetaDataListSchema>;
 
-export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
@@ -92,6 +92,7 @@ export const IhList = ({ cell, row, isReadOnly }: InputHelperProps) => {
             name="list"
             required={cell.template.isRequired}
             disabled={isReadOnly}
+            error={error}
             options={metadata.data.list}
             value={data.data.value ?? metadata.data.value ?? ""}
             onChange={(e) => {
@@ -188,7 +189,6 @@ const Dialog = ({
     setMetaData: (value: unknown) => void;
 }) => {
     const dialogRef = useRef<HTMLDialogElement>(null);
-
     useEffect(() => {
         if (!dialogRef.current) return;
         if (isOpen) dialogRef.current.showModal();

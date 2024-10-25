@@ -337,9 +337,8 @@ const editorSlice = createSlice({
             const row = state.data.items.find((row) => row.id === action.payload);
             if (
                 typeof row === "undefined" ||
-                (!row.template.canRepeat &&
-                    state.data.items.filter((item) => item.templateID === row.templateID).length <=
-                        1)
+                row.template.canRepeat === false ||
+                state.data.items.filter((item) => item.templateID === row.templateID).length <= 1
             )
                 return;
             state.data.items = [...state.data.items.filter((item) => item.id !== action.payload)];

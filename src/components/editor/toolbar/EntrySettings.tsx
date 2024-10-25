@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
-
 import Backend from "#/backend-routes";
 import { DEFAULT_UUID } from "#/general";
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
 import Routes from "~/constants/routes";
+import { IsRequiredFillfiled } from "~/redux/features/editor/editor-hook";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
 import { removeEntry } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
+import cls from "~/utils/class-name-helper";
 
 export default function EntrySettings() {
     const editor = useAppSelector(selectEditor);
@@ -48,6 +49,17 @@ export default function EntrySettings() {
         );
     };
 
+    let allRequired = true;
+    if (editor.data)
+        outerFor: for (const row of editor.data.items) {
+            for (const item of row.items) {
+                allRequired = IsRequiredFillfiled(item, editor.isPreview, editor.isTemplate);
+                if (allRequired === false) {
+                    break outerFor;
+                }
+            }
+        }
+
     if (editor.data === null) {
         return <div>{t("common.error")}</div>;
     }
@@ -56,10 +68,10 @@ export default function EntrySettings() {
         <fieldset className="lrow">
             <legend>
                 <button
-                    className="btn btn-primary p-0"
+                    className={cls("btn p-0", allRequired ? "btn-primary" : "btn-neutral")}
                     onClick={() => {
                         if (typeof editor.data?.id !== "string") return;
-                        dispatch(updateEditor());
+                        if (allRequired === true) dispatch(updateEditor());
                     }}>
                     {t("common.save")}
                 </button>

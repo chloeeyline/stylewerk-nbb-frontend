@@ -1,16 +1,15 @@
-import { t } from "i18next";
 import { useEffect } from "react";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { ihDataTextSchema } from "~/redux/features/editor/editor-data-schema";
-import { IsRequiredFillfiled, useInputHelper } from "~/redux/features/editor/editor-hook";
+import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataTextSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhText = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataTextSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
@@ -26,13 +25,6 @@ export const IhText = ({ cell, row, isReadOnly }: InputHelperProps) => {
             </div>
         );
     }
-
-    const error =
-        editor.isPreview === false &&
-        cell.template.isRequired &&
-        IsRequiredFillfiled(cell) === false
-            ? t("formErrors.pleaseEnter", { what: cell.template.text ?? t("formFields.data") })
-            : null;
 
     return (
         <TextareaField

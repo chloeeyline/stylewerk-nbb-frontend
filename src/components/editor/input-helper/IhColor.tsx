@@ -8,7 +8,7 @@ import { selectEditor } from "~/redux/features/editor/editor-slice";
 import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
-export const IhColor = ({ cell, row, isReadOnly }: InputHelperProps) => {
+export const IhColor = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataColorSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
@@ -58,6 +58,7 @@ export const IhColor = ({ cell, row, isReadOnly }: InputHelperProps) => {
             name="color"
             label={cell.template.text ?? ""}
             placeholder={cell.template.text ?? ""}
+            error={error}
             type="color"
             value={value}
             onChange={(e) => {

@@ -54,8 +54,18 @@ export function useInputHelper(cell: EntryCell, row: EntryRow) {
     };
 }
 
-export function IsRequiredFillfiled(cell: EntryCell): boolean {
-    if (cell.data === null) return false;
+export function IsRequiredFillfiled(
+    cell: EntryCell,
+    isPreview: boolean,
+    isTemplate: boolean,
+): boolean {
+    if (
+        cell.template.isRequired === false ||
+        cell.template.inputHelper === 1 ||
+        isPreview === true ||
+        isTemplate === true
+    )
+        return true;
     const data = saveParseEmptyObject(cell.data);
     switch (cell.template.inputHelper) {
         case 3:
