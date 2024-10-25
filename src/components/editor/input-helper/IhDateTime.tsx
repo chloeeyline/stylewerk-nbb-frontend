@@ -29,6 +29,19 @@ export const IhDateTime = ({ cell, row, isReadOnly, error }: InputHelperProps) =
         saveParseEmptyObject(cell.template.metaData),
     );
     const data = ihDataDateTimeSchema.safeParse(saveParseEmptyObject(cell.data));
+
+    useEffect(() => {
+        if (
+            data.success === false ||
+            metadata.success === false ||
+            (editor.isTemplate === false && typeof data.data.value !== "undefined")
+        )
+            return;
+        setData({
+            value: metadata.data.value ?? "",
+        });
+    }, []);
+
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -78,7 +91,6 @@ export const IhDateTimeSettings = ({ cell, row }: InputHelperProps) => {
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
         switch (e.target.name) {
             case "min":
             case "max":

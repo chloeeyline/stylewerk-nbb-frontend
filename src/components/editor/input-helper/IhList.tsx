@@ -39,6 +39,19 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataListSchema.safeParse(saveParseEmptyObject(cell.data));
+
+    useEffect(() => {
+        if (
+            data.success === false ||
+            metadata.success === false ||
+            (editor.isTemplate === false && typeof data.data.value !== "undefined")
+        )
+            return;
+        setData({
+            value: metadata.data.value ?? "",
+        });
+    }, []);
+
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -61,7 +74,7 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
         );
     }
 
-    if (metadata.data.radiobuttons === true) {
+    if (metadata.data.display !== 0) {
         return (
             <div className="d-grid">
                 <span>{cell.template.text ?? ""}</span>
@@ -93,12 +106,12 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
             required={cell.template.isRequired}
             disabled={isReadOnly}
             error={error}
-            options={metadata.data.list}
-            value={data.data.value ?? metadata.data.value ?? ""}
+            options={[["", "Empty"], ...metadata.data.list]}
+            value={data.data.value ?? metadata.data?.value ?? ""}
             onChange={(e) => {
                 setData({
                     ...data.data,
-                    value: e.target.value,
+                    value: e.target.value === "" ? undefined : e.target.value,
                 });
             }}
         />
@@ -118,22 +131,14 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
 
     if (metadata.success === false) return null;
 
-    const dispatchCellSettings = (e: React.ChangeEvent<HTMLSelectElement | HTMLInputElement>) => {
-        if (!e.target.value) return;
+    const dispatchCellSettings = (e: React.ChangeEvent<HTMLSelectElement>) => {
         switch (e.target.name) {
             case "value":
+            case "display":
                 setMetaData({
                     ...metadata.data,
                     [e.target.name]: e.target.value,
                 });
-                break;
-            case "radiobuttons":
-                if ("checked" in e.target) {
-                    setMetaData({
-                        ...metadata.data,
-                        [e.target.name]: e.target.checked,
-                    });
-                }
                 break;
             default:
                 return;
@@ -145,28 +150,29 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
             <SelectField
                 label={t("editor.ihOptionDefaultValue")}
                 name="value"
-                required={cell.template.isRequired}
                 options={metadata.data.list}
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <InputField
-                type="checkbox"
-                label="Radiobuttons verwenden"
-                name="radiobuttons"
-                checked={metadata.data.radiobuttons ?? false}
+            <SelectField
+                label={"Darstellungsart"}
+                name="display"
+                options={[
+                    ["0", "Liste"],
+                    ["1", "H Radiobuttons"],
+                    ["2", "V Radiobuttons"],
+                ]}
+                value={metadata.data.display ?? ""}
                 onChange={dispatchCellSettings}
             />
-            <div className="d-grid rounded-1 p-0" style={{ placeItems: "center" }}>
-                <button
-                    type="button"
-                    className="btn btn-success no-line-height d-flex gap-0 p-0"
-                    style={{ alignItems: "center" }}
-                    onClick={() => setDialogIsOpen(true)}>
-                    Liste bearbeiten
-                    <Plus className="icon-inline" />
-                </button>
-            </div>
+            <button
+                type="button"
+                className="btn btn-success no-line-height d-flex gap-0 p-0"
+                style={{ alignItems: "center" }}
+                onClick={() => setDialogIsOpen(true)}>
+                Liste bearbeiten
+                <Plus className="icon-inline" />
+            </button>
             <Dialog
                 metadata={metadata.data}
                 isOpen={dialogIsOpen}

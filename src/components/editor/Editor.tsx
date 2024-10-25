@@ -66,7 +66,6 @@ export default function Editor({
         const { active, over } = e;
 
         if (over && active.id !== over.id && editor.data && editor.data.items.length > 0) {
-            console.log(over.id, active.id);
             const oldIndex = editor.data.items.indexOf(
                 editor.data.items.filter((value) => value.id === active.id)[0],
             );

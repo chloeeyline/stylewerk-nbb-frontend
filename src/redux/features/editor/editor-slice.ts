@@ -20,6 +20,7 @@ export type EditorState = {
     selectedEntryCell: string;
     selectedTemplateRow: string;
     selectedTemplateCell: string;
+    error: string | null;
 };
 
 const initialState: EditorState = {
@@ -32,6 +33,7 @@ const initialState: EditorState = {
     selectedEntryCell: "",
     selectedTemplateRow: "",
     selectedTemplateCell: "",
+    error: null,
 };
 
 export const getEditor = createAsyncThunk<
@@ -508,8 +510,18 @@ const editorSlice = createSlice({
                     );
                 }
             })
-            .addCase(updateEditor.rejected, (state) => {
+            .addCase(updateEditor.rejected, (state, action) => {
                 state.status = "failed";
+                if (
+                    typeof action.payload === "object" &&
+                    action.payload !== null &&
+                    "message" in action.payload &&
+                    typeof action.payload.message === "string"
+                ) {
+                    state.error = action.payload.message;
+                } else {
+                    state.error = null;
+                }
             });
     },
 });

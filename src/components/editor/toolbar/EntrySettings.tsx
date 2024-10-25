@@ -28,7 +28,6 @@ export default function EntrySettings() {
             if (response.ok === false) return;
             const result = entryFoldersSchema.safeParse(response.result);
             if (result.success === false) return;
-            console.log(result);
             const list: [string, string][] = result.data.map((f) => [
                 f.id,
                 f.id === DEFAULT_UUID ? t("editor.notInFolder") : f.name ?? "",

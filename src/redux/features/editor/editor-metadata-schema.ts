@@ -28,12 +28,13 @@ const ihMetaDataListSchema = z
             .catch([[crypto.randomUUID(), ""]])
             .default([[crypto.randomUUID(), ""]]),
         value: z.string().optional().catch(undefined).default(undefined),
-        radiobuttons: z.boolean().catch(false).default(false),
+        display: z.number().safe().nonnegative().catch(0).default(0),
     })
     .strip();
 
 const ihMetaDataNumberSchema = z
     .object({
+        value: z.number().safe().optional().catch(undefined).default(undefined),
         min: z.number().safe().optional().catch(undefined).default(undefined),
         max: z.number().safe().optional().catch(undefined).default(undefined),
         step: z.number().safe().optional().catch(undefined).default(undefined),
@@ -50,7 +51,8 @@ const ihMetaDataStaticSchema = z
 
 const ihMetaDataTextSchema = z
     .object({
-        value: z.string().optional().catch(undefined).default(undefined),
+        lineShown: z.number().safe().nonnegative().optional().catch(undefined).default(undefined),
+        maxLenght: z.number().safe().nonnegative().optional().catch(undefined).default(undefined),
     })
     .strip();
 

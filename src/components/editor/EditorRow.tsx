@@ -54,7 +54,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
         const { active, over } = e;
 
         if (over && active.id !== over.id && editor.data && editor.data.items.length > 0) {
-            console.log(over.id, active.id);
             const rows = editor.data.items.map((item) => {
                 if (item.templateID === row.templateID) {
                     const oldIndex = item.items.indexOf(
@@ -64,8 +63,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         item.items.filter((value) => value.id === over.id)[0],
                     );
 
-                    console.log(oldIndex, newIndex);
-
                     return {
                         ...item,
                         items: arrayMove(item.items, oldIndex, newIndex),
@@ -73,8 +70,6 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                 }
                 return item;
             });
-            console.log(rows);
-
             dispatch(setRows(rows));
         }
     };
@@ -187,15 +182,19 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                     <div
                         className="d-flex flex-direction-column gap-1"
                         style={{ justifyContent: "space-between" }}>
-                        <button
-                            type="button"
-                            className="btn btn-error btn-square p-0"
-                            onClick={() => {
-                                if (typeof editor.data?.templateID !== "string") return;
-                                dispatch(removeEntryRow(row.id));
-                            }}>
-                            <Cross className="fill-current-color" />
-                        </button>
+                        {editor.data !== null &&
+                        editor.data.items.filter((item) => item.templateID === row.templateID)
+                            .length > 1 ? (
+                            <button
+                                type="button"
+                                className="btn btn-error btn-square p-0"
+                                onClick={() => {
+                                    if (typeof editor.data?.templateID !== "string") return;
+                                    dispatch(removeEntryRow(row.id));
+                                }}>
+                                <Cross className="fill-current-color" />
+                            </button>
+                        ) : null}
                         <button
                             type="button"
                             className="btn btn-success btn-square p-0"
