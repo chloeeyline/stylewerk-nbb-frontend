@@ -39,7 +39,7 @@ export default forwardRef(function InputField(
                     <span className="font-mono">({props.value})</span>
                 </label>
 
-                {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+                {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
             </div>
         );
     }
@@ -61,7 +61,7 @@ export default forwardRef(function InputField(
                     className={cls("input d-inline m-is-auto", className)}
                     {...props}
                 />
-                {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+                {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
             </div>
         );
     }
@@ -86,7 +86,7 @@ export default forwardRef(function InputField(
                 )}
                 {...props}
             />
-            {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+            {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
         </div>
     );
 });

@@ -19,7 +19,9 @@ import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
+
 import InputField from "~/components/forms/InputField";
+import RadioGroup from "~/components/forms/RadioGroup";
 import SelectField from "~/components/forms/SelectField";
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
@@ -63,26 +65,21 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
 
     if (metadata.data.radiobuttons === true) {
         return (
-            <div className="d-grid">
-                <span>{cell.template.text ?? ""}</span>
-                <div className="d-flex gap-2">
-                    {metadata.data.list.map(([key, value]) => (
-                        <InputField
-                            key={key}
-                            type="radio"
-                            label={value}
-                            name={cell.id}
-                            checked={data.data.value === key}
-                            onChange={(e) => {
-                                setData({
-                                    ...data.data,
-                                    value: e.target.checked ? key : "",
-                                });
-                            }}
-                        />
-                    ))}
-                </div>
-            </div>
+            <RadioGroup
+                label={cell.template.text ?? ""}
+                name={cell.id}
+                options={metadata.data.list}
+                value={data.data.value ?? metadata.data.value ?? ""}
+                required={cell.template.isRequired}
+                disabled={isReadOnly}
+                error={error}
+                onChange={(value) => {
+                    setData({
+                        ...data.data,
+                        value,
+                    });
+                }}
+            />
         );
     }
 

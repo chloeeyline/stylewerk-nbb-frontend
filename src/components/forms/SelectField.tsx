@@ -38,7 +38,7 @@ export default forwardRef(function SelectField(
                     </option>
                 ))}
             </select>
-            {(error ?? null) !== null ? <span className="error">{error}</span> : null}
+            {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
         </div>
     );
 });
