@@ -54,6 +54,16 @@ export function useInputHelper(cell: EntryCell, row: EntryRow) {
     };
 }
 
+export function ValidColorValue(data?: string | null, metadata?: string | null) {
+    const value = data ?? metadata ?? "";
+
+    if (value.length !== 7 || value.startsWith("#") === false) {
+        return undefined;
+    }
+
+    return value;
+}
+
 export function IsRequiredFillfiled(
     cell: EntryCell,
     isPreview: boolean,

@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import InputField from "~/components/forms/InputField";
 import { ihDataColorSchema } from "~/redux/features/editor/editor-data-schema";
-import { useInputHelper } from "~/redux/features/editor/editor-hook";
+import { useInputHelper, ValidColorValue } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataColorSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
 import { selectEditor } from "~/redux/features/editor/editor-slice";
@@ -13,20 +13,22 @@ export const IhColor = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataColorSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataColorSchema.safeParse(saveParseEmptyObject(cell.data));
+    const value = ValidColorValue(data?.data?.value, metadata?.data?.value);
+    useEffect(() => {
+        if (
+            data.success === false ||
+            metadata.success === false ||
+            (editor.isTemplate === false && typeof data.data.value !== "undefined")
+        )
+            return;
+        setData({
+            ...data.data,
+            value: value,
+        });
+    }, []);
+
     if (metadata.success === false) return null;
     if (data.success === false) return null;
-
-    const getValue = () => {
-        const value = data.data?.value ?? metadata.data?.value ?? "";
-
-        if (value.length !== 7 || value.startsWith("#") === false) {
-            return undefined;
-        }
-
-        return value;
-    };
-
-    const value = getValue();
 
     if (editor.isPreview === true) {
         return (
@@ -74,6 +76,7 @@ export const IhColor = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
 export const IhColorSettings = ({ cell, row }: InputHelperProps) => {
     const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataColorSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
+    const value = ValidColorValue(undefined, metadata?.data?.value);
 
     useEffect(() => {
         if (metadata.success === false) return;
@@ -83,7 +86,6 @@ export const IhColorSettings = ({ cell, row }: InputHelperProps) => {
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
         setMetaData({
             ...metadata.data,
             [e.target.name]: e.target.value,
@@ -95,7 +97,7 @@ export const IhColorSettings = ({ cell, row }: InputHelperProps) => {
             type="color"
             label="Standartwert"
             name="value"
-            value={metadata.data.value ?? ""}
+            value={value}
             onChange={dispatchCellSettings}
         />
     );

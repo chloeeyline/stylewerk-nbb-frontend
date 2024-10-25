@@ -33,7 +33,8 @@ export const IhText = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
             required={cell.template.isRequired}
             disabled={isReadOnly}
             placeholder={cell.template.text ?? ""}
-            value={data.data.value ?? metadata.data.value ?? ""}
+            value={data.data.value ?? ""}
+            maxLength={metadata.data.maxLenght}
             error={error}
             onChange={(e) => {
                 setData({
@@ -56,12 +57,12 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
         switch (e.target.name) {
-            case "value":
+            case "maxLenght":
+            case "lineShown":
                 setMetaData({
                     ...metadata.data,
-                    [e.target.name]: e.target.value,
+                    [e.target.name]: Number.parseInt(e.target.value),
                 });
                 break;
             default:
@@ -70,12 +71,22 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
     };
 
     return (
-        <InputField
-            type="checkbox"
-            label="Standartwert"
-            name="value"
-            value={metadata.data.value ?? false}
-            onChange={dispatchCellSettings}
-        />
+        <>
+            <InputField
+                type="number"
+                label="Max Länge"
+                name="maxLenght"
+                value={metadata.data.maxLenght ?? undefined}
+                onChange={dispatchCellSettings}
+            />
+
+            <InputField
+                type="number"
+                label="Zeilen angezeigt"
+                name="lineShown"
+                value={metadata.data.lineShown ?? undefined}
+                onChange={dispatchCellSettings}
+            />
+        </>
     );
 };

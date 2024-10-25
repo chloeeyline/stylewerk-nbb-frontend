@@ -5,14 +5,29 @@ import { ihDataCheckboxSchema } from "~/redux/features/editor/editor-data-schema
 import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataCheckboxSchema } from "~/redux/features/editor/editor-metadata-schema";
 import { InputHelperProps } from "~/redux/features/editor/editor-schemas";
+import { selectEditor } from "~/redux/features/editor/editor-slice";
+import { useAppSelector } from "~/redux/hooks";
 import { saveParseEmptyObject } from "~/utils/safe-json";
 
 export const IhCheckbox = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
+    const editor = useAppSelector(selectEditor);
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataCheckboxSchema.safeParse(
         saveParseEmptyObject(cell.template.metaData),
     );
     const data = ihDataCheckboxSchema.safeParse(saveParseEmptyObject(cell.data));
+
+    useEffect(() => {
+        if (
+            data.success === false ||
+            metadata.success === false ||
+            (editor.isTemplate === false && typeof data.data.value !== "undefined")
+        )
+            return;
+        setData({
+            value: metadata.data.value ?? false,
+        });
+    }, []);
 
     if (metadata.success === false) return null;
     if (data.success === false) return null;
@@ -27,7 +42,7 @@ export const IhCheckbox = ({ cell, row, isReadOnly, error }: InputHelperProps) =
                 disabled={isReadOnly}
                 error={error}
                 placeholder={cell.template.text ?? ""}
-                checked={data.data?.value ?? metadata.data.value ?? false}
+                checked={data.data.value ?? metadata.data.value ?? false}
                 onChange={(e) => {
                     setData({
                         ...data.data,
@@ -53,7 +68,6 @@ export const IhCheckboxSettings = ({ cell, row }: InputHelperProps) => {
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
         setMetaData({
             ...metadata.data,
             [e.target.name]: e.target.checked,

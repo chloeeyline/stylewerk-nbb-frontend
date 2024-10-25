@@ -14,6 +14,19 @@ export const IhNumber = ({ cell, row, isReadOnly, error }: InputHelperProps) => 
     const { setData } = useInputHelper(cell, row);
     const metadata = ihMetaDataNumberSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const data = ihDataNumberSchema.safeParse(saveParseEmptyObject(cell.data));
+
+    useEffect(() => {
+        if (
+            data.success === false ||
+            metadata.success === false ||
+            (editor.isTemplate === false && typeof data.data.value !== "undefined")
+        )
+            return;
+        setData({
+            value: metadata.data.value ?? undefined,
+        });
+    }, []);
+
     if (metadata.success === false) return null;
     if (data.success === false) return null;
 
@@ -34,7 +47,7 @@ export const IhNumber = ({ cell, row, isReadOnly, error }: InputHelperProps) => 
             required={cell.template.isRequired}
             disabled={isReadOnly}
             placeholder={cell.template.text ?? ""}
-            value={data.data.value ?? ""}
+            value={data.data.value ?? metadata.data.value ?? ""}
             error={error}
             min={metadata.data?.min}
             max={metadata.data?.max}
@@ -65,14 +78,15 @@ export const IhNumberSettings = ({ cell, row }: InputHelperProps) => {
     if (metadata.success === false) return null;
 
     const dispatchCellSettings = (e: React.ChangeEvent<HTMLInputElement>) => {
-        if (!e.target.value) return;
         switch (e.target.name) {
+            case "value":
             case "min":
             case "max":
             case "step":
+                console.log(e.target.value);
                 setMetaData({
                     ...metadata.data,
-                    [e.target.name]: Number(e.target.value),
+                    [e.target.name]: e.target.value === "" ? undefined : Number(e.target.value),
                 });
                 break;
             case "integer":
@@ -88,6 +102,13 @@ export const IhNumberSettings = ({ cell, row }: InputHelperProps) => {
 
     return (
         <>
+            <InputField
+                type="number"
+                label={t("editor.ihOptionDefaultValue")}
+                name="value"
+                value={metadata.data.value ?? ""}
+                onChange={dispatchCellSettings}
+            />
             <InputField
                 type="number"
                 label={t("editor.ihOptionMinValue")}
