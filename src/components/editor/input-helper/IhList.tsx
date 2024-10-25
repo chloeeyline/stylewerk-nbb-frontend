@@ -109,7 +109,7 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
             onChange={(e) => {
                 setData({
                     ...data.data,
-                    value: e.target.value === "" ? undefined : e.target.value,
+                    value: e.target.value,
                 });
             }}
         />
