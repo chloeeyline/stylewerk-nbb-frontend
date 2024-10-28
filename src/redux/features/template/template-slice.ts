@@ -7,6 +7,7 @@ import type { Paging } from "~/schemas/paging";
 import Ajax from "~/utils/ajax";
 import type { TemplateItem, TemplateSearchParams } from "./template-schemas";
 import { templatePagingSchema } from "./template-schemas";
+import Routes from "~/constants/routes";
 
 export type TemplateState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -27,7 +28,7 @@ const initialState: TemplateState = {
     },
     filter: {},
     hideFilters: true,
-    hideList: false,
+    hideList: document.location.pathname !== Routes.Templates.List,
 };
 
 const refreshTemplateList = (template: TemplateState) =>

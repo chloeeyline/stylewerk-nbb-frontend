@@ -32,6 +32,7 @@ import EntrySettings from "./toolbar/EntrySettings";
 import TemplateCellSettings from "./toolbar/TemplateCellSettings";
 import TemplateSettings from "./toolbar/TemplateSettings";
 import Plus from "~/components/Icon/Plus";
+import Spinner from "../general/Spinner";
 
 export default function Editor({
     id,
@@ -82,7 +83,13 @@ export default function Editor({
     }
 
     if (editor.status === "loading") {
-        return <div>{t("common.loading")}</div>;
+        return (
+            <div
+                className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                style={{ placeItems: "center" }}>
+                <Spinner size={10} />
+            </div>
+        );
     }
 
     if (editor.status === "failed" || editor.data === null) {
@@ -118,7 +125,7 @@ export default function Editor({
                     {editor.isTemplate === true ? (
                         <TemplateSettings isNew={isNew} />
                     ) : (
-                        <EntrySettings />
+                        <EntrySettings isNew={isNew} />
                     )}
                     {editor.isTemplate === true && editor.selectedTemplateCell.length > 0 ? (
                         <TemplateCellSettings />

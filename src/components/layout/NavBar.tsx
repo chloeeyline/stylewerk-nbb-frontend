@@ -289,7 +289,7 @@ const Switchers = () => {
                     <Paintbrush className="icon-inline" />
                 </button>
                 <dialog
-                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border size-auto"
                     style={{
                         insetBlockStart: "calc(100% + 0.5rem)",
                         insetBlockEnd: "auto",
@@ -363,7 +363,7 @@ const Switchers = () => {
                     <Globe className="icon-inline" />
                 </button>
                 <dialog
-                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border"
+                    className="p-absolute d-grid gap-1 p-1 rounded-3 bg-base-300 no-border size-auto"
                     style={{
                         insetBlockStart: "calc(100% + 0.5rem)",
                         insetBlockEnd: "auto",

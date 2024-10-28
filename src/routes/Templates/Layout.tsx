@@ -1,14 +1,17 @@
 import type React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import { DEFAULT_UUID } from "#/general";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
+import Spinner from "~/components/general/Spinner";
+import UserGuard from "~/components/general/UserGuard";
 import Filter from "~/components/Icon/Filter";
+import Globe from "~/components/Icon/Globe";
 import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
@@ -23,8 +26,6 @@ import {
 } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import UserGuard from "~/components/general/UserGuard";
-import Globe from "~/components/Icon/Globe";
 
 const TemplatesList = () => {
     const { t } = useTranslation();
@@ -32,8 +33,14 @@ const TemplatesList = () => {
     const dispatch = useAppDispatch();
 
     useEffect(() => {
+        if (
+            template.hideList === true ||
+            template.status === "loading" ||
+            template.status === "succeeded"
+        )
+            return;
         dispatch(listTemplates());
-    }, []);
+    }, [template.hideList]);
 
     return (
         <fieldset
@@ -58,6 +65,14 @@ const TemplatesList = () => {
 
             <ScrollContainer direction="vertical">
                 <div className="d-grid gap-1">
+                    {template.status === "loading" ? (
+                        <div
+                            className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                            style={{ placeItems: "center" }}>
+                            <Spinner />
+                        </div>
+                    ) : null}
+
                     {(template.items ?? []).map(
                         ({ id, name, username, description, tags, owned }) => (
                             <NavLink
@@ -210,18 +225,30 @@ const TemplateFilters = () => {
 };
 
 const TemplatesLayout = () => {
+    const { t } = useTranslation();
     const template = useAppSelector(selectTemplate);
     const dispatch = useAppDispatch();
-    const { t } = useTranslation();
     const navigate = useNavigate();
+    const { pathname } = useLocation();
 
     useEffect(() => {
-        dispatch(listTemplates());
-    }, []);
+        if (pathname !== Routes.Templates.List && template.hideList !== true) {
+            dispatch(setHideList());
+        }
+
+        if (pathname === Routes.Templates.List && template.hideList === true) {
+            dispatch(setHideList());
+        }
+    }, [pathname]);
 
     return (
         <Grid layout="header" className="gap-0 size-block-100">
             <div className="fieldset p-1 d-flex flex-wrap gap-1">
+                {pathname !== Routes.Templates.List ? (
+                    <Link className="btn p-0" to={Routes.Templates.List}>
+                        {t("common.back")}
+                    </Link>
+                ) : null}
                 <button
                     type="button"
                     className="btn p-0"

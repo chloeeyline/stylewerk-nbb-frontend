@@ -14,6 +14,7 @@ import { translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
 import translateError from "~/utils/translate-error-helper";
 import UserGuard from "~/components/general/UserGuard";
+import Spinner from "~/components/general/Spinner";
 
 const Translations = () => {
     const { t } = useTranslation();
@@ -34,6 +35,13 @@ const Translations = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
+        if (translationsState.loading === true) return;
+
+        setTranslationState({
+            ...translationsState,
+            loading: true,
+        });
+
         (async () => {
             const response = await Ajax.get(BackendRoutes.Language.List);
 
@@ -69,7 +77,13 @@ const Translations = () => {
     const { loading, error, translations } = translationsState;
 
     if (loading) {
-        return <div>{t("common.loading")}</div>;
+        return (
+            <div
+                className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                style={{ placeItems: "center" }}>
+                <Spinner size={10} />
+            </div>
+        );
     }
 
     if (error !== null) {

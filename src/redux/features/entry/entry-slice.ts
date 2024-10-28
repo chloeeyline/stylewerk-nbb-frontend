@@ -5,6 +5,7 @@ import type { AppDispatch, RootState } from "~/redux/store";
 import Ajax from "~/utils/ajax";
 import type { EntryFolder, EntryFolders, EntryItems, EntrySearchParams } from "./entry-schemas";
 import { entryFolderSchema, entryFoldersSchema, entryItemsSchema } from "./entry-schemas";
+import Routes from "#/routes";
 
 type EntryState = {
     status: "idle" | "loading" | "succeeded" | "failed";
@@ -15,6 +16,15 @@ type EntryState = {
     hideList: boolean;
     dragMode: boolean;
     selectedFolder: EntryFolder & { isNew: boolean };
+    selectedFolderStatus: "idle" | "loading" | "succeeded" | "failed" | "updating";
+};
+
+const initialSelectedFolder = {
+    id: "",
+    name: "",
+    items: [],
+    count: 0,
+    isNew: true,
 };
 
 const initialState: EntryState = {
@@ -23,9 +33,10 @@ const initialState: EntryState = {
     items: [],
     filter: {},
     hideFilters: true,
-    hideList: false,
+    hideList: document.location.pathname !== Routes.Entries.List,
     dragMode: false,
-    selectedFolder: { id: crypto.randomUUID(), name: "", items: [], count: 0, isNew: true },
+    selectedFolder: { ...initialSelectedFolder },
+    selectedFolderStatus: "idle",
 };
 
 export const listFolder = createAsyncThunk<
@@ -135,14 +146,14 @@ export const detailFolder = createAsyncThunk<
 
         return {
             ...entry,
-            status: "succeeded",
+            selectedFolderStatus: "succeeded",
             folders: items,
         };
     },
     {
         condition(_arg, { getState }) {
             const entry = selectEntry(getState());
-            if (entry.status === "loading") return false;
+            if (entry.selectedFolderStatus === "loading") return false;
         },
     },
 );
@@ -180,14 +191,14 @@ export const updateFolder = createAsyncThunk<
 
         return {
             ...entry,
-            status: "succeeded",
+            selectedFolderStatus: "succeeded",
             folders: items,
         };
     },
     {
         condition(_arg, { getState }) {
             const entry = selectEntry(getState());
-            if (entry.status === "loading") return false;
+            if (entry.selectedFolderStatus === "updating") return false;
         },
     },
 );
@@ -364,6 +375,8 @@ const entrySlice = createSlice({
         builder
             .addCase(listFolder.pending, (state) => {
                 state.status = "loading";
+                state.selectedFolder = { ...initialSelectedFolder };
+                state.selectedFolderStatus = "idle";
             })
             .addCase(listFolder.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
@@ -375,26 +388,34 @@ const entrySlice = createSlice({
                 state.status = "failed";
             })
             .addCase(detailFolder.pending, (state) => {
-                state.status = "loading";
+                state.selectedFolderStatus = "loading";
             })
             .addCase(detailFolder.fulfilled, (state, action) => {
-                if (action.payload.status !== "succeeded") return;
-                state.status = "succeeded";
+                if (action.payload.selectedFolderStatus !== "succeeded") {
+                    state.selectedFolderStatus = "failed";
+                    return;
+                }
+
+                state.selectedFolderStatus = "succeeded";
                 state.folders = action.payload.folders;
             })
             .addCase(detailFolder.rejected, (state) => {
-                state.status = "failed";
+                state.selectedFolderStatus = "failed";
             })
             .addCase(updateFolder.pending, (state) => {
                 state.status = "loading";
             })
             .addCase(updateFolder.fulfilled, (state, action) => {
-                if (action.payload.status !== "succeeded") return;
-                state.status = "succeeded";
-                state.folders = action.payload.folders;
+                if (action.payload.selectedFolderStatus === "succeeded") {
+                    state.selectedFolderStatus = "succeeded";
+                    state.folders = action.payload.folders;
+                    return;
+                }
+
+                state.selectedFolderStatus = "failed";
             })
             .addCase(updateFolder.rejected, (state) => {
-                state.status = "failed";
+                state.selectedFolderStatus = "failed";
             })
             .addCase(reorderFolder.pending, (state) => {
                 state.status = "loading";

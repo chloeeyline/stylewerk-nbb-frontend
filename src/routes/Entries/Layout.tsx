@@ -19,13 +19,17 @@ import { CSS } from "@dnd-kit/utilities";
 import type React from "react";
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
+import Spinner from "~/components/general/Spinner";
+import UserGuard from "~/components/general/UserGuard";
 import Filter from "~/components/Icon/Filter";
+import Folder from "~/components/Icon/Folder";
+import Globe from "~/components/Icon/Globe";
 import Move from "~/components/Icon/Move";
 import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
@@ -46,13 +50,11 @@ import {
     setSelectedFolderName,
     toggleDragMode,
     toggleHideFilters,
+    toggleHideList,
     updateFolder,
 } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import UserGuard from "~/components/general/UserGuard";
-import Folder from "~/components/Icon/Folder";
-import Globe from "~/components/Icon/Globe";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -65,6 +67,12 @@ const EntriesList = () => {
             coordinateGetter: sortableKeyboardCoordinates,
         }),
     );
+
+    useEffect(() => {
+        if (entry.hideList === true || entry.status === "loading" || entry.status === "succeeded")
+            return;
+        dispatch(listFolder());
+    }, [entry.hideList]);
 
     const dragFolder = (e: DragEndEvent) => {
         if (entry.folders.length > 0) {
@@ -116,6 +124,13 @@ const EntriesList = () => {
 
             <ScrollContainer direction="vertical">
                 <div className="d-grid gap-1">
+                    {entry.status === "loading" ? (
+                        <div
+                            className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                            style={{ placeItems: "center" }}>
+                            <Spinner />
+                        </div>
+                    ) : null}
                     {filterItems.map((item) => (
                         <EntryComponent key={item.id} item={item} insideFolder={false} />
                     ))}
@@ -239,11 +254,12 @@ const EntryFilters = () => {
 
 const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder: boolean }) => {
     const { id, name, username, tags, owned } = item;
+
     return (
         <NavLink
             className={cls(
-                "d-grid gap-0 no-link rounded-1 p-1",
-                insideFolder ? "bg-base-200" : "bg-base-300",
+                "d-grid gap-0 no-link",
+                insideFolder ? "p-0 rounded-0 bg-base-200" : "p-1 rounded-1 bg-base-300",
             )}
             to={Routes.Entries.View.replace(RouteParams.EntryId, id).replace(
                 RouteParams.IsNew,
@@ -272,26 +288,24 @@ const EntryComponent = ({ item, insideFolder }: { item: EntryItem; insideFolder:
 };
 
 const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
-    const entry = useAppSelector(selectEntry);
-    const { selectedFolder } = entry;
-    const dispatch = useAppDispatch();
-    const [visible, setVisible] = useState(
-        selectedFolder.id !== item.id && item.items.length == 0 ? false : true,
-    );
     const { t } = useTranslation();
+
+    const entry = useAppSelector(selectEntry);
+    const dispatch = useAppDispatch();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: item.id,
     });
 
-    const showOpen = visible && !entry.dragMode && item.items.length !== 0;
+    const showOpen =
+        entry.selectedFolder.id === item.id && item.items.length !== 0 && entry.dragMode === false;
 
     return (
         <div
             ref={setNodeRef}
             className={cls(
                 "d-grid p-1 rounded-1",
-                selectedFolder.id === item.id ? "bg-info-active" : "bg-base-300",
+                entry.selectedFolder.id === item.id ? "bg-info-active" : "bg-base-300",
                 showOpen ? "gap-0" : "gap-none",
             )}
             style={{
@@ -301,13 +315,9 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
             {...attributes}>
             <div
                 className="d-flex flex-wrap gap-1"
-                style={{
-                    alignItems: "center",
-                }}
+                style={{ alignItems: "center" }}
                 onClick={() => {
                     if (entry.dragMode) return;
-
-                    setVisible(!visible);
 
                     if (item.items.length === 0 && item.id) {
                         dispatch(detailFolder({ id: item.id }));
@@ -325,10 +335,17 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
                     {item.name ?? t("list.generalFolder")}
                 </span>
             </div>
+            {entry.selectedFolderStatus === "loading" ? (
+                <div
+                    className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                    style={{ placeItems: "center" }}>
+                    <Spinner />
+                </div>
+            ) : null}
             {showOpen ? (
-                <div className="d-grid gap-1">
-                    {(item.items ?? []).map((item) => (
-                        <EntryComponent key={item.id} item={item} insideFolder={true} />
+                <div className="d-grid gap-1 m-bs-0">
+                    {(item.items ?? []).map((folderItem) => (
+                        <EntryComponent key={folderItem.id} item={folderItem} insideFolder={true} />
                     ))}
                 </div>
             ) : null}
@@ -388,10 +405,17 @@ const EntriesLayout = () => {
     const editor = useAppSelector(selectEditor);
     const navigate = useNavigate();
     const [dialogIsOpen, setDialogIsOpen] = useState(false);
+    const { pathname } = useLocation();
 
     useEffect(() => {
-        dispatch(listFolder());
-    }, []);
+        if (pathname !== Routes.Entries.List && entry.hideList !== true) {
+            dispatch(toggleHideList());
+        }
+
+        if (pathname === Routes.Entries.List && entry.hideList === true) {
+            dispatch(toggleHideList());
+        }
+    }, [pathname]);
 
     const closeModal = (success: boolean) => {
         setDialogIsOpen(false);
@@ -411,6 +435,19 @@ const EntriesLayout = () => {
     return (
         <Grid layout="header" className="gap-0 size-block-100">
             <div className="fieldset p-1 d-flex flex-wrap gap-1">
+                {pathname !== Routes.Entries.List ? (
+                    <Link className="btn p-0" to={Routes.Entries.List}>
+                        {t("common.back")}
+                    </Link>
+                ) : null}
+                <button
+                    type="button"
+                    className="btn p-0"
+                    onClick={() => {
+                        dispatch(toggleHideList());
+                    }}>
+                    {entry.hideList ? t("common.showList") : t("common.hideList")}
+                </button>
                 <button
                     type="button"
                     className="btn p-0"
@@ -462,8 +499,25 @@ const EntriesLayout = () => {
                     }>
                     {t("common.edit")}
                 </button>
+
+                <button
+                    type="button"
+                    className="btn p-0"
+                    onClick={() => {
+                        /* console.log("Foobar");
+                        return;
+                        if (typeof editor.data?.templateID !== "string") return;
+                        navigate(
+                            Routes.Entries.Edit.replace(
+                                RouteParams.EntryId,
+                                editor.data.templateID,
+                            ).replace(RouteParams.IsNew, "true"),
+                        ); */
+                    }}>
+                    {t("common.createNewEntryFromTemplate")}
+                </button>
+                <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
             </div>
-            <CreateFolderDialog isOpen={dialogIsOpen} onClose={closeModal} />
             <ResponsiveSidebar
                 showSidebar={entry.hideList !== true}
                 className={cls("size-block-100", entry.hideList ? "gap-none" : "gap-2")}>

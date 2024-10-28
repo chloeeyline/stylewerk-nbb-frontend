@@ -6,9 +6,11 @@ export default function Dialog({
     notModal,
     children,
     ...props
-}: React.DialogHTMLAttributes<HTMLDialogElement> & {
+}: Omit<React.DialogHTMLAttributes<HTMLDialogElement>, "onCancel"> & {
     notModal?: boolean;
 }) {
+
+
     const dialogRef = useRef<HTMLDialogElement>(null);
     const abortControllerRef = useRef<AbortController>();
 
@@ -55,7 +57,7 @@ export default function Dialog({
     }, [open]);
 
     return (
-        <dialog ref={dialogRef} {...props}>
+        <dialog ref={dialogRef} {...props} onCancel={closeDialog}>
             {children}
         </dialog>
     );

@@ -11,6 +11,7 @@ import Grid from "~/components/layout/Grid";
 import type { ThemeApi } from "~/schemas/themes";
 import { getRemoteThemes } from "./api";
 import UserGuard from "~/components/general/UserGuard";
+import Spinner from "~/components/general/Spinner";
 
 const Themes = () => {
     const { t } = useTranslation();
@@ -49,7 +50,13 @@ const Themes = () => {
     const { loading, error, themes } = themesState;
 
     if (loading) {
-        return <div>{t("common.loading")}</div>;
+        return (
+            <div
+                className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
+                style={{ placeItems: "center" }}>
+                <Spinner size={10} />
+            </div>
+        );
     }
 
     if (error !== null) {

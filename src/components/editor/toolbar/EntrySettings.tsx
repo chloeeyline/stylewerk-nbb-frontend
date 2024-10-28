@@ -1,11 +1,13 @@
-import Backend from "#/backend-routes";
-import { DEFAULT_UUID } from "#/general";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+
+import Backend from "#/backend-routes";
+import { DEFAULT_UUID } from "#/general";
+import RouteParams from "#/route-params";
+import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
-import Routes from "~/constants/routes";
 import { IsRequiredFillfiled } from "~/redux/features/editor/editor-hook";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
@@ -13,8 +15,9 @@ import { removeEntry } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
 import cls from "~/utils/class-name-helper";
+import InlineScroller from "~/components/layout/InlineScroller";
 
-export default function EntrySettings() {
+export default function EntrySettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
@@ -64,8 +67,20 @@ export default function EntrySettings() {
     }
 
     return (
-        <fieldset className="lrow">
-            <legend>
+        <fieldset className="fieldset gap-1">
+            <legend className="legend d-flex flex-wrap gap-0 rounded-2">
+                <NavLink
+                    className="btn btn-primary p-0"
+                    to={
+                        isNew === true
+                            ? Routes.Entries.List
+                            : Routes.Entries.View.replace(
+                                  RouteParams.EntryId,
+                                  editor.data.id,
+                              ).replace(RouteParams.IsNew, "false")
+                    }>
+                    {t("common.back")}
+                </NavLink>
                 <button
                     className={cls("btn p-0", allRequired ? "btn-primary" : "btn-neutral")}
                     onClick={() => {
@@ -84,47 +99,53 @@ export default function EntrySettings() {
                     {t("common.delete")}
                 </button>
             </legend>
-            <InputField
-                label={t("common.name")}
-                name="name"
-                type="text"
-                maxLength={100}
-                value={editor.data.name ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-            />
-            <InputField
-                label={t("formFields.tags")}
-                name="tags"
-                type="text"
-                maxLength={100}
-                value={editor.data.tags ?? ""}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-            />
-            <SelectField
-                name="folderID"
-                label="Folder"
-                value={editor.data.folderID ?? 1}
-                onChange={(e) => dispatchGeneral(e, e.target.value)}
-                options={folders ?? []}
-            />
-            <div>
+            <InlineScroller>
                 <InputField
-                    label={t("formFields.public")}
-                    name="isPublic"
-                    type="checkbox"
+                    style={{ minInlineSize: "10ch" }}
+                    label={t("common.name")}
+                    name="name"
+                    type="text"
                     maxLength={100}
-                    checked={editor.data.isPublic}
-                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    value={editor.data.name ?? ""}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
                 />
                 <InputField
-                    label={"Encrypted"}
-                    name="isEncrypted"
-                    type="checkbox"
+                    style={{ minInlineSize: "10ch" }}
+                    label={t("formFields.tags")}
+                    name="tags"
+                    type="text"
                     maxLength={100}
-                    checked={editor.data.isEncrypted}
-                    onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    value={editor.data.tags ?? ""}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
                 />
-            </div>
+                <SelectField
+                    name="folderID"
+                    label="Folder"
+                    value={editor.data.folderID ?? 1}
+                    onChange={(e) => dispatchGeneral(e, e.target.value)}
+                    options={folders ?? []}
+                />
+                <div className="d-grid" style={{ placeItems: "center" }}>
+                    <InputField
+                        label={t("formFields.public")}
+                        name="isPublic"
+                        type="checkbox"
+                        maxLength={100}
+                        checked={editor.data.isPublic}
+                        onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    />
+                </div>
+                <div className="d-grid" style={{ placeItems: "center" }}>
+                    <InputField
+                        label={"Encrypted"}
+                        name="isEncrypted"
+                        type="checkbox"
+                        maxLength={100}
+                        checked={editor.data.isEncrypted}
+                        onChange={(e) => dispatchGeneral(e, e.target.checked)}
+                    />
+                </div>
+            </InlineScroller>
         </fieldset>
     );
 }
