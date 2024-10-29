@@ -22,7 +22,18 @@ export const IhText = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
         return (
             <div>
                 {cell.template.text !== null ? <h4>{cell.template.text}</h4> : null}
-                <p>{data.data.value}</p>
+                <p
+                    className={
+                        typeof metadata.data.lineShown === "number" ? "overflow-block-auto" : undefined
+                    }
+                    style={{
+                        maxBlockSize:
+                            typeof metadata.data.lineShown === "number"
+                                ? `calc(${metadata.data.lineShown} * (1em + 0.5rem))`
+                                : undefined,
+                    }}>
+                    {data.data.value}
+                </p>
             </div>
         );
     }

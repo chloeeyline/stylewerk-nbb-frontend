@@ -9,6 +9,7 @@ export default forwardRef(function TextareaField(
         error,
         resize,
         className,
+        style,
         ...props
     }: React.TextareaHTMLAttributes<HTMLTextAreaElement> & {
         name: string;
@@ -33,7 +34,10 @@ export default forwardRef(function TextareaField(
                 name={name}
                 placeholder={label}
                 className={cls("input", className)}
-                style={{ resize: resize ?? "none" }}
+                style={{
+                    resize: resize ?? "none",
+                    ...style
+                }}
                 {...props}
             />
             {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
