@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 
 import { DEFAULT_UUID } from "#/general";
 import RouteParams from "#/route-params";
@@ -15,7 +15,6 @@ export default function TemplateView() {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
-    const navigate = useNavigate();
     const { templateId, isNew } = useParams();
 
     return (
@@ -36,34 +35,26 @@ export default function TemplateView() {
                     editor.data.templateID !== "string" &&
                     editor.data.owned ? (
                         <>
-                            <button
-                                type="button"
-                                className="btn p-0"
-                                onClick={() => {
-                                    if (typeof editor.data?.templateID !== "string") return;
-                                    navigate(
-                                        Routes.Templates.Edit.replace(
-                                            RouteParams.TemplateId,
-                                            editor.data?.templateID,
-                                        ).replace(RouteParams.IsNew, "false"),
-                                    );
-                                }}>
-                                {t("common.edit")}
-                            </button>
-                            <button
-                                type="button"
-                                className="btn p-0"
-                                onClick={() => {
-                                    if (typeof editor.data?.templateID !== "string") return;
-                                    navigate(
-                                        Routes.Entries.Edit.replace(
-                                            RouteParams.EntryId,
-                                            editor.data.templateID,
-                                        ).replace(RouteParams.IsNew, "true"),
-                                    );
-                                }}>
-                                {t("common.createNewEntryFromTemplate")}
-                            </button>
+                            {typeof editor.data?.templateID === "string" ? (
+                                <NavLink
+                                    className="btn p-0 btn-loader"
+                                    to={Routes.Templates.Edit.replace(
+                                        RouteParams.TemplateId,
+                                        editor.data?.templateID,
+                                    ).replace(RouteParams.IsNew, "false")}>
+                                    {t("common.edit")}
+                                </NavLink>
+                            ) : null}
+                            {typeof editor.data?.templateID === "string" ? (
+                                <NavLink
+                                    className="btn p-0 btn-loader"
+                                    to={Routes.Entries.Edit.replace(
+                                        RouteParams.EntryId,
+                                        editor.data.templateID,
+                                    ).replace(RouteParams.IsNew, "true")}>
+                                    {t("common.createNewEntryFromTemplate")}
+                                </NavLink>
+                            ) : null}
                         </>
                     ) : null}
                 </div>
