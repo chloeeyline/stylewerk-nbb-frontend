@@ -12,16 +12,25 @@ export default function Home() {
             <h1>{t("nav.homepage")}</h1>
             <ScrollContainer direction="vertical">
                 <div
-                    className="d-flex gap-1 p-1"
+                    className="d-flex gap-1 p-1 m-be-6"
                     style={{ alignItems: "baseline", justifyContent: "center" }}>
                     <Logo style={{ maxInlineSize: "25ch" }} />
                     <SWLogo style={{ maxInlineSize: "7.5ch" }} />
                 </div>
-                <div className="d-grid gap-1 p-1" style={{ placeItems: "center" }}>
-                    <video controls src="/Tutorial.mp4" style={{ maxInlineSize: "70ch" }} />
-                    <a href="/Benutzerhandbuch.pdf" target="_blank">
+                <div className="d-grid gap-6 p-1" style={{ placeItems: "center" }}>
+                    <a className="btn btn-primary p-1" href="/Benutzerhandbuch.pdf" target="_blank">
                         {t("nav.userManual")}
                     </a>
+
+                    <video
+                        controls
+                        src="/Tutorial.mp4"
+                        className="rounded-4 shadow"
+                        style={{
+                            inlineSize: "70ch",
+                            border: "medium solid var(--clr-body)",
+                        }}
+                    />
                 </div>
             </ScrollContainer>
         </Grid>
