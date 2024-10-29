@@ -3,7 +3,12 @@ import { z } from "zod";
 const themeApiSchema = z.object({
     id: z.string(),
     name: z.string(),
-    base: z.union([z.literal("light"), z.literal("dark"), z.literal("system")]),
+    base: z.union([
+        z.literal("light"),
+        z.literal("dark"),
+        z.literal("colorful"),
+        z.literal("system"),
+    ]),
     data: z.string().nullable(),
 });
 

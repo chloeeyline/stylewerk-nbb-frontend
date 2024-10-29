@@ -87,7 +87,7 @@ export const builtInThemes: Record<"dark" | "light" | "system" | "colorful", The
     colorful: {
         id: "colorful",
         name: "Colorful",
-        base: "light",
+        base: "colorful",
         data: null,
     },
 };
@@ -206,7 +206,7 @@ export const loadTheme = async (id: string): Promise<CompleteTheme | null> => {
     return innerResult.data;
 };
 
-export const switchBase = (base: "dark" | "light" | "system") => {
+export const switchBase = (base: "dark" | "light" | "system" | "colorful") => {
     document.documentElement.dataset.theme = base;
 };
 

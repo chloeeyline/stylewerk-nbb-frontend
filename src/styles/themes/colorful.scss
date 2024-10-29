@@ -1,0 +1,42 @@
+@use "@/mixins/theme";
+
+@include theme.create(colorful) {
+    @include theme.scheme-light();
+
+    --clr-primary:#78f2c9;
+    --clr-primary-content:#000000;
+    --clr-primary-active:#97f7d2;
+  
+    --clr-accent:#ff3dae;
+    --clr-accent-content:#000000;
+    --clr-accent-active:#ff66f2;
+    
+    --clr-neutral:#96a4df;
+    --clr-neutral-content:#ffffff;
+    --clr-neutral-active:#b7cfe1;
+    
+    --clr-base-100:#d0dece;
+    --clr-base-200:#b8d0ae;
+    --clr-base-300:#afcda2;
+    
+    --clr-header:#191111;
+    --clr-body:#402b2b;
+    
+    --clr-info:#4dabf7;
+    --clr-info-content:#000000;
+    --clr-info-active:#74c0fc;
+    
+    --clr-success:#a9e34b;
+    --clr-success-content:#000000;
+    --clr-success-active:#c0eb75;
+    
+    --clr-warning:#ffa94d;
+    --clr-warning-content:#000000;
+    --clr-warning-active:#ffc078;
+    
+    --clr-error:#ff8787;
+    --clr-error-content:#000000;
+    --clr-error-active:#ffa8a8;
+    
+    --clr-shadow:#9a9179;
+}

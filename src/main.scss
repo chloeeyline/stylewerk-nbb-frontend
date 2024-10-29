@@ -2,7 +2,8 @@
 @use "./styles/fonts";
 @use "./styles/themes/dark";
 @use "./styles/themes/light";
-@use "./styles/base-styles.scss";
+@use "./styles/themes/colorful";
+@use "./styles/base-styles";
 @use "./styles/forms";
 @use "./styles/DivLayout";
 @use "./styles/colors";
@@ -12,4 +13,4 @@
 @use "./styles/shadows";
 @use "./styles/rounded";
 @use "./styles/position";
-@use "./styles/helpers.scss";
+@use "./styles/helpers";
