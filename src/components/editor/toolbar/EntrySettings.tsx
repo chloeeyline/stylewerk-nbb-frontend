@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import Backend from "#/backend-routes";
 import { DEFAULT_UUID } from "#/general";
@@ -8,6 +8,7 @@ import RouteParams from "#/route-params";
 import Routes from "#/routes";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import InlineScroller from "~/components/layout/InlineScroller";
 import { IsRequiredFillfiled } from "~/redux/features/editor/editor-hook";
 import { selectEditor, setEntry, updateEditor } from "~/redux/features/editor/editor-slice";
 import { entryFoldersSchema } from "~/redux/features/entry/entry-schemas";
@@ -15,14 +16,14 @@ import { removeEntry } from "~/redux/features/entry/entry-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import Ajax from "~/utils/ajax";
 import cls from "~/utils/class-name-helper";
-import InlineScroller from "~/components/layout/InlineScroller";
+import DeleteDialog from "./DeleteDialog";
+import Save from "~/components/Icon/Save";
 
 export default function EntrySettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
     const [folders, setFolders] = useState<[string, string][]>();
-    const navigate = useNavigate();
 
     useEffect(() => {
         Ajax.get(Backend.Entry.Folder.List, {
@@ -94,17 +95,43 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
                         if (typeof editor.data?.id !== "string") return;
                         if (allRequired === true && editor.error === null) dispatch(updateEditor());
                     }}>
+                    <Save className="icon-inline m-ie-0" />
                     {t("common.save")}
                 </button>
-                <button
-                    className="btn btn-primary p-0"
-                    onClick={() => {
-                        if (editor.data === null || typeof editor.data.id !== "string") return;
-                        dispatch(removeEntry({ id: editor.data.id }));
-                        navigate(Routes.Entries.List);
-                    }}>
-                    {t("common.delete")}
-                </button>
+                {editor.data !== null && typeof editor.data.id === "string" ? (
+                    <DeleteDialog
+                        message={t("common.deleteWhat", { what: t("common.theEntry") })}
+                        onDelete={async () => {
+                            if (editor.data === null || typeof editor.data.id !== "string") {
+                                return { ok: false, error: "NoDataFound" };
+                            }
+
+                            const result = await dispatch(removeEntry({ id: editor.data.id }));
+
+                            if (
+                                typeof result.payload === "object" &&
+                                result.payload !== null &&
+                                "status" in result.payload &&
+                                result.payload.status === "succeeded"
+                            ) {
+                                return { ok: true, redirectTo: Routes.Entries.List };
+                            }
+
+                            if (
+                                typeof result.payload === "object" &&
+                                result.payload !== null &&
+                                "name" in result.payload &&
+                                result.payload.name === "NbbError" &&
+                                "message" in result.payload &&
+                                typeof result.payload.message === "string"
+                            ) {
+                                return { ok: false, error: result.payload.message };
+                            }
+
+                            return { ok: false, error: "NoDataFound" };
+                        }}
+                    />
+                ) : null}
             </legend>
             <InlineScroller>
                 <InputField

@@ -5,16 +5,17 @@ import { Link, useNavigate } from "react-router-dom";
 import BackendRoutes from "#/backend-routes";
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
-import Columns from "~/components/forms/Columns";
+import styles from "~/components/forms/form-fields.module.scss";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import Spinner from "~/components/general/Spinner";
+import UserGuard from "~/components/general/UserGuard";
 import Grid from "~/components/layout/Grid";
 import type { Translation } from "~/schemas/translations";
 import { translationSchema } from "~/schemas/translations";
 import Ajax from "~/utils/ajax";
+import cls from "~/utils/class-name-helper";
 import translateError from "~/utils/translate-error-helper";
-import UserGuard from "~/components/general/UserGuard";
-import Spinner from "~/components/general/Spinner";
 
 const Translations = () => {
     const { t } = useTranslation();
@@ -128,7 +129,7 @@ const Translations = () => {
                     );
                 }}>
                 <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
-                    <Columns>
+                    <div className={cls("d-grid gap-1", styles.twoCol)}>
                         <InputField
                             className="input bg-base-300"
                             label={t("adminTranslations.labelNewCode")}
@@ -145,8 +146,8 @@ const Translations = () => {
                                 ...translations,
                             ].map(({ code, name }) => [code, name])}
                         />
-                    </Columns>
-                    <button type="submit" className="btn btn-primary p-1 m-bs-0 size-inline-fit">
+                    </div>
+                    <button type="submit" className="btn btn-primary p-1 m-bs-0 size-inline-100">
                         {t("adminTranslations.addNewLanguage")}
                     </button>
                 </fieldset>

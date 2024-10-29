@@ -1,6 +1,62 @@
 import type React from "react";
-import { forwardRef, useId } from "react";
+import { forwardRef, useId, useState } from "react";
 import cls from "~/utils/class-name-helper";
+import Show from "../Icon/Show";
+import Hide from "../Icon/Hide";
+
+const PasswordField = forwardRef(
+    (
+        {
+            name,
+            label,
+            error,
+            className,
+            id,
+            type,
+            ...props
+        }: React.InputHTMLAttributes<HTMLInputElement> & {
+            name: string;
+            label: string;
+            error?: string | null;
+        },
+        ref: React.ForwardedRef<HTMLInputElement>,
+    ) => {
+        const [showPassword, setShowPassword] = useState<boolean>(false);
+
+        return (
+            <div className="d-grid">
+                <label htmlFor={id}>
+                    {label}
+                    {props.required === true ? <span className="clr-error">*</span> : null}
+                </label>
+                <div
+                    className="d-grid grid-template-columns gap-1"
+                    style={{ "--grid-template-columns": "1fr auto" }}>
+                    <input
+                        type={showPassword ? "text" : "password"}
+                        ref={ref}
+                        id={id}
+                        name={name}
+                        placeholder={label}
+                        className={cls("input", className)}
+                        {...props}
+                    />
+                    <button
+                        type="button"
+                        className="btn btn-square"
+                        onClick={() => setShowPassword(!showPassword)}>
+                        {showPassword ? (
+                            <Hide className="icon-inline" />
+                        ) : (
+                            <Show className="icon-inline" />
+                        )}
+                    </button>
+                </div>
+                {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
+            </div>
+        );
+    },
+);
 
 export default forwardRef(function InputField(
     {
@@ -63,6 +119,20 @@ export default forwardRef(function InputField(
                 />
                 {(error ?? null) !== null ? <span className="error m-bs-0">{error}</span> : null}
             </div>
+        );
+    }
+
+    if (props.type === "password") {
+        return (
+            <PasswordField
+                id={id}
+                ref={ref}
+                label={label}
+                name={name}
+                error={error}
+                className={className}
+                {...props}
+            />
         );
     }
 

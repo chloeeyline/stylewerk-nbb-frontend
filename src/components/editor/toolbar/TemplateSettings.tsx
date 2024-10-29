@@ -1,5 +1,5 @@
 import { useTranslation } from "react-i18next";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
@@ -9,12 +9,14 @@ import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import DeleteDialog from "./DeleteDialog";
+import Copy from "~/components/Icon/Copy";
+import Save from "~/components/Icon/Save";
 
 export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
-    const navigate = useNavigate();
 
     const dispatchGeneral = (
         e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLSelectElement>,
@@ -66,6 +68,7 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                         )
                             dispatch(updateEditor());
                     }}>
+                    <Save className="icon-inline m-ie-0" />
                     {t("common.save")}
                 </button>
                 <button
@@ -75,19 +78,48 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                         if (typeof editor.data?.templateID !== "string") return;
                         dispatch(copyTemplates({ id: editor.data?.templateID }));
                     }}>
+                    <Copy className="icon-inline m-ie-0" />
                     {t("common.copy")}
                 </button>
-                <button
-                    type="button"
-                    className="btn btn-primary p-0"
-                    onClick={() => {
-                        if (editor.data === null || typeof editor.data.templateID !== "string")
-                            return;
-                        dispatch(removeTemplates({ id: editor.data?.templateID }));
-                        navigate(Routes.Templates.List);
-                    }}>
-                    {t("common.delete")}
-                </button>
+                {editor.data !== null && typeof editor.data.templateID === "string" ? (
+                    <DeleteDialog
+                        message={t("common.deleteWhat", { what: t("common.theTemplate") })}
+                        onDelete={async () => {
+                            if (
+                                editor.data === null ||
+                                typeof editor.data.templateID !== "string"
+                            ) {
+                                return { ok: false, error: "NoDataFound" };
+                            }
+
+                            const result = await dispatch(
+                                removeTemplates({ id: editor.data?.templateID }),
+                            );
+
+                            if (
+                                typeof result.payload === "object" &&
+                                result.payload !== null &&
+                                "status" in result.payload &&
+                                result.payload.status === "succeeded"
+                            ) {
+                                return { ok: true, redirectTo: Routes.Templates.List };
+                            }
+
+                            if (
+                                typeof result.payload === "object" &&
+                                result.payload !== null &&
+                                "name" in result.payload &&
+                                result.payload.name === "NbbError" &&
+                                "message" in result.payload &&
+                                typeof result.payload.message === "string"
+                            ) {
+                                return { ok: false, error: result.payload.message };
+                            }
+
+                            return { ok: false, error: "NoDataFound" };
+                        }}
+                    />
+                ) : null}
             </legend>
             <InlineScroller>
                 <InputField

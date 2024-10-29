@@ -4,14 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
-import Columns from "~/components/forms/Columns";
+import styles from "~/components/forms/form-fields.module.scss";
 import InputField from "~/components/forms/InputField";
 import SelectField from "~/components/forms/SelectField";
+import Spinner from "~/components/general/Spinner";
+import UserGuard from "~/components/general/UserGuard";
 import Grid from "~/components/layout/Grid";
 import type { ThemeApi } from "~/schemas/themes";
+import cls from "~/utils/class-name-helper";
 import { getRemoteThemes } from "./api";
-import UserGuard from "~/components/general/UserGuard";
-import Spinner from "~/components/general/Spinner";
 
 const Themes = () => {
     const { t } = useTranslation();
@@ -99,7 +100,7 @@ const Themes = () => {
                     );
                 }}>
                 <fieldset className="d-grid gap-0 rounded-2 p-1 bg-base-200 no-border">
-                    <Columns>
+                    <div className={cls("d-grid gap-1", styles.twoCol)}>
                         <InputField
                             className="input bg-base-300"
                             label={t("adminThemes.labelNewName")}
@@ -116,9 +117,9 @@ const Themes = () => {
                                 ["dark", "Dark"],
                             ]}
                         />
-                    </Columns>
+                    </div>
 
-                    <button type="submit" className="btn btn-primary p-1 size-inline-fit m-bs-0">
+                    <button type="submit" className="btn btn-primary p-1 size-inline-100 m-bs-0">
                         {t("adminThemes.addNewTheme")}
                     </button>
                 </fieldset>

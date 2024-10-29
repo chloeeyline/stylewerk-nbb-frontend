@@ -36,7 +36,7 @@ export default function RadioGroup({
             </label>
             <div
                 className={cls(
-                    "d-flex gap-2",
+                    "d-flex gap-2 flex-wrap",
                     direction === "vertical" ? "flex-direction-column" : "flex-direction-row",
                 )}>
                 {options.map(([optionKey, optionValue]) => (

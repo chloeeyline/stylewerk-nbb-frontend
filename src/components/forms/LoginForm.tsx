@@ -130,12 +130,14 @@ export default function LoginForm({ onLogin }: { onLogin?: () => void }) {
                     error={formError.password}
                 />
 
-                <InputField
-                    type="checkbox"
-                    label={t("formFields.rememberMe")}
-                    name="rememberMe"
-                    ref={rememberMeRef}
-                />
+                <div className="m-bs-0">
+                    <InputField
+                        type="checkbox"
+                        label={t("formFields.rememberMe")}
+                        name="rememberMe"
+                        ref={rememberMeRef}
+                    />
+                </div>
 
                 <button type="submit" className="btn btn-primary p-1 m-bs-0">
                     {t("formSubmit.login")}

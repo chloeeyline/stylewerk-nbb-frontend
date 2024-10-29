@@ -28,15 +28,16 @@ import InputField from "~/components/forms/InputField";
 import Spinner from "~/components/general/Spinner";
 import UserGuard from "~/components/general/UserGuard";
 import Cross from "~/components/Icon/Cross";
+import Edit from "~/components/Icon/Edit";
 import Filter from "~/components/Icon/Filter";
 import Folder from "~/components/Icon/Folder";
 import Globe from "~/components/Icon/Globe";
 import Move from "~/components/Icon/Move";
+import Plus from "~/components/Icon/Plus";
 import Refresh from "~/components/Icon/Refresh";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
-import { selectEditor } from "~/redux/features/editor/editor-slice";
 import type { EntryFolder, EntryItem } from "~/redux/features/entry/entry-schemas";
 import {
     clearFilters,
@@ -57,6 +58,9 @@ import {
 import { listTemplates, selectTemplate } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import Show from "~/components/Icon/Show";
+import Hide from "~/components/Icon/Hide";
+import Trash from "~/components/Icon/Trash";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -359,6 +363,7 @@ const CreateFolderDialog = () => {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const dialogRef = useRef<HTMLDialogElement>(null);
+    const { t } = useTranslation();
 
     return (
         <>
@@ -369,7 +374,17 @@ const CreateFolderDialog = () => {
                     if (!(dialogRef.current instanceof HTMLDialogElement)) return;
                     dialogRef.current.showModal();
                 }}>
-                {entry.selectedFolder.isNew ? "Neuen Ordner anlegen" : "Ordner bearbeiten"}
+                {entry.selectedFolder.isNew ? (
+                    <>
+                        <Plus className="icon-inline m-ie-0" />
+                        {t("common.createNewFolder")}
+                    </>
+                ) : (
+                    <>
+                        <Edit className="icon-inline m-ie-0" />
+                        {t("common.editFolder")}
+                    </>
+                )}
             </button>
             <dialog
                 ref={dialogRef}
@@ -390,9 +405,9 @@ const CreateFolderDialog = () => {
                     <Cross className="icon-inline" />
                 </button>
                 <fieldset className="fieldset gap-1">
-                    <legend className="legend">Neuen Ordner anlegen</legend>
+                    <legend className="legend">{t("common.createNewFolder")}</legend>
                     <InputField
-                        label="Folder name"
+                        label={t("common.foldername")}
                         name="foldername"
                         value={entry.selectedFolder?.name ?? ""}
                         onChange={(e) => dispatch(setSelectedFolderName(e.target.value))}
@@ -400,14 +415,16 @@ const CreateFolderDialog = () => {
                     <button
                         className="btn btn-accent p-1"
                         onClick={() => {
-                            updateFolder({
-                                model: {
-                                    id: entry.selectedFolder?.id ?? crypto.randomUUID(),
-                                    name: entry.selectedFolder?.name ?? "",
-                                    items: [],
-                                    count: 0,
-                                },
-                            });
+                            dispatch(
+                                updateFolder({
+                                    model: {
+                                        id: crypto.randomUUID(),
+                                        name: entry.selectedFolder?.name ?? "",
+                                        items: [],
+                                        count: 0,
+                                    },
+                                }),
+                            );
 
                             if (!(dialogRef.current instanceof HTMLDialogElement)) return;
                             dialogRef.current.close();
@@ -436,7 +453,8 @@ const CreateEntryDialog = () => {
                     dispatch(listTemplates());
                     dialogRef.current.showModal();
                 }}>
-                {t("common.createNewEntryFromTemplate")}
+                <Plus className="icon-inline m-ie-0" />
+                {t("common.createNewEntry")}
             </button>
             <dialog
                 ref={dialogRef}
@@ -456,7 +474,7 @@ const CreateEntryDialog = () => {
                     }}>
                     <Cross className="icon-inline" />
                 </button>
-                <h2>{t("common.createNewEntryFromTemplate")}</h2>
+                <h2>{t("common.createNewEntry")}</h2>
                 {template.status === "loading" ? (
                     <div className="d-grid" style={{ placeItems: "center" }}>
                         <Spinner />
@@ -487,7 +505,6 @@ const EntriesLayout = () => {
     const entry = useAppSelector(selectEntry);
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
-    const editor = useAppSelector(selectEditor);
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -503,18 +520,23 @@ const EntriesLayout = () => {
     return (
         <Grid layout="header" className="gap-0 size-block-100">
             <div className="fieldset p-1 d-flex flex-wrap gap-1">
-                {pathname !== Routes.Entries.List ? (
-                    <NavLink className="btn p-0 btn-loader" to={Routes.Entries.List}>
-                        {t("common.back")}
-                    </NavLink>
-                ) : null}
                 <button
                     type="button"
                     className="btn p-0"
                     onClick={() => {
                         dispatch(toggleHideList());
                     }}>
-                    {entry.hideList ? t("common.showList") : t("common.hideList")}
+                    {entry.hideList ? (
+                        <>
+                            <Show className="icon-inline m-ie-0" />
+                            {t("common.showList")}
+                        </>
+                    ) : (
+                        <>
+                            <Hide className="icon-inline m-ie-0" />
+                            {t("common.hideList")}
+                        </>
+                    )}
                 </button>
                 <button
                     type="button"
@@ -525,6 +547,7 @@ const EntriesLayout = () => {
                             dispatch(reorderFolder());
                         }
                     }}>
+                    <Folder className="icon-inline m-ie-0" />
                     {entry.dragMode
                         ? t("list.dragFolderModeDeactive")
                         : t("list.dragFolderModeActive")}
@@ -541,18 +564,9 @@ const EntriesLayout = () => {
                             : undefined,
                     )}
                     onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
-                    Ordner Löschen
+                    <Trash className="icon-inline m-ie-0" />
+                    {t("common.deleteFolder")}
                 </button>
-                {typeof editor.data?.id === "string" ? (
-                    <NavLink
-                        className="btn btn-loader p-0"
-                        to={Routes.Entries.Edit.replace(
-                            RouteParams.EntryId,
-                            editor.data.id,
-                        ).replace(RouteParams.IsNew, "false")}>
-                        {t("common.edit")}
-                    </NavLink>
-                ) : null}
 
                 <CreateEntryDialog />
             </div>

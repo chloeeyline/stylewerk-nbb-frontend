@@ -16,6 +16,8 @@ import Ajax from "~/utils/ajax";
 import cls from "~/utils/class-name-helper";
 import { deleteLanguage, updateLanguage } from "./api";
 import UserGuard from "~/components/general/UserGuard";
+import Save from "~/components/Icon/Save";
+import Cross from "~/components/Icon/Cross";
 
 type TranslationState = {
     loading: boolean;
@@ -316,12 +318,13 @@ const AdminTranslationsManage = () => {
                         await fetchTranslationContent();
                     }}>
                     {t("adminTranslations.saveLanguage")}
+                    <Save className="icon-inline m-is-1" />
                 </button>
                 {["de", "en"].includes(translationState.code) ? null : (
                     <button
                         type="button"
                         className={cls(
-                            "btn btn-loader p-1",
+                            "btn btn-error btn-loader p-1",
                             translationState.pending === "delete" ? "pending" : undefined,
                         )}
                         onClick={async () => {
@@ -343,6 +346,7 @@ const AdminTranslationsManage = () => {
                             navigate(Routes.Admin.Translations.List);
                         }}>
                         {t("adminTranslations.deleteLanguage")}
+                        <Cross className="icon-inline m-is-1" />
                     </button>
                 )}
                 <a
@@ -350,7 +354,7 @@ const AdminTranslationsManage = () => {
                     href={translationState.blob ?? "#"}
                     download={translationState.name + ".json"}>
                     {t("common.download")}
-                    <Download className="icon-inline m-is-1" fill="currentColor" />
+                    <Download className="icon-inline m-is-1" />
                 </a>
             </div>
         </Grid>

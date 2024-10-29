@@ -44,3 +44,19 @@
         transform: rotate(360deg);
     }
 }
+
+body {
+    container-type: inline-size;
+}
+
+.twoCol {
+    --cols: 1;
+    grid-template-columns: repeat(var(--cols), 1fr);
+
+    @container (min-inline-size: 26.5rem) {
+        --cols: 2;
+    }
+}
+
+
+

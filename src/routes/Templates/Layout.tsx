@@ -1,7 +1,7 @@
 import type React from "react";
 import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 
 import { DEFAULT_UUID } from "#/general";
 import RouteParams from "#/route-params";
@@ -12,7 +12,10 @@ import Spinner from "~/components/general/Spinner";
 import UserGuard from "~/components/general/UserGuard";
 import Filter from "~/components/Icon/Filter";
 import Globe from "~/components/Icon/Globe";
+import Hide from "~/components/Icon/Hide";
+import Plus from "~/components/Icon/Plus";
 import Refresh from "~/components/Icon/Refresh";
+import Show from "~/components/Icon/Show";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
@@ -228,7 +231,6 @@ const TemplatesLayout = () => {
     const { t } = useTranslation();
     const template = useAppSelector(selectTemplate);
     const dispatch = useAppDispatch();
-    const navigate = useNavigate();
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -255,21 +257,27 @@ const TemplatesLayout = () => {
                     onClick={() => {
                         dispatch(setHideList());
                     }}>
-                    {template.hideList ? t("common.showList") : t("common.hideList")}
+                    {template.hideList ? (
+                        <>
+                            <Show className="icon-inline m-ie-0" />
+                            {t("common.showList")}
+                        </>
+                    ) : (
+                        <>
+                            <Hide className="icon-inline m-ie-0" />
+                            {t("common.hideList")}
+                        </>
+                    )}
                 </button>
-                <button
-                    type="button"
-                    className="btn p-0"
-                    onClick={() =>
-                        navigate(
-                            Routes.Templates.Edit.replace(
-                                RouteParams.TemplateId,
-                                DEFAULT_UUID,
-                            ).replace(RouteParams.IsNew, "true"),
-                        )
-                    }>
+                <NavLink
+                    className="btn btn-loader p-0"
+                    to={Routes.Templates.Edit.replace(RouteParams.TemplateId, DEFAULT_UUID).replace(
+                        RouteParams.IsNew,
+                        "true",
+                    )}>
+                    <Plus className="icon-inline m-ie-0" />
                     {t("common.createNewTemplate")}
-                </button>
+                </NavLink>
             </div>
             <ResponsiveSidebar
                 showSidebar={template.hideList !== true}

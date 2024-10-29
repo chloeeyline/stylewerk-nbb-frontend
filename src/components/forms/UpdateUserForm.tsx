@@ -7,7 +7,6 @@ import { genders, UserData } from "~/redux/features/user/user-schemas";
 import { getUserData } from "~/redux/features/user/user-slice";
 import { useAppDispatch } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import Columns from "./Columns";
 import styles from "./form-fields.module.scss";
 import InputField from "./InputField";
 import SelectField from "./SelectField";
@@ -165,7 +164,7 @@ export default function UpdateUserForm(props: {
                 </legend>
                 {state.error !== null ? <span className="error">{state.error}</span> : null}
 
-                <Columns>
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
                     <InputField
                         className="bg-base-300"
                         label={t("formFields.firstName")}
@@ -185,7 +184,7 @@ export default function UpdateUserForm(props: {
                         ref={lastNameRef}
                         error={formError.lastName}
                     />
-                </Columns>
+                </div>
 
                 <SelectField
                     className="bg-base-300"
@@ -200,23 +199,25 @@ export default function UpdateUserForm(props: {
                     error={formError.gender}
                 />
 
-                <InputField
-                    className="bg-base-300"
-                    type="password"
-                    label={t("formFields.password")}
-                    name="password"
-                    ref={passwordRef}
-                    error={formError.password}
-                />
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
+                    <InputField
+                        className="bg-base-300"
+                        type="password"
+                        label={t("formFields.password")}
+                        name="password"
+                        ref={passwordRef}
+                        error={formError.password}
+                    />
 
-                <InputField
-                    className="bg-base-300"
-                    type="password"
-                    label={t("formFields.repeatPassword")}
-                    name="repeatPassword"
-                    ref={repeatPasswordRef}
-                    error={formError.repeatPassword}
-                />
+                    <InputField
+                        className="bg-base-300"
+                        type="password"
+                        label={t("formFields.repeatPassword")}
+                        name="repeatPassword"
+                        ref={repeatPasswordRef}
+                        error={formError.repeatPassword}
+                    />
+                </div>
 
                 <button type="submit" className="btn btn-primary p-1 m-bs-0">
                     {t("formSubmit.updateUserData")}

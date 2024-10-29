@@ -200,83 +200,92 @@ export default function RegistrationForm() {
                     <span className="error">{registration.error}</span>
                 ) : null}
 
-                <InputField
-                    className="bg-base-300"
-                    label={t("formFields.username")}
-                    name="username"
-                    required
-                    ref={usernameRef}
-                    error={formError.username}
-                />
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
+                    <InputField
+                        className="bg-base-300"
+                        label={t("formFields.username")}
+                        name="username"
+                        required
+                        ref={usernameRef}
+                        error={formError.username}
+                    />
 
-                <InputField
-                    className="bg-base-300"
-                    label={t("formFields.email")}
-                    name="email"
-                    required
-                    ref={emailRef}
-                    error={formError.email}
-                />
+                    <InputField
+                        className="bg-base-300"
+                        label={t("formFields.email")}
+                        name="email"
+                        required
+                        ref={emailRef}
+                        error={formError.email}
+                    />
+                </div>
 
-                <InputField
-                    className="bg-base-300"
-                    type="password"
-                    label={t("formFields.password")}
-                    name="password"
-                    required
-                    ref={passwordRef}
-                    error={formError.password}
-                />
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
+                    <InputField
+                        className="bg-base-300"
+                        type="password"
+                        label={t("formFields.password")}
+                        name="password"
+                        required
+                        ref={passwordRef}
+                        error={formError.password}
+                    />
 
-                <InputField
-                    className="bg-base-300"
-                    type="password"
-                    label={t("formFields.repeatPassword")}
-                    name="repeatPassword"
-                    required
-                    ref={repeatPasswordRef}
-                    error={formError.repeatPassword}
-                />
+                    <InputField
+                        className="bg-base-300"
+                        type="password"
+                        label={t("formFields.repeatPassword")}
+                        name="repeatPassword"
+                        required
+                        ref={repeatPasswordRef}
+                        error={formError.repeatPassword}
+                    />
+                </div>
 
-                <InputField
-                    className="bg-base-300"
-                    label={t("formFields.firstName")}
-                    name="firstName"
-                    required
-                    ref={firstNameRef}
-                    error={formError.firstName}
-                />
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
+                    <InputField
+                        className="bg-base-300"
+                        label={t("formFields.firstName")}
+                        name="firstName"
+                        required
+                        ref={firstNameRef}
+                        error={formError.firstName}
+                    />
 
-                <InputField
-                    className="bg-base-300"
-                    label={t("formFields.lastName")}
-                    name="lastName"
-                    required
-                    ref={lastNameRef}
-                    error={formError.lastName}
-                />
+                    <InputField
+                        className="bg-base-300"
+                        label={t("formFields.lastName")}
+                        name="lastName"
+                        required
+                        ref={lastNameRef}
+                        error={formError.lastName}
+                    />
+                </div>
 
-                <SelectField
-                    className="bg-base-300"
-                    label={t("formFields.gender")}
-                    name="gender"
-                    required
-                    ref={genderRef}
-                    options={genders.map(
-                        (gender) => [gender, t(`userGenders.${gender}`)] as [string, string],
-                    )}
-                    error={formError.gender}
-                />
+                <div className={cls("d-grid gap-1", styles.twoCol)}>
+                    <SelectField
+                        className="bg-base-300"
+                        label={t("formFields.gender")}
+                        name="gender"
+                        required
+                        ref={genderRef}
+                        options={genders.map(
+                            (gender) => [gender, t(`userGenders.${gender}`)] as [string, string],
+                        )}
+                        error={formError.gender}
+                    />
 
-                <InputField
-                    className="bg-base-300"
-                    type="date"
-                    label={t("formFields.birthday")}
-                    name="birthday"
-                    required
-                    ref={birthdayRef}
-                    error={formError.birthday}
-                />
+                    <InputField
+                        className="bg-base-300"
+                        type="date"
+                        label={t("formFields.birthday")}
+                        name="birthday"
+                        required
+                        ref={birthdayRef}
+                        error={formError.birthday}
+                    />
+                </div>
+
                 <button type="submit" className="btn btn-primary p-1 m-bs-0">
                     {t("formSubmit.registration")}
                 </button>

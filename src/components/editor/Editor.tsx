@@ -14,7 +14,7 @@ import {
     sortableKeyboardCoordinates,
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import ScrollContainer from "~/components/layout/ScrollContainer";
@@ -48,6 +48,7 @@ export default function Editor({
     const editor = useAppSelector(selectEditor);
     const { t } = useTranslation();
     const dispatch = useAppDispatch();
+    const [initial, setInitial] = useState<boolean>(true);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -152,9 +153,9 @@ export default function Editor({
                                 {getList().length > 0 &&
                                     getList().map((row) =>
                                         editor.isTemplate ? (
-                                            <EditorRow key={row.templateID} row={row} />
+                                            <EditorRow initial={initial} setInitial={setInitial} key={row.templateID} row={row} />
                                         ) : (
-                                            <EditorRow key={row.id} row={row} />
+                                            <EditorRow initial={initial} setInitial={setInitial} key={row.id} row={row} />
                                         ),
                                     )}
                             </SortableContext>

@@ -403,7 +403,7 @@ const entrySlice = createSlice({
                 state.selectedFolderStatus = "failed";
             })
             .addCase(updateFolder.pending, (state) => {
-                state.status = "loading";
+                state.selectedFolderStatus = "loading";
             })
             .addCase(updateFolder.fulfilled, (state, action) => {
                 if (action.payload.selectedFolderStatus === "succeeded") {

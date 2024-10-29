@@ -18,7 +18,6 @@ import {
 import { CSS } from "@dnd-kit/utilities";
 
 import InputField from "~/components/forms/InputField";
-import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
 import Plus from "~/components/Icon/Plus";
 import type { EntryRow } from "~/redux/features/editor/editor-schemas";
@@ -33,9 +32,19 @@ import {
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import DeleteDialog from "./DeleteDialog";
 import EditorCell from "./EditorCell";
+import { t } from "i18next";
 
-export default function EditorRow({ row }: { row: EntryRow }) {
+export default function EditorRow({
+    row,
+    initial,
+    setInitial,
+}: {
+    row: EntryRow;
+    initial: boolean;
+    setInitial: React.Dispatch<boolean>;
+}) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
@@ -105,15 +114,15 @@ export default function EditorRow({ row }: { row: EntryRow }) {
             {...attributes}>
             {editor.isPreview !== true && editor.isTemplate ? (
                 <div className="d-flex flex-wrap gap-1" style={{ justifyContent: "flex-start" }}>
-                    <button
-                        type="button"
-                        className="btn btn-error btn-square p-0"
-                        onClick={() => {
+                    <DeleteDialog
+                        message={t("common.deleteWhat", { what: t("common.theRow") })}
+                        initial={initial}
+                        setInitial={setInitial}
+                        onDelete={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(removeTemplateRow(row.templateID));
-                        }}>
-                        <Cross className="fill-current-color" />
-                    </button>
+                        }}
+                    />
 
                     <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
                         <Move className="fill-current-color" />
@@ -160,7 +169,13 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         onDragEnd={(e) => dragFolder(e)}>
                         <SortableContext items={row.items} strategy={horizontalListSortingStrategy}>
                             {row.items.map((cell) => (
-                                <EditorCell key={cell.templateID} cell={cell} row={row} />
+                                <EditorCell
+                                    key={cell.templateID}
+                                    cell={cell}
+                                    row={row}
+                                    initial={initial}
+                                    setInitial={setInitial}
+                                />
                             ))}
                         </SortableContext>
                     </DndContext>
@@ -185,15 +200,15 @@ export default function EditorRow({ row }: { row: EntryRow }) {
                         {editor.data !== null &&
                         editor.data.items.filter((item) => item.templateID === row.templateID)
                             .length > 1 ? (
-                            <button
-                                type="button"
-                                className="btn btn-error btn-square p-0"
-                                onClick={() => {
+                            <DeleteDialog
+                                message={t("common.deleteWhat", { what: t("common.theRow") })}
+                                initial={initial}
+                                setInitial={setInitial}
+                                onDelete={() => {
                                     if (typeof editor.data?.templateID !== "string") return;
                                     dispatch(removeEntryRow(row.id));
-                                }}>
-                                <Cross className="fill-current-color" />
-                            </button>
+                                }}
+                            />
                         ) : null}
                         <button
                             type="button"

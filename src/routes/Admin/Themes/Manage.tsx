@@ -21,6 +21,8 @@ import {
     updateTheme,
 } from "./api";
 import UserGuard from "~/components/general/UserGuard";
+import Save from "~/components/Icon/Save";
+import Cross from "~/components/Icon/Cross";
 
 type ThemeState = {
     loading: boolean;
@@ -210,11 +212,8 @@ const AdminThemesManage = () => {
                         <button
                             type="button"
                             className={cls(
-                                "btn",
-                                "btn-primary",
-                                "btn-loader",
+                                "btn btn-primary btn-loader p-1",
                                 themeState.pending === "save" ? "pending" : undefined,
-                                "p-1",
                             )}
                             onClick={async () => {
                                 setThemeState({
@@ -254,15 +253,14 @@ const AdminThemesManage = () => {
                                 await fetchThemeContent();
                             }}>
                             {t("adminThemes.saveTheme")}
+                            <Save className="icon-inline m-is-1" />
                         </button>
                         {Object.keys(builtInThemes).includes(themeState.id) ? null : (
                             <button
                                 type="button"
                                 className={cls(
-                                    "btn",
-                                    "btn-loader",
+                                    "btn btn-error btn-loader p-1",
                                     themeState.pending === "delete" ? "pending" : undefined,
-                                    "p-1",
                                 )}
                                 onClick={async () => {
                                     setThemeState({
@@ -283,6 +281,7 @@ const AdminThemesManage = () => {
                                     navigate(Routes.Admin.Themes.List);
                                 }}>
                                 {t("adminThemes.deleteTheme")}
+                                <Cross className="icon-inline m-is-1" />
                             </button>
                         )}
                     </div>

@@ -1,7 +1,7 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import Cross from "~/components/Icon/Cross";
+import { t } from "i18next";
 import Move from "~/components/Icon/Move";
 import type { EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
@@ -11,9 +11,20 @@ import {
 } from "~/redux/features/editor/editor-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
+import DeleteDialog from "./DeleteDialog";
 import InputHelper from "./input-helper/InputHelper";
 
-export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryRow }) {
+export default function EditorCell({
+    cell,
+    row,
+    initial,
+    setInitial,
+}: {
+    cell: EntryCell;
+    row: EntryRow;
+    initial: boolean;
+    setInitial: React.Dispatch<boolean>;
+}) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
 
@@ -58,10 +69,11 @@ export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryR
             {...attributes}>
             {editor.isPreview !== true && editor.isTemplate ? (
                 <div className="d-flex flex-wrap gap-1" style={{ justifyContent: "flex-start" }}>
-                    <button
-                        type="button"
-                        className="btn btn-error btn-square p-0"
-                        onClick={() => {
+                    <DeleteDialog
+                        initial={initial}
+                        setInitial={setInitial}
+                        message={t("common.deleteWhat", { what: t("common.theCell") })}
+                        onDelete={() => {
                             if (typeof editor.data?.templateID !== "string") return;
                             dispatch(
                                 removeTemplateCell({
@@ -69,9 +81,8 @@ export default function EditorCell({ cell, row }: { cell: EntryCell; row: EntryR
                                     templateCell: cell.templateID,
                                 }),
                             );
-                        }}>
-                        <Cross className="fill-current-color" />
-                    </button>
+                        }}
+                    />
 
                     <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
                         <Move className="fill-current-color" />
