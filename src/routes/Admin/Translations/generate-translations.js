@@ -18,6 +18,7 @@
             login: ["Anmeldung", "Login"],
             entries: ["Einträge", "Entries"],
             homepage: ["Startseite", "Homepage"],
+            userManual: ["Benutzerhandbuch", "User manual"],
             templates: ["Vorlagen", "Templates"],
             registration: ["Registrierung", "Registration"],
             resetPassword: ["Passwort zurücksetzen", "Reset password"],
