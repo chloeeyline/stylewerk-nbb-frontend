@@ -32,7 +32,20 @@ h6 {
     }
 }
 
+html[lang="ar"],
+html[lang="he"],
+html[lang="fa"],
+html[lang="ku"],
+html[lang="az"] {
+    direction: rtl;
+}
 
 html[lang="mo"] {
     writing-mode: vertical-lr;
+}
+
+html[lang="ja"],
+html[lang="zh"],
+html[lang="ko"] {
+    writing-mode: vertical-rl;
 }
