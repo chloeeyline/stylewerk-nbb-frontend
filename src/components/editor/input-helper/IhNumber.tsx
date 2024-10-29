@@ -135,14 +135,14 @@ export const IhNumberSettings = ({ cell, row }: InputHelperProps) => {
             />
             <InputField
                 type="number"
-                label="Schrittgröße"
+                label={t("editor.ihOptionStepSize")}
                 name="step"
                 value={metadata.data.step ?? ""}
                 onChange={dispatchCellSettings}
             />
             <InputField
                 type="checkbox"
-                label="Ganzzahlswert"
+                label={t("editor.ihOptionInteger")}
                 name="integer"
                 checked={metadata.data.integer}
                 onChange={dispatchCellSettings}

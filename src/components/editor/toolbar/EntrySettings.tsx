@@ -164,7 +164,7 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
                 />
                 <SelectField
                     name="folderID"
-                    label="Folder"
+                    label={t("formFields.folder")}
                     value={editor.data.folderID ?? 1}
                     onChange={(e) => dispatchGeneral(e, e.target.value)}
                     options={folders ?? []}

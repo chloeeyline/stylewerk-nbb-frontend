@@ -429,7 +429,7 @@ const CreateFolderDialog = () => {
                             if (!(dialogRef.current instanceof HTMLDialogElement)) return;
                             dialogRef.current.close();
                         }}>
-                        Speichern
+                        {t("common.save")}
                     </button>
                 </fieldset>
             </dialog>

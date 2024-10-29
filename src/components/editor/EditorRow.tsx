@@ -34,7 +34,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import DeleteDialog from "./DeleteDialog";
 import EditorCell from "./EditorCell";
-import { t } from "i18next";
+import { useTranslation } from "react-i18next";
 
 export default function EditorRow({
     row,
@@ -47,6 +47,7 @@ export default function EditorRow({
 }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -134,14 +135,14 @@ export default function EditorRow({
                         .includes(editor.selectedTemplateCell) ? (
                         <>
                             <InputField
-                                label="CanRepeat"
+                                label={t("editor.repeatableRow")}
                                 name="canRepeat"
                                 type="checkbox"
                                 checked={selectedRowSettings()?.canRepeat ?? false}
                                 onChange={dispatchRowSettings}
                             />
                             <InputField
-                                label="HideOnNoInput"
+                                label={t("editor.hideEmptyRow")}
                                 name="hideOnNoInput"
                                 type="checkbox"
                                 checked={selectedRowSettings()?.hideOnNoInput ?? false}

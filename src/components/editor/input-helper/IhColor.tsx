@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import { ihDataColorSchema } from "~/redux/features/editor/editor-data-schema";
 import { useInputHelper, ValidColorValue } from "~/redux/features/editor/editor-hook";
@@ -75,6 +76,7 @@ export const IhColor = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
 
 export const IhColorSettings = ({ cell, row }: InputHelperProps) => {
     const { setMetaData } = useInputHelper(cell, row);
+    const { t } = useTranslation();
     const metadata = ihMetaDataColorSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     const value = ValidColorValue(undefined, metadata?.data?.value);
 
@@ -95,7 +97,7 @@ export const IhColorSettings = ({ cell, row }: InputHelperProps) => {
     return (
         <InputField
             type="color"
-            label="Standartwert"
+            label={t("editor.ihOptionDefaultValue")}
             name="value"
             value={value}
             onChange={dispatchCellSettings}

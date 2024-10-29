@@ -46,7 +46,7 @@ export default function TemplateCellSettings() {
 
     return (
         <fieldset className="fieldset">
-            <legend className="legend">Zelle</legend>
+            <legend className="legend">{t("common.cell_one")}</legend>
             <InlineScroller>
                 <SelectField
                     label={t("editor.inputHelper")}

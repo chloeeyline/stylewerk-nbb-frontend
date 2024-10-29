@@ -1,7 +1,6 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 
-import { t } from "i18next";
 import Move from "~/components/Icon/Move";
 import type { EntryCell, EntryRow } from "~/redux/features/editor/editor-schemas";
 import {
@@ -13,6 +12,7 @@ import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
 import DeleteDialog from "./DeleteDialog";
 import InputHelper from "./input-helper/InputHelper";
+import { useTranslation } from "react-i18next";
 
 export default function EditorCell({
     cell,
@@ -27,6 +27,7 @@ export default function EditorCell({
 }) {
     const editor = useAppSelector(selectEditor);
     const dispatch = useAppDispatch();
+    const { t } = useTranslation();
 
     const { attributes, listeners, setNodeRef, transform, transition } = useSortable({
         id: cell.id,

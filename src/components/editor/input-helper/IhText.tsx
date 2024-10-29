@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import InputField from "~/components/forms/InputField";
 import TextareaField from "~/components/forms/TextareaField";
 import { ihDataTextSchema } from "~/redux/features/editor/editor-data-schema";
@@ -48,6 +49,7 @@ export const IhText = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
 
 export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
     const { setMetaData } = useInputHelper(cell, row);
+    const { t } = useTranslation();
     const metadata = ihMetaDataTextSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
     useEffect(() => {
         if (metadata.success === false) return;
@@ -74,7 +76,7 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
         <>
             <InputField
                 type="number"
-                label="Max Länge"
+                label={t("editor.ihOptionTextColor")}
                 name="maxLenght"
                 value={metadata.data.maxLenght ?? undefined}
                 onChange={dispatchCellSettings}
@@ -82,7 +84,7 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
 
             <InputField
                 type="number"
-                label="Zeilen angezeigt"
+                label={t("editor.ihOptionTextColor")}
                 name="lineShown"
                 value={metadata.data.lineShown ?? undefined}
                 onChange={dispatchCellSettings}
