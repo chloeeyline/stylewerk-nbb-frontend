@@ -76,7 +76,7 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
         <>
             <InputField
                 type="number"
-                label={t("editor.ihOptionTextColor")}
+                label={t("editor.ihOptionMaxLenght")}
                 name="maxLenght"
                 value={metadata.data.maxLenght ?? undefined}
                 onChange={dispatchCellSettings}
@@ -84,7 +84,7 @@ export const IhTextSettings = ({ cell, row }: InputHelperProps) => {
 
             <InputField
                 type="number"
-                label={t("editor.ihOptionTextColor")}
+                label={t("editor.ihOptionRowsShown")}
                 name="lineShown"
                 value={metadata.data.lineShown ?? undefined}
                 onChange={dispatchCellSettings}
