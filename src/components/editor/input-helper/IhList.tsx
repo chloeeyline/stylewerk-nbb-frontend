@@ -16,7 +16,7 @@ import {
     verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
@@ -122,7 +122,6 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
     const { t } = useTranslation();
     const { setMetaData } = useInputHelper(cell, row);
     const metadata = ihMetaDataListSchema.safeParse(saveParseEmptyObject(cell.template.metaData));
-    const [dialogIsOpen, setDialogIsOpen] = useState(false);
 
     useEffect(() => {
         if (metadata.success === false) return;
