@@ -1,0 +1,57 @@
+.logo {
+    --base: 1;
+
+    --starting-delay: calc(var(--base) * 3000ms);
+
+    --delay: calc(var(--base) * 1500ms);
+
+    --s-duration: calc(var(--base) * 2000ms);
+    --w-duration: calc(var(--base) * 2000ms);
+
+    .drawPathS,
+    .drawBgS,
+    .drawPathW,
+    .drawBgW {
+        animation-timing-function: ease-in-out;
+        animation-fill-mode: forwards;
+        animation-name: dashdraw;
+    }
+
+    .drawPathS,
+    .drawBgS {
+        stroke-dasharray: 29.352224349975586;
+        stroke-dashoffset: 29.352224349975586;
+
+        animation-duration: var(--s-duration);
+    }
+
+    .drawBgS {
+        animation-delay: var(--starting-delay);
+    }
+
+    .drawPathS {
+        animation-delay: calc(var(--starting-delay) + 50ms);
+    }
+
+    .drawPathW,
+    .drawBgW {
+        stroke-dasharray: 30.28120994567871;
+        stroke-dashoffset: 30.28120994567871;
+
+        animation-duration: var(--w-duration);
+    }
+
+    .drawBgW {
+        animation-delay: calc(var(--starting-delay) + var(--s-duration) - var(--delay));
+    }
+
+    .drawPathW {
+        animation-delay: calc(var(--starting-delay) + var(--s-duration) - var(--delay) + 50ms);
+    }
+}
+
+@keyframes dashdraw {
+    to {
+        stroke-dashoffset: 0;
+    }
+}
