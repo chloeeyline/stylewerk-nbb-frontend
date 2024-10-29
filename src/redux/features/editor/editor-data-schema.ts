@@ -26,7 +26,11 @@ const ihDataListSchema = z
 
 const ihDataNumberSchema = z
     .object({
-        value: z.number().safe().optional().catch(undefined).default(undefined),
+        value: z
+            .union([z.number().safe(), z.string()])
+            .optional()
+            .catch(undefined)
+            .default(undefined),
     })
     .strip();
 

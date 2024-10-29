@@ -179,16 +179,6 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
                         onChange={(e) => dispatchGeneral(e, e.target.checked)}
                     />
                 </div>
-                <div className="d-grid" style={{ placeItems: "center" }}>
-                    <InputField
-                        label={"Encrypted"}
-                        name="isEncrypted"
-                        type="checkbox"
-                        maxLength={100}
-                        checked={editor.data.isEncrypted}
-                        onChange={(e) => dispatchGeneral(e, e.target.checked)}
-                    />
-                </div>
             </InlineScroller>
         </fieldset>
     );

@@ -188,7 +188,6 @@ const editorSlice = createSlice({
                         state.data[action.payload.type] = action.payload.value;
                     }
                     break;
-                case "isEncrypted":
                 case "isPublic":
                     if (typeof action.payload.value == "boolean")
                         state.data[action.payload.type] = Boolean(action.payload.value);

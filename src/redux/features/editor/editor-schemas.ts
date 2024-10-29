@@ -44,7 +44,6 @@ const editorSchema = z.object({
     templateID: z.string().uuid(),
     name: z.string().nullable(),
     tags: z.string().nullable(),
-    isEncrypted: z.boolean(),
     isPublic: z.boolean(),
     template: templateSchema,
     owned: z.boolean(),

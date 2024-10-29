@@ -10,7 +10,6 @@ const CreateEditor = () => {
         templateID: templateID,
         name: null,
         tags: null,
-        isEncrypted: false,
         isPublic: false,
         template: CreateTemplate(templateID),
         owned: true,

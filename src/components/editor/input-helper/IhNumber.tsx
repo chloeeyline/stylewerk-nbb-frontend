@@ -53,11 +53,21 @@ export const IhNumber = ({ cell, row, isReadOnly, error }: InputHelperProps) => 
             max={metadata.data?.max}
             step={metadata.data?.step}
             onChange={(e) => {
+                if (e.target.value === "") {
+                    setData({
+                        ...data.data,
+                        value: "",
+                    });
+                    return;
+                }
+
+                const value = metadata.data.integer
+                    ? Number.parseInt(e.target.value)
+                    : Number(e.target.value);
+
                 setData({
                     ...data.data,
-                    value: metadata.data.integer
-                        ? Number.parseInt(e.target.value)
-                        : Number.parseFloat(e.target.value),
+                    value,
                 });
             }}
         />

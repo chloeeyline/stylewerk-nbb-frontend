@@ -3,7 +3,6 @@ import { z } from "zod";
 const entryItemSchema = z.object({
     id: z.string().uuid(),
     name: z.string(),
-    isEncrypted: z.boolean(),
     isPublic: z.boolean(),
     tags: z.string().nullable(),
     createdAt: z.number().int().safe().nonnegative(),
