@@ -174,6 +174,13 @@ const editorSlice = createSlice({
             if (state.data === null) return;
             switch (action.payload.type) {
                 case "name":
+                    if (typeof action.payload.value == "string") {
+                        if (action.payload.value.trim().length === 0) action.payload.value = null;
+                        state.data[action.payload.type] = action.payload.value;
+                        state.error = null;
+                        state.status = "succeeded";
+                    }
+                    break;
                 case "tags":
                 case "folderID":
                     if (typeof action.payload.value == "string") {
@@ -198,6 +205,13 @@ const editorSlice = createSlice({
             if (state.data === null) return;
             switch (action.payload.type) {
                 case "name":
+                    if (typeof action.payload.value == "string") {
+                        if (action.payload.value.trim().length === 0) action.payload.value = null;
+                        state.data.template[action.payload.type] = action.payload.value;
+                        state.error = null;
+                        state.status = "succeeded";
+                    }
+                    break;
                 case "description":
                 case "tags":
                     if (typeof action.payload.value == "string") {
@@ -473,6 +487,7 @@ const editorSlice = createSlice({
             .addCase(getEditor.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                state.error = null;
                 state.data = action.payload.data;
                 state.isTemplate = action.payload.isTemplate;
                 state.isPreview = action.payload.isPreview;
@@ -487,6 +502,7 @@ const editorSlice = createSlice({
             .addCase(updateEditor.fulfilled, (state, action) => {
                 if (action.payload.status !== "succeeded") return;
                 state.status = "succeeded";
+                state.error = null;
                 const hasChanged = state.data?.id !== action.payload.data?.id;
                 state.data = action.payload.data;
                 if (action.payload.data === null || hasChanged === false) return;

@@ -92,7 +92,10 @@ export default function Editor({
         );
     }
 
-    if (editor.status === "failed" || editor.data === null) {
+    if (
+        (editor.status === "failed" || editor.data === null) &&
+        editor.error !== "NameMustBeUnique"
+    ) {
         return <div>{t("common.error")}</div>;
     }
 

@@ -52,15 +52,19 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
     };
 
     let allRequired = true;
-    if (editor.data)
-        outerFor: for (const row of editor.data.items) {
-            for (const item of row.items) {
-                allRequired = IsRequiredFillfiled(item, editor.isPreview, editor.isTemplate);
-                if (allRequired === false) {
-                    break outerFor;
+    if (editor.data !== null) {
+        allRequired = typeof editor.data.name === "string" && editor.data.name.trim().length !== 0;
+        if (allRequired === true) {
+            outerFor: for (const row of editor.data.items) {
+                for (const item of row.items) {
+                    allRequired = IsRequiredFillfiled(item, editor.isPreview, editor.isTemplate);
+                    if (allRequired === false) {
+                        break outerFor;
+                    }
                 }
             }
         }
+    }
 
     if (editor.data === null) {
         return <div>{t("common.error")}</div>;
@@ -82,10 +86,13 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
                     {t("common.back")}
                 </NavLink>
                 <button
-                    className={cls("btn p-0", allRequired ? "btn-primary" : "btn-neutral")}
+                    className={cls(
+                        "btn p-0",
+                        allRequired && editor.error === null ? "btn-primary" : "btn-neutral",
+                    )}
                     onClick={() => {
                         if (typeof editor.data?.id !== "string") return;
-                        if (allRequired === true) dispatch(updateEditor());
+                        if (allRequired === true && editor.error === null) dispatch(updateEditor());
                     }}>
                     {t("common.save")}
                 </button>
@@ -103,6 +110,16 @@ export default function EntrySettings({ isNew }: { isNew: boolean }) {
                 <InputField
                     style={{ minInlineSize: "10ch" }}
                     label={t("common.name")}
+                    error={
+                        editor.error !== null && editor.error === "NameMustBeUnique"
+                            ? t("errorCodes.NameMustBeUnique")
+                            : typeof editor.data.name !== "string" ||
+                              editor.data.name.trim().length === 0
+                            ? t("formErrors.pleaseEnter", {
+                                  what: "Name",
+                              })
+                            : null
+                    }
                     name="name"
                     type="text"
                     maxLength={100}

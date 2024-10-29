@@ -8,6 +8,7 @@ import InlineScroller from "~/components/layout/InlineScroller";
 import { selectEditor, setTemplate, updateEditor } from "~/redux/features/editor/editor-slice";
 import { copyTemplates, removeTemplates } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
+import cls from "~/utils/class-name-helper";
 
 export default function TemplateSettings({ isNew }: { isNew: boolean }) {
     const editor = useAppSelector(selectEditor);
@@ -48,10 +49,22 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                 </NavLink>
                 <button
                     type="button"
-                    className="btn btn-primary p-0"
+                    className={cls(
+                        "btn p-0",
+                        typeof editor.data.template.name === "string" &&
+                            editor.data.template.name.trim().length !== 0 &&
+                            editor.error === null
+                            ? "btn-primary"
+                            : "btn-neutral",
+                    )}
                     onClick={() => {
                         if (typeof editor.data?.templateID !== "string") return;
-                        dispatch(updateEditor());
+                        if (
+                            typeof editor.data.template.name === "string" &&
+                            editor.data.template.name.trim().length !== 0 &&
+                            editor.error === null
+                        )
+                            dispatch(updateEditor());
                     }}>
                     {t("common.save")}
                 </button>
@@ -82,6 +95,16 @@ export default function TemplateSettings({ isNew }: { isNew: boolean }) {
                     type="text"
                     label={t("common.name")}
                     name="name"
+                    error={
+                        editor.error !== null && editor.error === "NameMustBeUnique"
+                            ? t("errorCodes.NameMustBeUnique")
+                            : typeof editor.data.template.name !== "string" ||
+                              editor.data.template.name.trim().length === 0
+                            ? t("formErrors.pleaseEnter", {
+                                  what: "Name",
+                              })
+                            : null
+                    }
                     maxLength={100}
                     value={editor.data.template.name ?? ""}
                     onChange={(e) => dispatchGeneral(e, e.target.value)}
