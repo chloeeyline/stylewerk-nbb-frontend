@@ -17,7 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type React from "react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
 
@@ -27,6 +27,7 @@ import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import Spinner from "~/components/general/Spinner";
 import UserGuard from "~/components/general/UserGuard";
+import Cross from "~/components/Icon/Cross";
 import Filter from "~/components/Icon/Filter";
 import Folder from "~/components/Icon/Folder";
 import Globe from "~/components/Icon/Globe";
@@ -53,10 +54,9 @@ import {
     toggleHideList,
     updateFolder,
 } from "~/redux/features/entry/entry-slice";
+import { listTemplates, selectTemplate } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import { listTemplates, selectTemplate } from "~/redux/features/template/template-slice";
-import Cross from "~/components/Icon/Cross";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -488,7 +488,6 @@ const EntriesLayout = () => {
     const dispatch = useAppDispatch();
     const { t } = useTranslation();
     const editor = useAppSelector(selectEditor);
-    const [dialogIsOpen, setDialogIsOpen] = useState(false);
     const { pathname } = useLocation();
 
     useEffect(() => {
@@ -500,21 +499,6 @@ const EntriesLayout = () => {
             dispatch(toggleHideList());
         }
     }, [pathname]);
-
-    const closeModal = (success: boolean) => {
-        setDialogIsOpen(false);
-        if (success === false) return;
-        dispatch(
-            updateFolder({
-                model: {
-                    id: entry.selectedFolder?.id ?? crypto.randomUUID(),
-                    name: entry.selectedFolder?.name ?? "",
-                    items: [],
-                    count: 0,
-                },
-            }),
-        );
-    };
 
     return (
         <Grid layout="header" className="gap-0 size-block-100">
