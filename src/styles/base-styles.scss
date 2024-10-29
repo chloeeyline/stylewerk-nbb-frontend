@@ -31,3 +31,8 @@ h6 {
         margin-block-end: #{map.get(props.$spacing, 3)}rem;
     }
 }
+
+
+html[lang="mo"] {
+    writing-mode: vertical-lr;
+}
