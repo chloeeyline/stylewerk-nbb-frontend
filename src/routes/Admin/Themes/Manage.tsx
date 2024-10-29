@@ -30,7 +30,7 @@ type ThemeState = {
     pending: "save" | "delete" | null;
     id: string;
     name: string;
-    base: "light" | "dark";
+    base: "light" | "dark" | "colorful";
     theme: Theme;
 };
 
