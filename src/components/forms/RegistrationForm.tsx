@@ -205,6 +205,7 @@ export default function RegistrationForm() {
                         className="bg-base-300"
                         label={t("formFields.username")}
                         name="username"
+                        autoComplete="username"
                         required
                         ref={usernameRef}
                         error={formError.username}
@@ -214,6 +215,7 @@ export default function RegistrationForm() {
                         className="bg-base-300"
                         label={t("formFields.email")}
                         name="email"
+                        autoComplete="email"
                         required
                         ref={emailRef}
                         error={formError.email}
@@ -224,6 +226,7 @@ export default function RegistrationForm() {
                     <InputField
                         className="bg-base-300"
                         type="password"
+                        autoComplete="new-password"
                         label={t("formFields.password")}
                         name="password"
                         required
@@ -236,6 +239,7 @@ export default function RegistrationForm() {
                         type="password"
                         label={t("formFields.repeatPassword")}
                         name="repeatPassword"
+                        autoComplete="new-password"
                         required
                         ref={repeatPasswordRef}
                         error={formError.repeatPassword}
@@ -247,6 +251,7 @@ export default function RegistrationForm() {
                         className="bg-base-300"
                         label={t("formFields.firstName")}
                         name="firstName"
+                        autoComplete="given-name"
                         required
                         ref={firstNameRef}
                         error={formError.firstName}
@@ -256,6 +261,7 @@ export default function RegistrationForm() {
                         className="bg-base-300"
                         label={t("formFields.lastName")}
                         name="lastName"
+                        autoComplete="family-name"
                         required
                         ref={lastNameRef}
                         error={formError.lastName}

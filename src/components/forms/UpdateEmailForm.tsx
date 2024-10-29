@@ -123,6 +123,7 @@ export default function UpdateEmailForm({ email }: { email: string }) {
                     className="rounded-1 bg-base-300 no-border p-1"
                     label={t("formFields.email")}
                     name="email"
+                    autoComplete="email"
                     required
                     defaultValue={email}
                     ref={emailRef}

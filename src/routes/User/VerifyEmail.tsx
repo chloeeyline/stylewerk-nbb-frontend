@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import Routes from "#/routes";
 import { verifyEmail } from "~/redux/features/user/user-api";
+import Grid from "~/components/layout/Grid";
 
 export default function VerifyEmail() {
     const { t } = useTranslation();
@@ -21,7 +22,7 @@ export default function VerifyEmail() {
                 if (result.ok === false) {
                     setError(
                         t("verify.mailError", {
-                            error: result.error.message,
+                            error: t(`errorCodes.${result.error.message}`),
                         }),
                     );
                 }
@@ -32,17 +33,25 @@ export default function VerifyEmail() {
     }, []);
 
     if (typeof error === "string") {
-        return <p>{error}</p>;
+        return (
+            <Grid layout="contentCenter" className="size-100">
+                <p>{error}</p>
+            </Grid>
+        );
     }
 
     if (isVerified) {
         return (
-            <div>
+            <Grid layout="contentCenter" className="size-100">
                 <p>{t("verify.mailOk")}</p>
-                <Link to={Routes.Login} />
-            </div>
+                <Link to={Routes.Login}>{t("nav.login")}</Link>
+            </Grid>
         );
     }
 
-    return <p>{t("verify.mailInProgress")}</p>;
+    return (
+        <Grid layout="contentCenter" className="size-100">
+            <p>{t("verify.mailInProgress")}</p>
+        </Grid>
+    );
 }

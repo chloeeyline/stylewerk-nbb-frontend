@@ -9,7 +9,7 @@ export default function UserResetPassword() {
     return (
         <Grid layout="header" className="size-block-100">
             <h1>{t("nav.resetPassword")}</h1>
-            <Grid layout="contentCenter">
+            <Grid layout="contentCenter" className="size-100">
                 <ScrollContainer direction="vertical">
                     <ResetPasswordForm />
                 </ScrollContainer>

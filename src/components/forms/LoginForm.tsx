@@ -115,6 +115,7 @@ export default function LoginForm({ onLogin }: { onLogin?: () => void }) {
                     className="bg-base-300"
                     label={t("formFields.username")}
                     name="username"
+                    autoComplete="username"
                     required
                     ref={usernameRef}
                     error={formError.username}
@@ -125,6 +126,7 @@ export default function LoginForm({ onLogin }: { onLogin?: () => void }) {
                     type="password"
                     label={t("formFields.password")}
                     name="password"
+                    autoComplete="current-password"
                     required
                     ref={passwordRef}
                     error={formError.password}

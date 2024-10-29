@@ -23,6 +23,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 
 import RouteParams from "#/route-params";
 import Routes from "#/routes";
+import DeleteDialog from "~/components/editor/toolbar/DeleteDialog";
 import Columns from "~/components/forms/Columns";
 import InputField from "~/components/forms/InputField";
 import Spinner from "~/components/general/Spinner";
@@ -32,9 +33,11 @@ import Edit from "~/components/Icon/Edit";
 import Filter from "~/components/Icon/Filter";
 import Folder from "~/components/Icon/Folder";
 import Globe from "~/components/Icon/Globe";
+import Hide from "~/components/Icon/Hide";
 import Move from "~/components/Icon/Move";
 import Plus from "~/components/Icon/Plus";
 import Refresh from "~/components/Icon/Refresh";
+import Show from "~/components/Icon/Show";
 import Grid from "~/components/layout/Grid";
 import ResponsiveSidebar from "~/components/layout/ResponsiveSidebar";
 import ScrollContainer from "~/components/layout/ScrollContainer";
@@ -58,9 +61,6 @@ import {
 import { listTemplates, selectTemplate } from "~/redux/features/template/template-slice";
 import { useAppDispatch, useAppSelector } from "~/redux/hooks";
 import cls from "~/utils/class-name-helper";
-import Show from "~/components/Icon/Show";
-import Hide from "~/components/Icon/Hide";
-import Trash from "~/components/Icon/Trash";
 
 const EntriesList = () => {
     const { t } = useTranslation();
@@ -341,7 +341,7 @@ const EntryFolderComponent = ({ item }: { item: EntryFolder }) => {
                     {item.name ?? t("list.generalFolder")}
                 </span>
             </div>
-            {entry.selectedFolderStatus === "loading" ? (
+            {entry.selectedFolder.id === item.id && entry.selectedFolderStatus === "loading" ? (
                 <div
                     className="d-grid p-1 bg-base-200 rounded-0 m-bs-0"
                     style={{ placeItems: "center" }}>
@@ -404,34 +404,35 @@ const CreateFolderDialog = () => {
                     }}>
                     <Cross className="icon-inline" />
                 </button>
-                <fieldset className="fieldset gap-1">
-                    <legend className="legend">{t("common.createNewFolder")}</legend>
-                    <InputField
-                        label={t("common.foldername")}
-                        name="foldername"
-                        value={entry.selectedFolder?.name ?? ""}
-                        onChange={(e) => dispatch(setSelectedFolderName(e.target.value))}
-                    />
-                    <button
-                        className="btn btn-accent p-1"
-                        onClick={() => {
-                            dispatch(
-                                updateFolder({
-                                    model: {
-                                        id: crypto.randomUUID(),
-                                        name: entry.selectedFolder?.name ?? "",
-                                        items: [],
-                                        count: 0,
-                                    },
-                                }),
-                            );
+                <form
+                    onSubmit={(e) => {
+                        e.preventDefault();
 
-                            if (!(dialogRef.current instanceof HTMLDialogElement)) return;
-                            dialogRef.current.close();
-                        }}>
-                        Speichern
-                    </button>
-                </fieldset>
+                        dispatch(
+                            updateFolder({
+                                model: {
+                                    id: crypto.randomUUID(),
+                                    name: entry.selectedFolder?.name ?? "",
+                                    items: [],
+                                    count: 0,
+                                },
+                            }),
+                        );
+
+                        if (!(dialogRef.current instanceof HTMLDialogElement)) return;
+                        dialogRef.current.close();
+                    }}>
+                    <fieldset className="fieldset gap-1">
+                        <legend className="legend">{t("common.createNewFolder")}</legend>
+                        <InputField
+                            label={t("common.foldername")}
+                            name="foldername"
+                            value={entry.selectedFolder?.name ?? ""}
+                            onChange={(e) => dispatch(setSelectedFolderName(e.target.value))}
+                        />
+                        <button className="btn btn-accent p-1">Speichern</button>
+                    </fieldset>
+                </form>
             </dialog>
         </>
     );
@@ -555,18 +556,16 @@ const EntriesLayout = () => {
                 {entry.hideFilters === true && entry.dragMode === false ? (
                     <CreateFolderDialog />
                 ) : null}
-                <button
-                    type="button"
-                    className={cls(
-                        "btn p-0",
-                        entry.selectedFolder.isNew === true || entry.selectedFolder.name === null
-                            ? "d-none"
-                            : undefined,
-                    )}
-                    onClick={() => dispatch(removeFolder({ id: entry.selectedFolder.id }))}>
-                    <Trash className="icon-inline m-ie-0" />
-                    {t("common.deleteFolder")}
-                </button>
+                {entry.selectedFolder.isNew !== true && entry.selectedFolder.name !== null ? (
+                    <DeleteDialog
+                        message={t("common.deleteFolder")}
+                        onDelete={async () => {
+                            dispatch(removeFolder({ id: entry.selectedFolder.id }));
+
+                            return { ok: true };
+                        }}
+                    />
+                ) : null}
 
                 <CreateEntryDialog />
             </div>

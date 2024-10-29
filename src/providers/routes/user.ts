@@ -18,14 +18,6 @@ export const userRoutes: RouteObject[] = [
         },
     },
     {
-        path: User.ChangeEmail,
-        lazy: async () => {
-            const { default: Component } = await import("~/routes/User/ChangeEmail");
-
-            return { Component };
-        },
-    },
-    {
         path: User.ResetPassword,
         lazy: async () => {
             const { default: Component } = await import("~/routes/User/ResetPassword");
