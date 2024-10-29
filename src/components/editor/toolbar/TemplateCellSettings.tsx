@@ -54,7 +54,6 @@ export default function TemplateCellSettings() {
                     value={selectedCellSettings()?.template.inputHelper ?? 1}
                     onChange={(e) => dispatchCellSettings(e, e.target.value)}
                     options={[
-                        ["0", "Test"],
                         ["1", t("editor.inputHelperStatic")],
                         ["3", t("editor.inputHelperText")],
                         ["4", t("editor.inputHelperNumber")],
