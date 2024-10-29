@@ -75,21 +75,20 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
         );
     }
 
-    if (metadata.data.display !== "0") {
+    if (metadata.data.display === "0") {
         return (
-            <RadioGroup
+            <SelectField
                 label={cell.template.text ?? ""}
-                name={cell.id}
-                direction={metadata.data.display === "2" ? "vertical" : "horizontal"}
-                options={metadata.data.list}
-                value={data.data.value ?? metadata.data.value ?? ""}
+                name="list"
                 required={cell.template.isRequired}
                 disabled={isReadOnly}
                 error={error}
-                onChange={(value) => {
+                options={[["", "Empty"], ...metadata.data.list]}
+                value={data.data.value ?? metadata.data?.value ?? ""}
+                onChange={(e) => {
                     setData({
                         ...data.data,
-                        value,
+                        value: e.target.value,
                     });
                 }}
             />
@@ -97,18 +96,19 @@ export const IhList = ({ cell, row, isReadOnly, error }: InputHelperProps) => {
     }
 
     return (
-        <SelectField
+        <RadioGroup
             label={cell.template.text ?? ""}
-            name="list"
+            name={cell.id}
+            direction={metadata.data.display === "2" ? "vertical" : "horizontal"}
+            options={metadata.data.list}
+            value={data.data.value ?? metadata.data.value ?? ""}
             required={cell.template.isRequired}
             disabled={isReadOnly}
             error={error}
-            options={[["", "Empty"], ...metadata.data.list]}
-            value={data.data.value ?? metadata.data?.value ?? ""}
-            onChange={(e) => {
+            onChange={(value) => {
                 setData({
                     ...data.data,
-                    value: e.target.value,
+                    value,
                 });
             }}
         />
@@ -147,7 +147,7 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
             <SelectField
                 label={t("editor.ihOptionDefaultValue")}
                 name="value"
-                options={metadata.data.list}
+                options={[["", "Empty"], ...metadata.data.list]}
                 value={metadata.data.value ?? ""}
                 onChange={dispatchCellSettings}
             />
