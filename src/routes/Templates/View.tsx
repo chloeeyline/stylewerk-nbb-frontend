@@ -40,15 +40,17 @@ export default function TemplateView() {
                     <Copy className="icon-inline m-ie-0" />
                     {t("common.copy")}
                 </button>
-                <NavLink
-                    className="btn p-0 btn-loader"
-                    to={Routes.Templates.Edit.replace(
-                        RouteParams.TemplateId,
-                        templateId ?? DEFAULT_UUID,
-                    ).replace(RouteParams.IsNew, "false")}>
-                    <Edit className="icon-inline m-ie-0" />
-                    {t("common.edit")}
-                </NavLink>
+                {editor.data?.owned ? (
+                    <NavLink
+                        className="btn p-0 btn-loader"
+                        to={Routes.Templates.Edit.replace(
+                            RouteParams.TemplateId,
+                            templateId ?? DEFAULT_UUID,
+                        ).replace(RouteParams.IsNew, "false")}>
+                        <Edit className="icon-inline m-ie-0" />
+                        {t("common.edit")}
+                    </NavLink>
+                ) : null}
             </div>
             <ScrollContainer direction="both">
                 <Editor

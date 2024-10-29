@@ -104,6 +104,8 @@
             ihOptionDatetimeMonth: ["Monat", "Month"],
             ihOptionDatetimeWeek: ["Woche", "Week"],
             ihOptionDatetimeTime: ["Zeit", "Time"],
+            ihOptionListEditOptions: ["Optionen bearbeiten", "Edit options"],
+            ihOptionListAddNewOption: ["Neue Option", "New option"],
             addNewRow: ["Neue Zeile einfügen", "Add new row"],
             responsiveRow: ["Dynamischer Zeilenumbruch", "Dynamic row wrapping"],
             repeatableRow: ["Wiederholbare Zeile", "Repeatable Row"],

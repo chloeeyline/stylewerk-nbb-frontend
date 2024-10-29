@@ -17,6 +17,7 @@ import {
 } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { useTranslation } from "react-i18next";
 import { z } from "zod";
 
@@ -25,6 +26,8 @@ import SelectField from "~/components/forms/SelectField";
 import Cross from "~/components/Icon/Cross";
 import Move from "~/components/Icon/Move";
 import Plus from "~/components/Icon/Plus";
+import Grid from "~/components/layout/Grid";
+import ScrollContainer from "~/components/layout/ScrollContainer";
 import { ihDataListSchema } from "~/redux/features/editor/editor-data-schema";
 import { useInputHelper } from "~/redux/features/editor/editor-hook";
 import { ihMetaDataListSchema } from "~/redux/features/editor/editor-metadata-schema";
@@ -162,41 +165,20 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
                 value={metadata.data.display ?? "0"}
                 onChange={dispatchCellSettings}
             />
-            <button
-                type="button"
-                className="btn btn-success no-line-height d-flex gap-0 p-0"
-                style={{ alignItems: "center" }}
-                onClick={() => setDialogIsOpen(true)}>
-                Liste bearbeiten
-                <Plus className="icon-inline" />
-            </button>
-            <Dialog
-                metadata={metadata.data}
-                isOpen={dialogIsOpen}
-                onClose={() => setDialogIsOpen(false)}
-                setMetaData={setMetaData}
-            />
+            <Dialog metadata={metadata.data} setMetaData={setMetaData} />
         </>
     );
 };
 
 const Dialog = ({
-    isOpen,
-    onClose,
     metadata,
     setMetaData,
 }: {
-    isOpen: boolean;
-    onClose: () => void;
     metadata: IhListMetaData;
     setMetaData: (value: unknown) => void;
 }) => {
+    const { t } = useTranslation();
     const dialogRef = useRef<HTMLDialogElement>(null);
-    useEffect(() => {
-        if (!dialogRef.current) return;
-        if (isOpen) dialogRef.current.showModal();
-        else dialogRef.current.close();
-    }, [isOpen]);
 
     const sensors = useSensors(
         useSensor(PointerSensor),
@@ -225,54 +207,81 @@ const Dialog = ({
     };
 
     return (
-        <dialog
-            ref={dialogRef}
-            onClick={(e) => {
-                if (e.target === dialogRef.current) onClose();
-            }}
-            style={{
-                position: "fixed", // Use fixed positioning to allow centering relative to the viewport
-                top: "50%", // Move the dialog to the center vertically
-                left: "50%", // Move the dialog to the center horizontally
-                transform: "translate(-50%, -50%)", // Shift back by 50% of its own width and height to center it
-                border: "none",
-                backgroundColor: "rgba(0, 0, 0, 1)", // Optional: semi-transparent background
-                zIndex: 1000, // Ensure it's on top of other elements
-            }}>
-            <div>Optionen bearbeiten</div>
-            <DndContext
-                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={(e) => dragItem(e)}>
-                <SortableContext
-                    items={metadata.list.map(([key]) => key)}
-                    strategy={verticalListSortingStrategy}>
-                    {metadata.list.map(([key, value]) => (
-                        <DialogItem
-                            key={key}
-                            id={key}
-                            value={value}
-                            metadata={metadata}
-                            setList={setList}></DialogItem>
-                    ))}
-                </SortableContext>
-            </DndContext>
-            <div className="d-grid gap-1 p-0" style={{ placeItems: "center" }}>
-                <button
-                    type="button"
-                    className="btn btn-success p-1 no-line-height d-flex gap-1"
-                    style={{ alignItems: "center" }}
-                    onClick={() => {
-                        const temp = metadata.list;
-                        temp.push([crypto.randomUUID(), ""]);
-                        setList(temp);
-                    }}>
-                    {"Neues Element"}
+        <>
+            <button
+                type="button"
+                className="btn btn-success no-line-height d-flex gap-0 p-0"
+                style={{ alignItems: "center" }}
+                onClick={() => {
+                    if (!(dialogRef.current instanceof HTMLDialogElement)) return;
+                    dialogRef.current.showModal();
+                }}>
+                <span>
+                    {t("common.editList")}
                     <Plus className="icon-inline" />
-                </button>
-            </div>
-        </dialog>
+                </span>
+            </button>
+            {createPortal(
+                <dialog
+                    ref={dialogRef}
+                    className="inset-0 m-auto no-border rounded-4 p-relative overflow-visible min-size-block-fit size-block-auto max-size-block-80">
+                    <Grid layout="headerFooter" className="size-block-100">
+                        <div>
+                            <button
+                                type="button"
+                                className="btn btn-primary btn-square p-1 p-absolute"
+                                style={{
+                                    insetBlockStart: "-1em",
+                                    insetInlineEnd: "-1em",
+                                    insetBlockEnd: "auto",
+                                    insetInlineStart: "auto",
+                                }}
+                                onClick={() => {
+                                    if (!(dialogRef.current instanceof HTMLDialogElement)) return;
+                                    dialogRef.current.close();
+                                }}>
+                                <Cross className="icon-inline" />
+                            </button>
+                            <h2>{t("editor.ihOptionListEditOptions")}</h2>
+                        </div>
+                        <ScrollContainer direction="vertical">
+                            <DndContext
+                                modifiers={[restrictToVerticalAxis, restrictToParentElement]}
+                                sensors={sensors}
+                                collisionDetection={closestCenter}
+                                onDragEnd={(e) => dragItem(e)}>
+                                <SortableContext
+                                    items={metadata.list.map(([key]) => key)}
+                                    strategy={verticalListSortingStrategy}>
+                                    {metadata.list.map(([key, value]) => (
+                                        <DialogItem
+                                            key={key}
+                                            id={key}
+                                            value={value}
+                                            metadata={metadata}
+                                            setList={setList}></DialogItem>
+                                    ))}
+                                </SortableContext>
+                            </DndContext>
+                        </ScrollContainer>
+                        <div className="d-grid gap-1 p-0" style={{ placeItems: "center" }}>
+                            <button
+                                type="button"
+                                className="btn btn-success p-1 no-line-height"
+                                onClick={() => {
+                                    const temp = metadata.list;
+                                    temp.push([crypto.randomUUID(), ""]);
+                                    setList(temp);
+                                }}>
+                                {t("editor.ihOptionListAddNewOption")}
+                                <Plus className="icon-inline m-is-0" />
+                            </button>
+                        </div>
+                    </Grid>
+                </dialog>,
+                document.body,
+            )}
+        </>
     );
 };
 
@@ -299,15 +308,16 @@ const DialogItem = ({
             {...attributes}>
             <button
                 type="button"
-                className="btn btn-error btn-square p-0"
+                className="btn btn-error btn-square p-1"
                 onClick={() => setList(metadata.list.filter(([k]) => k !== id))}>
                 <Cross className="fill-current-color" />
             </button>
 
-            <button type="button" className="btn btn-accent btn-square p-0" {...listeners}>
+            <button type="button" className="btn btn-accent btn-square p-1" {...listeners}>
                 <Move className="fill-current-color" />
             </button>
             <input
+                className="input p-0"
                 value={value}
                 onChange={(e) =>
                     setList(
