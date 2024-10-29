@@ -155,12 +155,12 @@ export const IhListSettings = ({ cell, row }: InputHelperProps) => {
                 onChange={dispatchCellSettings}
             />
             <SelectField
-                label={"Darstellungsart"}
+                label={t("editor.ihOptionListDisplayType")}
                 name="display"
                 options={[
-                    ["0", "Liste"],
-                    ["1", "H Radiobuttons"],
-                    ["2", "V Radiobuttons"],
+                    ["0", t("editor.ihOptionListDisplayList")],
+                    ["1", t("editor.ihOptionListDisplayHRadio")],
+                    ["2", t("editor.ihOptionListDisplayVRadio")],
                 ]}
                 value={metadata.data.display ?? "0"}
                 onChange={dispatchCellSettings}
