@@ -102,14 +102,17 @@
             repeatableRow: ["Wiederholbare Zeile", "Repeatable Row"],
             hideEmptyRow: ["Zeile verstecken wenn leer", "Hide row when empty"],
             public: ["Öffentlich", "Public"],
-            notInFolder: ["Ordnerlos", "Folderless"]
+            notInFolder: ["Ordnerlos", "Folderless"],
         },
         common: {
             yes: ["Ja", "Yes"],
             no: ["Nein", "No"],
             editFolder: ["Ordner bearbeiten", "Edit folder"],
             deleteFolder: ["Ordner löschen", "Delete folder"],
-            deleteWhat: ["Bist du sicher, dass du {{what}} löschen möchtest?", "Are you sure you want to delete {{what}}?"],
+            deleteWhat: [
+                "Bist du sicher, dass du {{what}} löschen möchtest?",
+                "Are you sure you want to delete {{what}}?",
+            ],
             theRow: ["die Zeile", "the row"],
             theCell: ["die Zelle", "the cell"],
             theTemplate: ["die Vorlage", "the template"],
@@ -197,8 +200,8 @@
                 "The user name is too long. It may be a maximum of 100 characters long.",
             ],
             UnToShort: [
-                "Der Benutzername ist zu kurz. Er muss mindestens 3 Zeichen lang sein.",
-                "The user name is too short. It must be at least 3 characters long.",
+                "Der Benutzername ist zu kurz. Er muss mindestens 5 Zeichen lang sein.",
+                "The user name is too short. It must be at least 5 characters long.",
             ],
             PwTooShort: [
                 "Das Passwort ist zu kurz. Es muss mindestens 10 Zeichen lang sein.",
@@ -260,8 +263,8 @@
                 "The password contains invalid characters. Only letters (a-z, A-Z), numbers (0-9), spaces and the characters ! # $ % & * + - . ? @ _ |.",
             ],
             StatusTokenExpired: [
-                "Der Status-Token ist abgelaufen.",
-                "The status token has expired.",
+                "Der Status-Token ist abgelaufen. Es wurde eine neue E-Mail versendet.",
+                "The status token has expired. A new email has been sent.",
             ],
             UnUsesInvalidChars: [
                 "Der Benutzername enthält ungültige Zeichen. Erlaubt sind nur Buchstaben (a-z, A-Z), Ziffern (0-9) und die Zeichen & + * - . _ |.",
