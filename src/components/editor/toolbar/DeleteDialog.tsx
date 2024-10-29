@@ -10,7 +10,7 @@ export default function DeleteDialog({
     onDelete,
 }: {
     message: string;
-    onDelete: () => Promise<{ ok: true; redirectTo: string } | { ok: false; error: string }>;
+    onDelete: () => Promise<{ ok: true; redirectTo?: string } | { ok: false; error: string }>;
 }) {
     const { t } = useTranslation();
     const dialogRef = useRef<HTMLDialogElement>(null);
@@ -67,7 +67,9 @@ export default function DeleteDialog({
                             if (!(dialogRef.current instanceof HTMLDialogElement)) return;
                             dialogRef.current.close();
 
-                            navigate(result.redirectTo);
+                            if (typeof result.redirectTo === "string") {
+                                navigate(result.redirectTo);
+                            }
                         }}>
                         {t("common.yes")}
                     </button>

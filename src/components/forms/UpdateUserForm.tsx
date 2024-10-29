@@ -169,6 +169,7 @@ export default function UpdateUserForm(props: {
                         className="bg-base-300"
                         label={t("formFields.firstName")}
                         name="firstName"
+                        autoComplete="given-name"
                         required
                         defaultValue={props.firstName}
                         ref={firstNameRef}
@@ -179,6 +180,7 @@ export default function UpdateUserForm(props: {
                         className="bg-base-300"
                         label={t("formFields.lastName")}
                         name="lastName"
+                        autoComplete="family-name"
                         required
                         defaultValue={props.lastName}
                         ref={lastNameRef}
@@ -203,6 +205,7 @@ export default function UpdateUserForm(props: {
                     <InputField
                         className="bg-base-300"
                         type="password"
+                        autoComplete="new-password"
                         label={t("formFields.password")}
                         name="password"
                         ref={passwordRef}
@@ -212,6 +215,7 @@ export default function UpdateUserForm(props: {
                     <InputField
                         className="bg-base-300"
                         type="password"
+                        autoComplete="new-password"
                         label={t("formFields.repeatPassword")}
                         name="repeatPassword"
                         ref={repeatPasswordRef}

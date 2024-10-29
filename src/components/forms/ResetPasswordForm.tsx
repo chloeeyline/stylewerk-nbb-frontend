@@ -11,6 +11,7 @@ import {
 import cls from "~/utils/class-name-helper";
 import InputField from "./InputField";
 import styles from "./form-fields.module.scss";
+import Grid from "../layout/Grid";
 
 function RequestReset() {
     const { t } = useTranslation();
@@ -28,7 +29,11 @@ function RequestReset() {
     });
 
     if (request.done === true) {
-        return <div>{t("formMessages.requestPasswordReset")}</div>;
+        return (
+            <Grid layout="contentCenter" className="size-100">
+                <p>{t("formMessages.requestPasswordReset")}</p>
+            </Grid>
+        );
     }
 
     const submitResetRequest = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -88,6 +93,7 @@ function RequestReset() {
                 <InputField
                     className="bg-base-300"
                     label={t("formFields.email")}
+                    autoComplete="email"
                     name="email"
                     required
                     ref={emailRef}
@@ -205,6 +211,7 @@ function ResetPassword({ token }: { token: string }) {
                     type="password"
                     label={t("formFields.password")}
                     name="password"
+                    autoComplete="new-password"
                     required
                     ref={passwordRef}
                 />
@@ -214,6 +221,7 @@ function ResetPassword({ token }: { token: string }) {
                     type="password"
                     label={t("formFields.repeatPassword")}
                     name="repeatPassword"
+                    autoComplete="new-password"
                     required
                     ref={repeatPasswordRef}
                 />

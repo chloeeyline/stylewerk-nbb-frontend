@@ -93,7 +93,6 @@ export const IhNumberSettings = ({ cell, row }: InputHelperProps) => {
             case "min":
             case "max":
             case "step":
-                console.log(e.target.value);
                 setMetaData({
                     ...metadata.data,
                     [e.target.name]: e.target.value === "" ? undefined : Number(e.target.value),
