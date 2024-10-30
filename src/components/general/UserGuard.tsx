@@ -17,7 +17,7 @@ export default function UserGuard({ children }: React.PropsWithChildren) {
         return <Loader />;
     }
 
-    if (status === "loggedIn" || status === "failed") {
+    if (status === "loggedIn") {
         return children;
     }
 
