@@ -1,11 +1,10 @@
 import type { SVGProps } from "react";
 import { Ref, forwardRef } from "react";
 import styles from "./logo.module.scss";
-import cls from "~/utils/class-name-helper";
 
 const SvgLogo = ({ className, ...props }: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => (
     <svg
-        className={cls(className, styles.logo)}
+        className={className}
         xmlSpace="preserve"
         viewBox="0 0 10.578 7.05"
         role="img"

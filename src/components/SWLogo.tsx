@@ -1,11 +1,10 @@
 import type { SVGProps } from "react";
 import { Ref, forwardRef } from "react";
 import styles from "./sw-logo.module.scss";
-import cls from "~/utils/class-name-helper";
 
 const SvgLogo = ({ className, ...props }: SVGProps<SVGSVGElement>, ref: Ref<SVGSVGElement>) => (
     <svg
-        className={cls(className, styles.logo)}
+        className={className}
         xmlSpace="preserve"
         viewBox="0 0 19.9417 10"
         role="img"
@@ -20,7 +19,7 @@ const SvgLogo = ({ className, ...props }: SVGProps<SVGSVGElement>, ref: Ref<SVGS
             strokeLinejoin="round"
             strokeWidth="2"
             d="M8.5 3h0a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2h0a2 2 0 0 0 2 2h3.5a2 2 0 0 1 2 2h0a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h0"
-            />
+        />
         <path
             className={styles.drawPathS}
             fill="none"
@@ -29,7 +28,7 @@ const SvgLogo = ({ className, ...props }: SVGProps<SVGSVGElement>, ref: Ref<SVGS
             strokeLinejoin="round"
             strokeWidth="0.75"
             d="M8.5 3h0a2 2 0 0 0-2-2H3a2 2 0 0 0-2 2h0a2 2 0 0 0 2 2h3.5a2 2 0 0 1 2 2h0a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2h0"
-            />
+        />
         <path
             className={styles.drawBgW}
             fill="none"
@@ -38,7 +37,7 @@ const SvgLogo = ({ className, ...props }: SVGProps<SVGSVGElement>, ref: Ref<SVGS
             strokeLinejoin="round"
             strokeWidth="2"
             d="M12.4417 1h0a1.5 1.5 0 0 0-1.5 1.5v5a1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5V6a1 1 0 0 1 1-1 1 1 0 0 1 1 1v1.5a1.5 1.5 0 0 0 1.5 1.5 1.5 1.5 0 0 0 1.5-1.5v-5a1.5 1.5 0 0 0-1.5-1.5h0"
-            />
+        />
         <path
             fill="none"
             className={styles.drawPathW}

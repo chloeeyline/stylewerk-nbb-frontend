@@ -1,53 +1,42 @@
-.logo {
-    --base: 1;
+.drawPathS,
+.drawBgS,
+.drawPathW,
+.drawBgW {
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    animation-name: dashdraw;
+}
 
-    --starting-delay: calc(var(--base) * 3000ms);
+.drawPathS,
+.drawBgS {
+    stroke-dasharray: 29.352224349975586;
+    stroke-dashoffset: 29.352224349975586;
 
-    --delay: calc(var(--base) * 1500ms);
+    animation-duration: 2000ms;
+}
 
-    --s-duration: calc(var(--base) * 2000ms);
-    --w-duration: calc(var(--base) * 2000ms);
+.drawBgS {
+    animation-delay: 3000ms;
+}
 
-    .drawPathS,
-    .drawBgS,
-    .drawPathW,
-    .drawBgW {
-        animation-timing-function: ease-in-out;
-        animation-fill-mode: forwards;
-        animation-name: dashdraw;
-    }
+.drawPathS {
+    animation-delay: 3050ms;
+}
 
-    .drawPathS,
-    .drawBgS {
-        stroke-dasharray: 29.352224349975586;
-        stroke-dashoffset: 29.352224349975586;
+.drawPathW,
+.drawBgW {
+    stroke-dasharray: 30.28120994567871;
+    stroke-dashoffset: 30.28120994567871;
 
-        animation-duration: var(--s-duration);
-    }
+    animation-duration: 2000ms;
+}
 
-    .drawBgS {
-        animation-delay: var(--starting-delay);
-    }
+.drawBgW {
+    animation-delay: 3500ms;
+}
 
-    .drawPathS {
-        animation-delay: calc(var(--starting-delay) + 50ms);
-    }
-
-    .drawPathW,
-    .drawBgW {
-        stroke-dasharray: 30.28120994567871;
-        stroke-dashoffset: 30.28120994567871;
-
-        animation-duration: var(--w-duration);
-    }
-
-    .drawBgW {
-        animation-delay: calc(var(--starting-delay) + var(--s-duration) - var(--delay));
-    }
-
-    .drawPathW {
-        animation-delay: calc(var(--starting-delay) + var(--s-duration) - var(--delay) + 50ms);
-    }
+.drawPathW {
+    animation-delay: 3550ms;
 }
 
 @keyframes dashdraw {

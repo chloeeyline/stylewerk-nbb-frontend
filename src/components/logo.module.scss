@@ -1,47 +1,33 @@
-.logo {
-    --base: 1;
+.drawPathN,
+.drawPathBOne,
+.drawPathBTwo {
+    animation-timing-function: ease-in-out;
+    animation-fill-mode: forwards;
+    animation-name: dashdraw;
+}
 
-    --starting-delay: calc(var(--base) * 500ms);
+.drawPathN {
+    stroke-dasharray: 12.395113945007324;
+    stroke-dashoffset: 12.395113945007324;
 
-    --delay: calc(var(--base) * 1500ms);
+    animation-duration: 2000ms;
+    animation-delay: 500ms;
+}
 
-    --n-duration: calc(var(--base) * 2000ms);
-    --b1-duration: calc(var(--base) * 2000ms);
-    --b2-duration: calc(var(--base) * 2000ms);
+.drawPathBOne {
+    stroke-dasharray: 18.18989372253418;
+    stroke-dashoffset: 18.18989372253418;
 
-    .drawPathN,
-    .drawPathBOne,
-    .drawPathBTwo {
-        animation-timing-function: ease-in-out;
-        animation-fill-mode: forwards;
-        animation-name: dashdraw;
-    }
+    animation-duration: 2000ms;
+    animation-delay: 1000ms;
+}
 
-    .drawPathN {
-        stroke-dasharray: 12.395113945007324;
-        stroke-dashoffset: 12.395113945007324;
+.drawPathBTwo {
+    stroke-dasharray: 18.189794540405273;
+    stroke-dashoffset: 18.189794540405273;
 
-        animation-duration: var(--n-duration);
-        animation-delay: var(--starting-delay);
-    }
-
-    .drawPathBOne {
-        stroke-dasharray: 18.18989372253418;
-        stroke-dashoffset: 18.18989372253418;
-
-        animation-duration: var(--b1-duration);
-        animation-delay: calc(var(--starting-delay) + var(--n-duration) - var(--delay));
-    }
-
-    .drawPathBTwo {
-        stroke-dasharray: 18.189794540405273;
-        stroke-dashoffset: 18.189794540405273;
-
-        animation-duration: var(--b2-duration);
-        animation-delay: calc(
-            var(--starting-delay) + var(--n-duration) + var(--b1-duration) - (var(--delay) * 2)
-        );
-    }
+    animation-duration: 2000ms;
+    animation-delay: 1500ms;
 }
 
 @keyframes dashdraw {
