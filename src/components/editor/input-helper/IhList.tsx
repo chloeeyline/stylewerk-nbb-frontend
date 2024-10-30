@@ -216,8 +216,8 @@ const Dialog = ({
                     dialogRef.current.showModal();
                 }}>
                 <span>
-                    {t("common.editList")}
-                    <Plus className="icon-inline" />
+                    {t("editor.ihOptionListEditOptions")}
+                    <Plus className="icon-inline m-is-1" />
                 </span>
             </button>
             {createPortal(
