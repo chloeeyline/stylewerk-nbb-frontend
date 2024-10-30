@@ -24,7 +24,11 @@ export default function Home() {
 
                     <video
                         controls
-                        src="/Tutorial.mp4"
+                        playsInline
+                        muted
+                        autoPlay
+                        loop
+                        src="/tutorial.webm"
                         className="rounded-4 shadow"
                         style={{
                             inlineSize: "75ch",
