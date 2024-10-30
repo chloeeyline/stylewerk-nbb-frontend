@@ -27,7 +27,7 @@ export default function Home() {
                         src="/Tutorial.mp4"
                         className="rounded-4 shadow"
                         style={{
-                            inlineSize: "70ch",
+                            inlineSize: "75ch",
                             border: "medium solid var(--clr-body)",
                         }}
                     />
