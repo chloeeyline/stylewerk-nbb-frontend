@@ -13,12 +13,12 @@ export default function Home() {
             <ScrollContainer direction="vertical">
                 <div
                     className="d-flex gap-1 p-1 m-be-6"
-                    style={{ alignItems: "baseline", justifyContent: "center" }}>
-                    <Logo style={{ maxInlineSize: "25ch" }} />
-                    <SWLogo style={{ maxInlineSize: "7.5ch" }} />
+                    style={{ alignItems: "flex-end", justifyContent: "center" }}>
+                    <Logo style={{ maxInlineSize: "16.25rem" }} />
+                    <SWLogo style={{ maxInlineSize: "5rem" }} />
                 </div>
                 <div className="d-grid gap-6 p-1" style={{ placeItems: "center" }}>
-                    <a className="btn btn-primary p-1" href="/Benutzerhandbuch.pdf" target="_blank">
+                    <a className="btn btn-primary p-1" href="/Benutzerhandbuch-v2.pdf" target="_blank">
                         {t("nav.userManual")}
                     </a>
 
